@@ -1,7 +1,6 @@
 <?php
-namespace models;
-use core\model;
-class Model_Portfolio extends Model
+namespace application\models;
+class Model_Portfolio extends \application\core\model
 {
 	public function get_data()
 	{

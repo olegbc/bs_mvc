@@ -1,14 +1,12 @@
 <?php
-namespace Controllers;
-use core\Controller;
-use models;
-class Controller_Portfolio extends Controller
+namespace application\Controllers;
+class Controller_Portfolio extends \application\core\Controller
 {
 
 	function __construct()
 	{
-		$this->model = new \models\Model_Portfolio;
-		$this->view = new \core\View();
+		$this->model = new \application\models\Model_Portfolio;
+		$this->view = new \application\core\View();
 	}
 	
 	function action_index()

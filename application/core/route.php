@@ -1,5 +1,5 @@
 <?php
-namespace core;
+namespace application\core;
 class Route
 {
 	static function start()
@@ -26,37 +26,11 @@ class Route
 		$model_name = 'Model_'.$controller_name;
 		$controller_name = 'Controller_'.$controller_name;
 		$action_name = 'action_'.$action_name;
-
-		// подцепляем файл с классом модели (файла модели может и не быть)
-
-//		$model_file = strtolower($model_name).'.php';
-//        $model_alias =  '\models\\'.$controller_name;
-//
-//		$model_path = "application/models/".$model_file;
-//		if(file_exists($model_path))
-//		{
-//			include "application/models/".$model_file;
-//		}
-
-		// подцепляем файл с классом контроллера
-		// $controller_file = strtolower($controller_name).'.php';
-		// $controller_path = "application/controllers/".$controller_file;
-		// if(file_exists($controller_path))
-		// {
-		// 	include "application/controllers/".$controller_file;
-		// }
-		// else
-		// {
-		// 	/*
-		// 	правильно было бы кинуть здесь исключение,
-		// 	но для упрощения сразу сделаем редирект на страницу 404
-		// 	*/
-		// 	Route::ErrorPage404();
-		// }
 		
 		// создаем контроллер
-		$controller_alias =  '\Controllers\\'.$controller_name;
+		$controller_alias =  'application\Controllers\\'.$controller_name;
 		$controller = new $controller_alias;
+		// $controller = new $controller_alias;
 		$action = $action_name;
 		
 		if(method_exists($controller, $action))

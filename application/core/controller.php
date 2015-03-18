@@ -1,13 +1,12 @@
 <?php
-namespace core;
-use core\View;
+namespace application\core;
 class Controller {
 	public $model;
 	public $view;
 	
 	function __construct()
 	{
-		$this->view = new View();
+		$this->view = new \application\core\View;
 	}
 	
 	function action_index()
