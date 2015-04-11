@@ -9,7 +9,7 @@ class Controller {
 		$this->view = new \application\core\View;
 	}
 	
-	function action_index()
+	function actionIndex()
 	{
 	}
 }

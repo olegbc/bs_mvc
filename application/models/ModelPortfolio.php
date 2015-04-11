@@ -1,6 +1,6 @@
 <?php
 namespace application\models;
-class Model_Portfolio extends \application\core\model
+class ModelPortfolio extends \application\core\model
 {
 	public function get_data()
 	{

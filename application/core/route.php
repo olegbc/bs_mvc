@@ -4,43 +4,59 @@ class Route
 {
 	static function start()
 	{
-		// контроллер и действие по умолчанию
 		$controller_name = 'Main';
-		$action_name = 'index';
-		
-		$routes = explode('/', $_SERVER['REQUEST_URI']);
+		$action_name = 'Index';
 
-		// получаем имя контроллера
-		if ( !empty($routes[2]) )
-		{	
-			$controller_name = $routes[2];
-		}
-		
-		// получаем имя экшена
-		if ( !empty($routes[3]) )
-		{
-			$action_name = $routes[3];
-		}
+		$routes = $_SERVER['REQUEST_URI'];
 
-		// добавляем префиксы
-		$model_name = 'Model_'.$controller_name;
-		$controller_name = 'Controller_'.$controller_name;
-		$action_name = 'action_'.$action_name;
-		
-		// создаем контроллер
+		// http://test.ru/bigstep/person.php?person=131
+		// 'http://test.ru/bs_mvc/person?id=131'
+		// '/blog/post/(?P<id>\d+)\.html'
+		// preg_match('#id=(?P<id>[\d]+)#', $routes, $matches);
+		// preg_match('#bs_mvc/(?P<controller>[\w-]+)#', $routes, $matches);
+		// preg_match('#bs_mvc/portfolio/(?P<action>[\w-]+)#', $routes, $matches);
+		$rules=	array(
+			'bs_mvc/(?P<controller>[\w-]+)',
+			'bs_mvc/[\w]+/(?P<action>[\w-]+)',
+			'id=(?P<id>[\d]+)'
+		);
+
+		foreach ($rules as $pattern) {
+			preg_match('#' . $pattern . '#', $routes, $matches);
+			if (!empty($matches['controller']))
+			{	
+				$controller_name = $matches['controller'];
+			}
+			if (!empty($matches['action']))
+			{	
+				$action_name = $matches['action'];
+			}
+			if (!empty($matches['id']))
+			{	
+				$id = $matches['id'];
+			}
+		}
+		// if(!empty($controller_name)){echo $controller_name.'<br />';}
+		// if(!empty($action_name)){echo $action_name.'<br />';}
+		// if(!empty($id)){echo $id.'<br />';}
+		$model_name = 'Model'.$controller_name;
+		$controller_name = 'Controller'.$controller_name;
+		$action_name = 'action'.$action_name;
+
 		$controller_alias =  'application\Controllers\\'.$controller_name;
 		$controller = new $controller_alias;
-		// $controller = new $controller_alias;
 		$action = $action_name;
 		
 		if(method_exists($controller, $action))
 		{
-			// вызываем действие контроллера
-			$controller->$action();
+            if(!empty($id)){
+                $controller->$action($id);
+            }else{
+                $controller->$action();
+            }
 		}
 		else
 		{
-			// здесь также разумнее было бы кинуть исключение
 			Route::ErrorPage404();
 		}
 	

@@ -2,7 +2,11 @@
 namespace application\core;
 class Model
 {
-	public function get_data()
+	public $db;
+	public function __construct(){
+		$this->db = Db::getInstance();
+	}
+	public function getData()
 	{
 	}
 }
