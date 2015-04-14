@@ -20,8 +20,8 @@ class ControllerPerson extends \application\core\Controller
         echo json_encode($data);
     }
 
-    public function actionCombinationDatesFitedToTimetable(){
-        $data = $this->model->combinationDatesFitedToTimetable();
+    public function actionCombinationDatesFittedToTimetable(){
+        $data = $this->model->combinationDatesFittedToTimetable();
         echo json_encode($data);
     }
 
@@ -42,6 +42,16 @@ class ControllerPerson extends \application\core\Controller
 
     public function actionAddOrRemovePayedDate(){
         $data = $this->model->addOrRemovePayedDate();
+        echo json_encode($data);
+    }
+
+    public function actionAreAnyPayedOrAttenedOrFrozenLessonsExist(){
+        $data = $this->model->areAnyPayedOrAttenedOrFrozenLessonsExist();
+        echo json_encode($data);
+    }
+
+    public function actionRemovePersonComboPayedLessonsFrozenLessons(){
+        $data = $this->model->removePersonComboPayedLessonsFrozenLessons();
         echo json_encode($data);
     }
 }

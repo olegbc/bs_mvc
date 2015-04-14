@@ -24,7 +24,7 @@
 	<a href="http://test.ru/bigstep/person.php?person=$row[0]" target="_self">$row[1]</a>
 	</td>
 	<td><input type='text' name='dog_num' size='5'  onchange='call2(this.value,$row[0],'dog_num')' value=$row[2]></td>
-	<td><p class='lgtt' onclick='lgtt($row[0]);takedown3();'>Создать уровень</p></td>
+	<td><p class='fillInNameAndIdInForm' onclick='fillInNameAndIdInForm($row[0]);showDivWrapperOfFormShowGrayBackgroundResetForm();'>Создать уровень</p></td>
 	<td><p class='take' onclick='take($row[0]);takedown();'>Принять проплату</p></td>
 	<td><p class='del' onclick='del($row[0])'>Удалить</p></td>
 </tr>

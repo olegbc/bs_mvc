@@ -21,7 +21,7 @@ form#form{width:730px;margin: auto;}
 .add_form{top:50px;left:50%;position:absolute;z-index:99;/*display:none;*/width: 670px;border:2px solid #000;background:#fff;
 margin-left: -335px;display: none;padding: 10px 0 5px 0;}
 .level_person_form{top:100px;left:50%;position:fixed;z-index:99;/*display:none;*/width: 670px;border:2px solid #000;background:#fff;
-margin-left: -335px;display: none;padding: 10px 0 5px 0;}
+margin-left: -335px;display: block;padding: 10px 0 5px 0;}
 .take_form{top:50px;left:50%;position:fixed;z-index:99;/*display:none;*/width: 670px;border:2px solid #000;background:#fff;
 margin-left: -335px;display: none;padding: 10px 0 5px 0;}
 .visit_form{top:50px;left:50%;position:fixed;z-index:99;/*display:none;*/width: 670px;border:2px solid #000;background:#fff;

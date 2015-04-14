@@ -53,7 +53,7 @@
 					<!-- <td><input type="text" name="fio" size="45" onblur="call2(this.value,<?php echo $row[0]; ?>,'fio')" class="id_<?php echo $row[0]; ?>" value=""><a href ='http://test.ru/bigstep/person.php?person=<?php echo $row[0]; ?>' target='_self'><?php echo $row[1]; ?></a></td> -->
 					<td><a href ='/bigstep/person.php?person=<?php echo $row[0]; ?>' target='_self' class="fio_links"><?php echo $row[1]; ?></a></td>
 					<td><input type="text" name="dog_num" size="5"  onchange="call2(this.value,<?php echo $row[0]; ?>,'dog_num')" class="id_<?php echo $row[0]; ?>"  value="<?php echo $row[2]; ?>"></td>
-					<td><p class="lgtt" onclick="lgtt(<?php echo $row[0]; ?>);takedown3();">Создать уровень</p></td>
+					<td><p class="lgtt" onclick="fillInNameAndIdInForm(<?php echo $row[0]; ?>);showDivWrapperOfFormShowGrayBackgroundResetForm();">Создать уровень</p></td>
 					<!-- <td><p class="date_of_visit" onclick="dateofvisit(<?php echo $row[0]; ?>);takedown2();">Отметить посещение</p></td> -->
 					<td><p class="take" onclick="take(<?php echo $row[0]; ?>);takedown();">Принять проплату</p></td>
 					<td><p class="del" onclick="del(<?php echo $row[0].", '".$row[1]."'"; ?>)">Удалить</p></td>
@@ -112,7 +112,7 @@
 		$result = mysql_query($sql)	or die(mysql_error());
 	?>
 	<div class="level_person_form">
-	<div class="close_cross"></div>	
+	    <div class="close_cross"></div>
 		<form name="level_person_form" action="javascript:void(null);" method="post" onsubmit="lgtttodb()" id="level_person_form">
 			<div class="item"><label for="id_person">ID:</label> <input id="id_person" class="add_form_input" type="text" name="id_person" readonly></div>
 			<div class="item"><label for="fio_person">ФИО:</label> <input id="fio_person" class="add_form_input" type="text" name="fio_person" readonly></div>

@@ -67,7 +67,7 @@ class ModelPerson extends \application\core\model
         $sql="SELECT `balance` FROM `balance` WHERE id_person=".$id;
         $data = $db->query($sql);
         $data = $data->fetchAll($db::FETCH_ASSOC);
-        $balance = $data[0]['balance'];
+        if(isset($data[0]['balance'])){$balance = $data[0]['balance'];}else{$balance = 0;}
         return $balance;
     }
     public function getFrozenDates($id,$teacher,$timetable,$level_start){
@@ -128,6 +128,20 @@ class ModelPerson extends \application\core\model
         $data = $data->fetchAll($db::FETCH_ASSOC);
         return $data;
     }
+    public function getCheckForAnyAttendedLessonOfPerson($id,$teacher,$timetable,$level_start){
+        $db = $this->db;
+        $sql = "SELECT DISTINCT `id` FROM `attendance` WHERE `teacher`='".$teacher."' AND `timetable`='".$timetable."' AND `level_start`='".$level_start."' AND `id_visit`='".$id."' LIMIT 1";
+        $data = $db->query($sql);
+        $data = $data->fetchAll($db::FETCH_ASSOC);
+        if(isset($data[0])){return $data[0];}else{return;}
+    }
+    public function getCheckForAnyFrozenDates($id,$teacher,$timetable,$level_start){
+        $db = $this->db;
+        $sql = "SELECT `id` FROM `freeze` WHERE teacher='".$teacher."' AND level_start='".$level_start."' AND timetable='".$timetable."' AND id_person=".$id;
+        $data = $db->query($sql);
+        $data = $data->fetchAll($db::FETCH_COLUMN);
+        return $data;
+    }
 
     /////////////////////////////////////////////////////////   /GETTERS   /////////////////////////////////////////////////////////
 
@@ -171,13 +185,13 @@ class ModelPerson extends \application\core\model
 		if($allCombinationsOfThisPerson){$mainArr['allCombinationsOfThisPerson']=$allCombinationsOfThisPerson;}else{$mainArr['allCombinationsOfThisPerson']=0;}
 //		$mainArr[3]=$num_lessons_payed;
 //		if($numOfLessonsOnCombinationArr){$mainArr[4]=$numOfLessonsOnCombinationArr;}else{$mainArr[4]=0;}
-		if($frozenDatesOfStudent){$mainArr['frozenDatesOfStudent']=$frozenDatesOfStudent;}else{$mainArr['frozenDatesOfStudent']=0;}
+		if(isset($frozenDatesOfStudent)){$mainArr['frozenDatesOfStudent']=$frozenDatesOfStudent;}else{$mainArr['frozenDatesOfStudent']=0;}
 		$mainArr['balance']=$balance;
 
 		return $mainArr;
     }
 
-    public function combinationDatesFitedToTimetable(){
+    public function combinationDatesFittedToTimetable(){
         $level_start = $_POST["level_start"];
         $teacher = $_POST["teacher"];
         $timetable = $_POST["timetable"];
@@ -307,6 +321,44 @@ class ModelPerson extends \application\core\model
                 $db->query($sql);
             }
         }
+    }
+
+    public function areAnyPayedOrAttenedOrFrozenLessonsExist(){
+        $payedLessonExists=0;
+        $attendedLessonExists=0;
+        $frozenLessonExists=0;
+        $id = $_POST['id'];
+        $teacher = $_POST["teacher"];
+        $timetable = $_POST["timetable"];
+        $level_start = $_POST["level_start"];
+
+        $data = $this->numPayedNumReservedCostOfOneLessonWithDiscount($id,$teacher,$timetable,$level_start);
+        if($data['num_payed']!=0){ $payedLessonExists=1; }
+
+        $data = $this->getCheckForAnyAttendedLessonOfPerson($id,$teacher,$timetable,$level_start);
+        if(isset($data['id'])){$attendedLessonExists=1;}
+
+        $data = $this->getCheckForAnyFrozenDates($id,$teacher,$timetable,$level_start);
+        if(!empty($data)){$frozenLessonExists=1;}
+
+        if($payedLessonExists==1 or $attendedLessonExists==1 or $frozenLessonExists==1){return false;}else{return true;}
+    }
+
+    public function removePersonComboPayedLessonsFrozenLessons(){
+        $id = $_POST["id"];
+        $level_start = $_POST["level_start"];
+        $teacher = $_POST["teacher"];
+        $timetable = $_POST["timetable"];
+
+        $db = $this->db;
+        $sql = "DELETE FROM `levels_person` WHERE `teacher`='".$teacher."' AND `timetable`='".$timetable."' AND `level_start`='".$level_start."' AND `id_person`=".$id;
+        $db->query($sql);
+
+        $sql = "DELETE FROM `payed_lessons` WHERE `teacher`='".$teacher."' AND `timetable`='".$timetable."' AND `level_start`='".$level_start."' AND `id_person`=".$id;
+        $db->query($sql);
+
+        $sql = "DELETE FROM `freeze` WHERE `teacher`='".$teacher."' AND `timetable`='".$timetable."' AND `level_start`='".$level_start."' AND `id_person`=".$id;
+        $db->query($sql);
     }
 
 }
