@@ -21,7 +21,7 @@ form#form{width:730px;margin: auto;}
 .add_form{top:50px;left:50%;position:absolute;z-index:99;/*display:none;*/width: 670px;border:2px solid #000;background:#fff;
 margin-left: -335px;display: none;padding: 10px 0 5px 0;}
 .level_person_form{top:100px;left:50%;position:fixed;z-index:99;/*display:none;*/width: 670px;border:2px solid #000;background:#fff;
-margin-left: -335px;display: block;padding: 10px 0 5px 0;}
+margin-left: -335px;display: none;padding: 10px 0 5px 0;}
 .take_form{top:50px;left:50%;position:fixed;z-index:99;/*display:none;*/width: 670px;border:2px solid #000;background:#fff;
 margin-left: -335px;display: none;padding: 10px 0 5px 0;}
 .visit_form{top:50px;left:50%;position:fixed;z-index:99;/*display:none;*/width: 670px;border:2px solid #000;background:#fff;
@@ -33,7 +33,7 @@ label{display:block;width:350px;float:left;}
 .item.last{border-bottom:none;}
 .add_form_btn{float:right;cursor:pointer;}
 .cancel_btn{float:right;cursor:pointer;}
-.close_cross{background:url('img/close_cross.png') no-repeat;z-index:110;cursor:pointer;width:20px;height:19px;position:absolute;top:5px;right:5px;}
+.close_cross{background:url('../images/close_cross.png') no-repeat;z-index:110;cursor:pointer;width:20px;height:19px;position:absolute;top:5px;right:5px;}
 .wrap_payment_form{width:100%;overflow: hidden;}
 #fio_take, #id_take, #fio_visit, #id_visit, #id_person, #fio_person{border:none;}
 .rotateText {-moz-transform: rotate(90deg); -webkit-transform: rotate(90deg); -o-transform: rotate(90deg); writing-mode: tb-rl; 

@@ -34,5 +34,17 @@ class ControllerMain extends \application\core\Controller
         $data = $this->model->saveUpdateStudentCombination();
         echo json_encode($data);
     }
+    public function actionSaveAmountOfMoney(){
+        $data = $this->model->saveAmountOfMoney();
+        echo json_encode($data);
+    }
+    public function actionDeleteStudent(){
+        $data = $this->model->deleteStudent();
+        echo json_encode($data);
+    }
+    public function actionAddStudent(){
+        $data = $this->model->addStudent();
+        echo json_encode($data);
+    }
 }
 

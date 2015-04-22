@@ -190,7 +190,6 @@ class ModelPerson extends \application\core\model
 
 		return $mainArr;
     }
-
     public function combinationDatesFittedToTimetable(){
         $level_start = $_POST["level_start"];
         $teacher = $_POST["teacher"];
@@ -216,7 +215,6 @@ class ModelPerson extends \application\core\model
             echo "Дата старта уровня не соответствует расписанию";
         }
     }
-
     public function studentNameAndDates(){
         $level_start = $_POST["level_start"];
         $teacher = $_POST["teacher"];
@@ -253,7 +251,6 @@ class ModelPerson extends \application\core\model
 
         return $arrAll;
     }
-
     public function numPayedNumReservedCostOfOneLessonWithDiscount(){
         $teacher = $_POST["teacher"];
         $timetable = $_POST["timetable"];
@@ -275,7 +272,6 @@ class ModelPerson extends \application\core\model
 
         return $arr;
     }
-
     public function addOrRemovePayedDate(){
         $db = $this->db;
         $id = $_POST["id"];
@@ -322,7 +318,6 @@ class ModelPerson extends \application\core\model
             }
         }
     }
-
     public function areAnyPayedOrAttenedOrFrozenLessonsExist(){
         $payedLessonExists=0;
         $attendedLessonExists=0;
@@ -343,7 +338,6 @@ class ModelPerson extends \application\core\model
 
         if($payedLessonExists==1 or $attendedLessonExists==1 or $frozenLessonExists==1){return false;}else{return true;}
     }
-
     public function removePersonComboPayedLessonsFrozenLessons(){
         $id = $_POST["id"];
         $level_start = $_POST["level_start"];

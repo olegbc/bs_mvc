@@ -12,7 +12,7 @@
 		isset($_POST["one_lesson"]) and $_POST["one_lesson"]!="" ){
 			
 		$person = $_POST["person"];
-		$date = $_POST["date"];
+		$frozenDate = $_POST["frozenDate"];
 
 		$teacher = $_POST["teacher"];
 		$timetable = $_POST["timetable"];
@@ -24,14 +24,14 @@
 		$row = mysql_fetch_row($result);
 		$person_start = $row[0];
 		// echo $date." - ".$person_start;
-		if($date >= $person_start){
-			$sql = "SELECT `id` FROM `freeze` WHERE `frozen_day`='".$date."' AND `teacher`='".$teacher."' AND `timetable`='".$timetable."' AND `level_start`='".$level_start."' AND `id_person`='".$person."'";
+		if($frozenDate >= $person_start){
+			$sql = "SELECT `id` FROM `freeze` WHERE `frozen_day`='".$frozenDate."' AND `teacher`='".$teacher."' AND `timetable`='".$timetable."' AND `level_start`='".$level_start."' AND `id_person`='".$person."'";
 			// echo $sql.PHP_EOL;
 			$result = mysql_query($sql)	or die(mysql_error());
 			$row = mysql_fetch_row($result);
 			
 			if (mysql_num_rows($result) == 0){
-				$sql = "INSERT INTO `freeze` (frozen_day,id_person,teacher,timetable,level_start) VALUES('".$date."','".$person."','".$teacher."','".$timetable."','".$level_start."')";
+				$sql = "INSERT INTO `freeze` (frozen_day,id_person,teacher,timetable,level_start) VALUES('".$frozenDate."','".$person."','".$teacher."','".$timetable."','".$level_start."')";
 				// echo $sql.PHP_EOL;
 				$result = mysql_query($sql)	or die(mysql_error());
 				$sql="UPDATE `payed_lessons` SET `num_reserved`=num_reserved-1 WHERE `id_person`='".$person."' AND `teacher`='".$teacher."' AND `timetable`='".$timetable."' AND `level_start`='".$level_start."'";
