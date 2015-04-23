@@ -5,7 +5,8 @@
 
 	if(isset($_POST["level_start_choose"]) and isset($_POST["teacher_choose"]) and isset($_POST["timetable_choose"])
 		and $_POST["level_start_choose"]!="" and $_POST["teacher_choose"]!="" and $_POST["timetable_choose"]!=""
-	){
+	)
+    {
 
 		$level_start = $_POST["level_start_choose"];	
 		$teacher = $_POST["teacher_choose"];	

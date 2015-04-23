@@ -151,6 +151,10 @@ class ModelMain extends \application\core\Model
             return $data[0];
         }
     }
+    public function buildingBlocks(){
+        $data = $this->getAllCombinations();
+        return $data;
+    }
 
 
 /////////////////////////////////////////////////////////   GETTERS/SETTERS   /////////////////////////////////////////////////////////
@@ -407,6 +411,13 @@ class ModelMain extends \application\core\Model
     public function getRowByIdFromMain($id){
         $db = $this->db;
         $sql="SELECT `fio`,`dog_num` FROM `main` WHERE `id` ='".$id."'";
+        $data = $db->query($sql);
+        $data = $data->fetchAll($db::FETCH_ASSOC);
+        return $data;
+    }
+    public function getAllCombinations(){
+        $db = $this->db;
+        $sql = "SELECT `teacher`, `timetable`, `sd_1`,`level`,`status` FROM `levels` ORDER BY `teacher` ";
         $data = $db->query($sql);
         $data = $data->fetchAll($db::FETCH_ASSOC);
         return $data;

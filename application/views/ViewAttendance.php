@@ -1,7 +1,7 @@
 <form action="javascript:void(null)" id='lgtt_form' method='post'>
-    <input type='hidden' name='teacher_choose' />
-    <input type='hidden' name='timetable_choose' />
-    <input type='hidden' name='level_start_choose' />
+    <input type='hidden' name='teacher' />
+    <input type='hidden' name='timetable' />
+    <input type='hidden' name='level_start' />
 </form>
 <div class="back_gray"></div>
 <div class="table_title"><h1>Attendance table</h1></div>

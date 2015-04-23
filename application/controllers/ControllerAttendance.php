@@ -15,9 +15,19 @@ class ControllerAttendance extends \application\core\Controller
         $this->view->generate('ViewAttendance.php', 'ViewTemplateAttendance.php', $data);
     }
 
-//    public function actionNameSumCombinationsFrozenDatesBalance()
-//    {
-//        $data = $this->model->nameSumCombinationsFrozenDatesBalance();
-//        echo json_encode($data);
-//    }
+    public function actionCombinationDatesFittedToTimetable()
+    {
+        $data = $this->model->combinationDatesFittedToTimetable();
+        echo json_encode($data);
+    }
+    public function actionStudentsInformation()
+    {
+        $data = $this->model->studentsInformation();
+        echo json_encode($data);
+    }
+    public function actionBuildingBlocks()
+    {
+        $data = $this->model->buildingBlocks();
+        echo json_encode($data);
+    }
 }
