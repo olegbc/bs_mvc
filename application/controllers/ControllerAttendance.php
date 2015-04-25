@@ -30,4 +30,19 @@ class ControllerAttendance extends \application\core\Controller
         $data = $this->model->buildingBlocks();
         echo json_encode($data);
     }
+    public function actionDeleteAttenedDateFromAttendanceTable()
+    {
+        $data = $this->model->deleteAttenedDateFromAttendanceTable();
+        echo json_encode($data);
+    }
+    public function actionInsertAttenedDateToAttendanceTable()
+    {
+        $data = $this->model->insertAttenedDateToAttendanceTable();
+        echo json_encode($data);
+    }
+    public function actionChangeLevelStartDate()
+    {
+        $data = $this->model->changeLevelStartDate();
+        echo json_encode($data);
+    }
 }
