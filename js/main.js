@@ -617,6 +617,7 @@ function lgtt_match_fn(teacher,timetable,level_start){
 				data: msg,
 				success: function(data) {
                     //console.log(data);
+                    //return;
                     if(data!=null) {
                         var idArr = data['id'];
                         for (var i = (data['name'].length - 1); i >= 0; i--) {

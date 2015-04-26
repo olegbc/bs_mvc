@@ -39,6 +39,7 @@ class ModelAttendance extends \application\core\Model
         $timetable = $_POST["timetable"];
         $level_start = $_POST["level_start"];
 
+
         $students = $this->getPersonIdStartStop($teacher,$timetable,$level_start);
         if(count($students) != 0){
             for ($i=0; $i <count($students); $i++) {
@@ -92,20 +93,20 @@ class ModelAttendance extends \application\core\Model
         $new_level_start = $_POST["new_level_start"];
 
         //	инициализируем переменные необходимые в дальнейшем для работы
-        $arr = array();
-        $arr_persons = array();
+//        $arr = array();
+//        $arr_persons = array();
         $arr_dates_day = array();
 //        $arr[0] = $teacher;
 //        $arr[1] = $timetable;
 //        $arr[2] = $level_start;
 //        $arr[3] = $new_level_start;
-        $t=0;
-        $num=0;
-        $all_queries_num = 21;
-        $repeats = 1120;
-        $arr_bad_days = array();
+//        $t=0;
+//        $num=0;
+//        $all_queries_num = 21;
+//        $repeats = 1120;
+//        $arr_bad_days = array();
         $start = strtotime($new_level_start);
-        $arr_dates=array();
+//        $arr_dates=array();
 
         //	опредиляем тип расписания
         if($timetable == "ПУ" or $timetable == "ПД" or $timetable == "ПВ"){
@@ -128,63 +129,44 @@ class ModelAttendance extends \application\core\Model
                 //	все бед деи
                 $data = $this->getAllBadDaysOfCombination($teacher,$timetable,$level_start);
                 $dataMain['badDays'] = $data;
-//                $sql = "SELECT `bad_day` FROM `bad_days` WHERE `teacher`='".$teacher."' AND `timetable`='".$timetable."' AND `level_start`='".$level_start."'";
-//                return $dataMain;
-//                $result = mysql_query($sql) or die(mysql_error());
-//                $p = 0;
-//                while($row=mysql_fetch_row($result)){
-//                    $arr_bad_days[$p] = $row[0];
-//                    $p++;
-//                }
-
-                while($repeats-- and $all_queries_num >0){
+                $flag=true;
+                for($t=0;$flag;$t++) {
                     $denied = 0;
                     $day_of_week = date("N",$start + (86400*$t));
-//                    return $day_of_week;
-                    for($i=0;$i<count($arr_bad_days);$i++){
-                        if(date("Y-m-d",($start + (86400*$t))) == $arr_bad_days[$i]){$denied = 1;}
-                    }
-                    if($day_of_week == $first_week_lesson or $day_of_week == $second_week_lesson or $day_of_week == $third_week_lesson){
-                        if($denied==0){
-                            $arr_dates[$num] = $start + (86400*$t);
-                            $arr_dates_day[$num] = date("Y-m-d",$start + (86400*$t));
-                            $all_queries_num--;
-                            $num++;
+                    for ($i = 0; $i < count($dataMain['badDays']); $i++) {
+                        if (strtotime(date("Y-m-d", ($start + (86400 * $t)))) == strtotime($dataMain['badDays'][$i])) {
+                            $denied = 1;
                         }
                     }
-                    $t++;
+                    if($day_of_week == $first_week_lesson or $day_of_week == $second_week_lesson or $day_of_week == $third_week_lesson) {
+                        if ($denied == 0){
+                            $dataMain['newDatesInDayFormat'][] = date("Y-m-d",$start + (86400*$t));
+                        }
+                    }
+                    if(count($dataMain['newDatesInDayFormat'])==21){$flag = false;}
                 }
-                if(isset($arr_dates[20])){
-                    $calculatedLevelStop = $arr_dates[20];
+                if(isset($dataMain['newDatesInDayFormat'][20])){
+                    $calculatedLevelStop = $dataMain['newDatesInDayFormat'][20];
                 }
-                if(isset($arr_dates[0])){
-                    $calculatedLevelStart = $arr_dates[0];
-                }
-
                 // формирование $arr_persons
                 $data = $this->getPersonIdStartStop($teacher,$timetable,$level_start);
                 $dataMain['PersonIdStartStop'] = $data;
-//                return $dataMain['PersonIdStartStop'];
-//                $sql="SELECT `id_person`,`person_start`,`person_stop` FROM `levels_person` WHERE `teacher`='".$teacher."' AND `timetable`='".$timetable."' AND `level_start`='".$level_start."'";
-
-                // echo $sql.PHP_EOL;
-//                $result= mysql_query($sql) or die(mysql_error());
-//                $i=0;
-//                while($row=mysql_fetch_row($result)){
-//                    $id_person[$i]=$row[0]; // $dataMain['PersonIdStartStop'][$i]['id']
-//                    $person_start[$i]=$row[1]; // $dataMain['PersonIdStartStop'][$i]['$person_start']
-//                    $person_stop[$i]=$row[2]; // $dataMain['PersonIdStartStop'][$i]['$person_stop]
-//                    $i++;
-//                }
 
                 // изменение базы
                 for($i=0;$i<count($dataMain['PersonIdStartStop']);$i++){
                     $id_person = $dataMain['PersonIdStartStop'][$i]['id_person'];
                     $person_start = $dataMain['PersonIdStartStop'][$i]['person_start'];
                     $person_stop = $dataMain['PersonIdStartStop'][$i]['person_stop'];
+                    $dataMain['numPayedNumReserved'] = $this->getNumPayedNumReserved($id_person,$teacher,$timetable,$level_start);
+                    $numPayed = $dataMain['numPayedNumReserved']['num_payed'];
+                    $numReserved = $dataMain['numPayedNumReserved']['num_reserved'];
+                    $dataMain['combinationDates'] = $this->getCombinationDates($teacher,$timetable,$level_start);
                     if(isset($calculatedLevelStop)){
-                        if(strtotime($person_stop)>$calculatedLevelStop){
-                            $dataMain['combinationDates'] = $this->getCombinationDates($teacher,$timetable,$level_start);
+//                        return $dataMain;
+//                        $dataMain['combinationDates'] = $this->getCombinationDates($teacher,$timetable,$level_start);
+//                        return $dataMain['Comparison'] = $calculatedLevelStop;
+                        if(strtotime($person_stop)>strtotime($calculatedLevelStop)){
+                            return 'person stop latter then calculated level stop';
                             $num_minus=0;	//	количество скушаных в конце уроков
                             if(strtotime($person_start)>$calculatedLevelStop){
                                 $this->setUpdatePersonStartEqualCalculatedLevelStop($calculatedLevelStop,$teacher,$timetable,$level_start,$id_person);
@@ -195,10 +177,10 @@ class ModelAttendance extends \application\core\Model
                                     }
                                 }
                             }
-
-                            $dataMain['numPayedNumReserved'] = $this->getNumPayedNumReserved($id_person,$teacher,$timetable,$level_start);
-                            $numPayed = $dataMain['numPayedNumReserved']['num_payed'];
-                            $numReserved = $dataMain['numPayedNumReserved']['num_reserved'];
+//                            return $dataMain;
+//                            $dataMain['numPayedNumReserved'] = $this->getNumPayedNumReserved($id_person,$teacher,$timetable,$level_start);
+//                            $numPayed = $dataMain['numPayedNumReserved']['num_payed'];
+//                            $numReserved = $dataMain['numPayedNumReserved']['num_reserved'];
                             if(strtotime($person_start)>$calculatedLevelStop){
                                 $num_minus = $numPayed;
                                 $num_minus_reserverd = $numReserved;
@@ -215,90 +197,99 @@ class ModelAttendance extends \application\core\Model
                             }else{
                                 $this->setUpdateNumReservedByNumMinusToPayedLessons($num_minus,$id_person,$teacher,$timetable,$level_start);
                             }
-                            return;
-                            // echo gettype(date("Y-m-d",$arr_dates[20]));
-                            $sql="UPDATE `levels_person` SET `person_stop`='".date("Y-m-d",$arr_dates[20])."' WHERE `teacher`='".$teacher."' AND `timetable`='".$timetable."' AND `level_start`='".$level_start."' AND `id_person`=".$id_person[$i];
-                            $result = mysql_query($sql)	or die(mysql_error());
-                            $sql="UPDATE `levels_person` SET `level_start`='".$new_level_start."'  WHERE `teacher`='".$teacher."' AND `timetable`='".$timetable."' AND `level_start`='".$level_start."' AND `id_person`=".$id_person[$i];
-                            $result = mysql_query($sql)	or die(mysql_error());
-                            $sql="UPDATE `payed_lessons` SET `level_start`='".$new_level_start."'  WHERE `teacher`='".$teacher."' AND `timetable`='".$timetable."' AND `level_start`='".$level_start."' AND `id_person`=".$id_person[$i];
-                            $result = mysql_query($sql)	or die(mysql_error());
-                        }else if(1){
-                            return 4444444;
-//                        else if(strtotime($person_start[$i])<strtotime($new_level_start)){
-                            echo "forward".PHP_EOL;
+                            $this->setUpdatePersonStopToLevelsPerson($calculatedLevelStop,$id_person,$teacher,$timetable,$level_start);
+                            $this->setUpdateLevelStartToLevelsPerson($new_level_start,$id_person,$teacher,$timetable,$level_start);
+                            $this->setUpdateLevelStartToPayedLessons($new_level_start,$id_person,$teacher,$timetable,$level_start);
+                        }
+                        else if(strtotime($person_start)<strtotime($new_level_start)){
+//                            return 'person start yarlier than new level start';
+//                            echo "forward".PHP_EOL;
                             //	обновить: levels_person(level_start,person_start,person_stop), payed_lessons(num_payed,num_reserved,level_start), balance(balance)
-
-                            $sql = "SELECT sd_1,sd_2,sd_3,sd_4,sd_5,sd_6,sd_7,sd_8,sd_9,sd_10,sd_11,sd_12,sd_13,sd_14,sd_15,sd_16,sd_17,sd_18,sd_19,sd_20,sd_21 FROM `levels` WHERE `teacher`='".$teacher."' AND `timetable`='".$timetable."' AND `sd_1`='".$level_start."'";
-                            $result = mysql_query($sql) or die(mysql_error());
-                            $row=mysql_fetch_row($result);
-                            $last_lesson_date=$row[20];
+//                            $sql = "SELECT sd_1,sd_2,sd_3,sd_4,sd_5,sd_6,sd_7,sd_8,sd_9,sd_10,sd_11,sd_12,sd_13,sd_14,sd_15,sd_16,sd_17,sd_18,sd_19,sd_20,sd_21 FROM `levels` WHERE `teacher`='".$teacher."' AND `timetable`='".$timetable."' AND `sd_1`='".$level_start."'";                         return $dataMain;
+//                            $result = mysql_query($sql) or die(mysql_error());
+//                            $row=mysql_fetch_row($result);
+//                            $last_lesson_date=$row[20];
                             $num_eaten=0;	//	съедено в начале
-                            $num_minus=0;	//	съедено в конце
-                            for($j=0;$j<count($row);$j++){
-                                if($row[$j]==$new_level_start){
+//                            $num_minus=0;	//	съедено в конце
+//                            return $new_level_start;
+                            for($j=0;$j<count($dataMain['combinationDates']);$j++){
+                                if($dataMain['combinationDates'][$j]==$new_level_start){
                                     $num_eaten = $j;
                                 }
                             }
-
-                            $sql = "SELECT `num_payed`,`id` FROM `payed_lessons` WHERE `id_person`=".$id_person[$i]." AND `teacher`='".$teacher."' AND `timetable`='".$timetable."' AND `level_start`='".$level_start."'";
-                            $result = mysql_query($sql)	or die(mysql_error());
-                            $row=mysql_fetch_array($result);
-                            $num_payed=$row[0];
-                            $id_of_payed_row=$row[1];
-
-
-                            if($id_of_payed_row){
-                                $sql="SELECT `person_stop` FROM `levels_person` WHERE `teacher`='".$teacher."' AND `timetable`='".$timetable."' AND `level_start`='".$level_start."' AND `id_person`=".$id_person[$i];
-                                $result = mysql_query($sql)	or die(mysql_error());
-                                $row=mysql_fetch_row($result);
-                                $person_stop = $row[0];
-                                for($e=0;$e<count($arr_dates_day);$e++){
-                                    if(strtotime($arr_dates_day[$e])==strtotime($person_stop)){
-                                        $new_person_stop = $arr_dates_day[$e+$num_eaten];
+//                            return $num_eaten;
+//                            return $num_eaten;
+//                            $data = $this->getNumPayedNumReserved($id_person,$teacher,$timetable,$level_start);
+//                            return $data;
+//                            $sql = "SELECT `num_payed`,`id` FROM `payed_lessons` WHERE `id_person`=".$id_person." AND `teacher`='".$teacher."' AND `timetable`='".$timetable."' AND `level_start`='".$level_start."'";
+//                            $result = mysql_query($sql)	or die(mysql_error());
+//                            $row=mysql_fetch_array($result);
+//                            $num_payed=$row[0];
+//                            $id_of_payed_row=$row[1];
+                            if(!empty($numPayed)){
+//                                return 'numPayed exists';
+//                                $PersonStop = $this->getPersonStop($id_person,$teacher,$timetable,$level_start);
+//                                return $PersonStop;
+//                                $dataMain['PersonStop'] = $person_stop = $PersonStop[0][0];
+//                                $person_stop
+//                                return $person_stop;
+//                                $sql="SELECT `person_stop` FROM `levels_person` WHERE `teacher`='".$teacher."' AND `timetable`='".$timetable."' AND `level_start`='".$level_start."' AND `id_person`=".$id_person[$i];
+//                                $result = mysql_query($sql)	or die(mysql_error());
+//                                $row=mysql_fetch_row($result);
+                                for($e=0;$e<count($dataMain['newDatesInDayFormat']);$e++){
+//                                    return $person_stop;
+//                                    return $num_eaten;
+//                                    return strtotime($dataMain['combinationDates'][$e]);
+                                    if(strtotime($dataMain['newDatesInDayFormat'][$e])==strtotime($person_stop)){
+                                        $new_person_stop = $dataMain['newDatesInDayFormat'][$e+$num_eaten];
                                     }
                                 }
-                                if(strtotime($person_stop[$i])<strtotime($new_level_start)){
-                                    $sql="UPDATE `levels_person` SET `person_stop`='".date("Y-m-d",$arr_dates[20])."' WHERE `teacher`='".$teacher."' AND `timetable`='".$timetable."' AND `level_start`='".$level_start."' AND `id_person`=".$id_person[$i];
-                                    $result= mysql_query($sql) or die(mysql_error());
+//                                return $new_person_stop;
+                                if(strtotime($person_stop)<strtotime($new_level_start)){
+                                    return 'person_stop earlier than new_level_start'; // checked
+                                    $this->setUpdatePersonStopToLevelsPerson($calculatedLevelStop,$id_person,$teacher,$timetable,$level_start); // checked
+//                                    $sql="UPDATE `levels_person` SET `person_stop`='".date("Y-m-d",$arr_dates[20])."' WHERE `teacher`='".$teacher."' AND `timetable`='".$timetable."' AND `level_start`='".$level_start."' AND `id_person`=".$id_person[$i];
                                 }else{
-                                    $sql="UPDATE `levels_person` SET `person_stop`='".$new_person_stop."'WHERE `teacher`='".$teacher."' AND `timetable`='".$timetable."' AND `level_start`='".$level_start."' AND `id_person`=".$id_person[$i];
-                                    $result = mysql_query($sql)	or die(mysql_error());
+                                    return 'person_start latter than new_level_start'; // checked
+//                                    return $new_person_stop;
+                                    $this->setUpdatePersonStopWithNewPersonStopToLevelsPerson($new_person_stop,$id_person,$teacher,$timetable,$level_start); // checked
+//                                    $sql="UPDATE `levels_person` SET `person_stop`='".$new_person_stop."'WHERE `teacher`='".$teacher."' AND `timetable`='".$timetable."' AND `level_start`='".$level_start."' AND `id_person`=".$id_person[$i];
                                 }
                             }
-                            $sql="UPDATE `levels_person` SET `person_start`='".$new_level_start."' WHERE `teacher`='".$teacher."' AND `timetable`='".$timetable."' AND `level_start`='".$level_start."' AND `id_person`=".$id_person[$i];
-                            $result= mysql_query($sql) or die(mysql_error());
-                            $sql="UPDATE `levels_person` SET `level_start`='".$new_level_start."' WHERE `teacher`='".$teacher."' AND `timetable`='".$timetable."' AND `level_start`='".$level_start."' AND `id_person`=".$id_person[$i];
-                            $result= mysql_query($sql) or die(mysql_error());
-                            $sql="UPDATE `payed_lessons` SET `level_start`='".$new_level_start."'WHERE `teacher`='".$teacher."' AND `timetable`='".$timetable."' AND `level_start`='".$level_start."' AND `id_person`=".$id_person[$i];
-                            // echo $sql;
-                            $result = mysql_query($sql)	or die(mysql_error());
+                            return 'numPayed (!!!!) DON`T (!!!) exists';
+                            $this->setUpdatePersonStartToLevelsPerson($new_level_start,$id_person,$teacher,$timetable,$level_start); // checked
+//                            $sql="UPDATE `levels_person` SET `person_start`='".$new_level_start."' WHERE `teacher`='".$teacher."' AND `timetable`='".$timetable."' AND `level_start`='".$level_start."' AND `id_person`=".$id_person[$i];
+                            $this->setUpdateLevelStartToLevelsPerson($new_level_start,$id_person,$teacher,$timetable,$level_start); // checked
+//                            $sql="UPDATE `levels_person` SET `level_start`='".$new_level_start."' WHERE `teacher`='".$teacher."' AND `timetable`='".$timetable."' AND `level_start`='".$level_start."' AND `id_person`=".$id_person[$i];
+                            $this->setUpdateLevelStartToPayedLessons($new_level_start,$id_person,$teacher,$timetable,$level_start); // checked
+//                            $sql="UPDATE `payed_lessons` SET `level_start`='".$new_level_start."'WHERE `teacher`='".$teacher."' AND `timetable`='".$timetable."' AND `level_start`='".$level_start."' AND `id_person`=".$id_person[$i];
 
-                        }else{
-                            echo "default".PHP_EOL;
-                            $sql="UPDATE `payed_lessons` SET `level_start`='".$new_level_start."'WHERE `teacher`='".$teacher."' AND `timetable`='".$timetable."' AND `level_start`='".$level_start."' AND `id_person`=".$id_person[$i];
-                            $result = mysql_query($sql)	or die(mysql_error());
-
-
+                        }
+                        else{
+                            return 'other possibilities';
+//                            echo "default".PHP_EOL;
+                            $this->setUpdateLevelStartToPayedLessons($new_level_start,$id_person,$teacher,$timetable,$level_start);
+//                            $sql="UPDATE `payed_lessons` SET `level_start`='".$new_level_start."'WHERE `teacher`='".$teacher."' AND `timetable`='".$timetable."' AND `level_start`='".$level_start."' AND `id_person`=".$id_person[$i];
+                            $this->setUpdateLevelStartToLevelsPerson($new_level_start,$id_person,$teacher,$timetable,$level_start);
                             $sql="UPDATE `levels_person` SET `level_start`='".$new_level_start."' WHERE `teacher`='".$teacher."' AND `timetable`='".$timetable."' AND `level_start`='".$level_start."' AND `id_person`=".$id_person[$i];
                             $result= mysql_query($sql) or die(mysql_error());
                         }
                     }
                 }
                 //	обновление дат уровня
-                if($arr_dates_day){
-                    for($i=0;$i<count($arr_dates_day);$i++){
-                        // echo $arr_dates_day[$i];
-                        if($i==0){
-                            $sql="UPDATE `levels` SET sd_".($i+1)."='".$arr_dates_day[$i]."' WHERE `teacher`='".$teacher."' AND `timetable`='".$timetable."' AND `sd_1`='".$level_start."'";
-                            $result= mysql_query($sql) or die(mysql_error());
-                        }
-                        else{
-                            $sql="UPDATE `levels` SET sd_".($i+1)."='".$arr_dates_day[$i]."' WHERE `teacher`='".$teacher."' AND `timetable`='".$timetable."' AND `sd_1`='".$new_level_start."'";
-                            $result= mysql_query($sql) or die(mysql_error());
-                        }
-                    }
-                }
+//                if($arr_dates_day){
+//                    for($i=0;$i<count($arr_dates_day);$i++){
+//                        // echo $arr_dates_day[$i];
+//                        if($i==0){
+//                            $sql="UPDATE `levels` SET sd_".($i+1)."='".$arr_dates_day[$i]."' WHERE `teacher`='".$teacher."' AND `timetable`='".$timetable."' AND `sd_1`='".$level_start."'";
+//                            $result= mysql_query($sql) or die(mysql_error());
+//                        }
+//                        else{
+//                            $sql="UPDATE `levels` SET sd_".($i+1)."='".$arr_dates_day[$i]."' WHERE `teacher`='".$teacher."' AND `timetable`='".$timetable."' AND `sd_1`='".$new_level_start."'";
+//                            $result= mysql_query($sql) or die(mysql_error());
+//                        }
+//                    }
+//                }
             }
             else{
                 $wrong['wrongTimetable']=true;
@@ -356,6 +347,13 @@ class ModelAttendance extends \application\core\Model
         $data = $data->fetchAll($db::FETCH_ASSOC);
         return $data;
     }
+    public function getPersonStop($id_person,$teacher,$timetable,$level_start){
+        $db = $this->db;
+        $sql="SELECT `person_stop` FROM `levels_person` WHERE `teacher`='".$teacher."' AND `timetable`='".$timetable."' AND `level_start`='".$level_start."' AND `id_person`=".$id_person;
+        $data = $db->query($sql);
+        $data = $data->fetchAll($db::FETCH_NUM);
+        return $data;
+    }
     public function getDiscount($id,$teacher,$timetable,$level_start){
         $db = $this->db;
         $sql="SELECT `discount` FROM `discounts` WHERE `id_person`='".$id."' AND `teacher`='".$teacher."' AND `timetable`='".$timetable."' AND `level_start`='".$level_start."'";
@@ -378,7 +376,7 @@ class ModelAttendance extends \application\core\Model
         $sql = "SELECT sd_1,sd_2,sd_3,sd_4,sd_5,sd_6,sd_7,sd_8,sd_9,sd_10,sd_11,sd_12,sd_13,sd_14,sd_15,sd_16,sd_17,sd_18,sd_19,sd_20,sd_21 FROM `levels` WHERE levels.teacher='".$teacher."' AND levels.timetable='".$timetable."' AND levels.sd_1='".$level_start."'";
         $everyLessonDate = $db->query($sql);
         $everyLessonDate = $everyLessonDate->fetchAll($db::FETCH_NUM);
-        return $everyLessonDate[0];
+        if(!empty($everyLessonDate[0])){return $everyLessonDate[0];}else{return false;}
     }
     public function getCombinationStatus($teacher,$timetable,$level_start){
         $db = $this->db;
@@ -393,7 +391,7 @@ class ModelAttendance extends \application\core\Model
 //        return $sql;
         $data = $db->query($sql);
         $data = $data->fetchAll($db::FETCH_ASSOC);
-        return $data[0];
+        if(!empty($data[0])){return $data[0];}else{return false;}
     }
     public function getFrozenDates($id,$teacher,$timetable,$level_start){
         $db = $this->db;
@@ -438,8 +436,8 @@ class ModelAttendance extends \application\core\Model
         return $data;
     }
     public function setUpdatePersonStartEqualCalculatedLevelStop($calculatedLevelStop,$teacher,$timetable,$level_start,$id_person){
+//        return $calculatedLevelStop;
         $DayOfCalculatedLevelStop = date("Y-m-d",$calculatedLevelStop);
-//        return $DayOfCalculatedLevelStop;
         $db = $this->db;
         $sql="UPDATE `levels_person` SET `person_start`=:calculatedLevelStop  WHERE `teacher`=:teacher AND `timetable`=:timetable AND `level_start`=:level_start AND `id_person`=:id_person";
         $stmt = $db->prepare($sql);
@@ -541,5 +539,98 @@ class ModelAttendance extends \application\core\Model
         return $data;
 
     }
+    public function setUpdatePersonStopToLevelsPerson($calculatedLevelStop,$id_person,$teacher,$timetable,$level_start){
+        $db = $this->db;
+//        return $calculatedLevelStop;
+        if(!is_string($calculatedLevelStop)){$calculatedLevelStop = date('Y-m-d',$calculatedLevelStop);}
+        $sql="UPDATE `levels_person` SET `person_stop`=:calculatedLevelStop WHERE `teacher`=:teacher AND `timetable`=:timetable AND `level_start`=:level_start AND `id_person`=:id_person";
+        $stmt = $db->prepare($sql);
+
+        $stmt->bindParam(':calculatedLevelStop', $calculatedLevelStop, \PDO::PARAM_STR);
+        $stmt->bindParam(':id_person', $id_person, \PDO::PARAM_INT);
+        $stmt->bindParam(':teacher', $teacher, \PDO::PARAM_STR);
+        $stmt->bindParam(':timetable', $timetable, \PDO::PARAM_STR);
+        $stmt->bindParam(':level_start', $level_start, \PDO::PARAM_STR);
+        $stmt->execute();
+
+        $data['errorCode'] = $stmt->errorCode();
+        $data['rowCount'] = $stmt->rowCount();
+        $data['state'] = 'update';
+        return $data;
+
+    }
+    public function setUpdatePersonStopWithNewPersonStopToLevelsPerson($new_person_stop,$id_person,$teacher,$timetable,$level_start){
+        $db = $this->db;
+        $sql="UPDATE `levels_person` SET `person_stop`=:new_person_stop WHERE `teacher`=:teacher AND `timetable`=:timetable AND `level_start`=:level_start AND `id_person`=:id_person";
+        $stmt = $db->prepare($sql);
+
+        $stmt->bindParam(':new_person_stop', $new_person_stop, \PDO::PARAM_STR);
+        $stmt->bindParam(':id_person', $id_person, \PDO::PARAM_INT);
+        $stmt->bindParam(':teacher', $teacher, \PDO::PARAM_STR);
+        $stmt->bindParam(':timetable', $timetable, \PDO::PARAM_STR);
+        $stmt->bindParam(':level_start', $level_start, \PDO::PARAM_STR);
+        $stmt->execute();
+
+        $data['errorCode'] = $stmt->errorCode();
+        $data['rowCount'] = $stmt->rowCount();
+        $data['state'] = 'update';
+        return $data;
+
+    }
+    public function setUpdateLevelStartToLevelsPerson($new_level_start,$id_person,$teacher,$timetable,$level_start){
+        $db = $this->db;
+        $sql="UPDATE `levels_person` SET `level_start`=:new_level_start WHERE `teacher`=:teacher AND `timetable`=:timetable AND `level_start`=:level_start AND `id_person`=:id_person";
+        $stmt = $db->prepare($sql);
+
+        $stmt->bindParam(':new_level_start', $new_level_start, \PDO::PARAM_STR);
+        $stmt->bindParam(':id_person', $id_person, \PDO::PARAM_INT);
+        $stmt->bindParam(':teacher', $teacher, \PDO::PARAM_STR);
+        $stmt->bindParam(':timetable', $timetable, \PDO::PARAM_STR);
+        $stmt->bindParam(':level_start', $level_start, \PDO::PARAM_STR);
+        $stmt->execute();
+
+        $data['errorCode'] = $stmt->errorCode();
+        $data['rowCount'] = $stmt->rowCount();
+        $data['state'] = 'update';
+        return $data;
+
+    }
+    public function setUpdateLevelStartToPayedLessons($new_level_start,$id_person,$teacher,$timetable,$level_start){
+        $db = $this->db;
+        $sql="UPDATE `payed_lessons` SET `level_start`=:new_level_start WHERE `teacher`=:teacher AND `timetable`=:timetable AND `level_start`=:level_start AND `id_person`=:id_person";
+        $stmt = $db->prepare($sql);
+
+        $stmt->bindParam(':new_level_start', $new_level_start, \PDO::PARAM_STR);
+        $stmt->bindParam(':id_person', $id_person, \PDO::PARAM_INT);
+        $stmt->bindParam(':teacher', $teacher, \PDO::PARAM_STR);
+        $stmt->bindParam(':timetable', $timetable, \PDO::PARAM_STR);
+        $stmt->bindParam(':level_start', $level_start, \PDO::PARAM_STR);
+        $stmt->execute();
+
+        $data['errorCode'] = $stmt->errorCode();
+        $data['rowCount'] = $stmt->rowCount();
+        $data['state'] = 'update';
+        return $data;
+
+    }
+    public function setUpdatePersonStartToLevelsPerson($new_level_start,$id_person,$teacher,$timetable,$level_start){
+        $db = $this->db;
+        $sql="UPDATE `levels_person` SET `person_start`=:new_level_start WHERE `teacher`=:teacher AND `timetable`=:timetable AND `level_start`=:level_start AND `id_person`=:id_person";
+        $stmt = $db->prepare($sql);
+
+        $stmt->bindParam(':new_level_start', $new_level_start, \PDO::PARAM_STR);
+        $stmt->bindParam(':id_person', $id_person, \PDO::PARAM_INT);
+        $stmt->bindParam(':teacher', $teacher, \PDO::PARAM_STR);
+        $stmt->bindParam(':timetable', $timetable, \PDO::PARAM_STR);
+        $stmt->bindParam(':level_start', $level_start, \PDO::PARAM_STR);
+        $stmt->execute();
+
+        $data['errorCode'] = $stmt->errorCode();
+        $data['rowCount'] = $stmt->rowCount();
+        $data['state'] = 'update';
+        return $data;
+
+    }
+
 
 }
