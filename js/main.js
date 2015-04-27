@@ -574,6 +574,8 @@ function building_blocks(teacher_now,timetable_now,level_start_now){
 }
 
 function lgtt_match_fn(teacher,timetable,level_start){
+    //console.log(level_start);
+    //return;
 		// построение блоков сочетаний
 		var msg;
 		if(teacher!=undefined && timetable!=undefined && level_start!=undefined){
@@ -2158,36 +2160,6 @@ function fix_person_start(date){
 	});
 }
 
-function change_start_date(teacher,timetable,level_start){
-	var newLevelStart = $('#new_level_start').val();
-	if(newLevelStart==""){
-        alert('Введите новую дату старта');
-    }else{
-		$.ajax({
-			type: 'POST',
-			url: './Attendance/ChangeLevelStartDate.php',
-			dataType: 'json',
-			data: {teacher:teacher,timetable:timetable,level_start:level_start,new_level_start:newLevelStart},
-			success: function(data) {
-                console.log(data);
-                return;
-                if(data['wrongTimetable']){
-                    alert('Данная дата не совпадает с расписанием(не тот день недели');
-                }else{
-                    //console.log(data);
-                    return;
-                    lgtt_match_fn(r,t,new_level_start);
-					$('.brick').remove();
-					building_blocks(r,t,new_level_start);
-				} 
-			},
-			error: function(xhr, str){
-				alert('Возникла ошибка: ' + xhr.responseCode);
-			}
-		});
-	}
-}
-
 function remove_combination(r,t,u){
 	if(confirm("Вы действительно хотите удалить сочетание: "+r+"/"+t+"/"+u+" ?")){
 		$.ajax({
@@ -2202,13 +2174,45 @@ function remove_combination(r,t,u){
 				var t = $('.brick:first').children('[name=timetable_choose]').val();
 				var u = $('.brick:first').children('[name=level_start_choose]').val();
 				$('.brick:first').css('borderColor','blue');
-				lgtt_match_fn(r,t,u); 
+				lgtt_match_fn(r,t,u);
 			},
 			error: function(xhr, str){
 				alert('Возникла ошибка: ' + xhr.responseCode);
 			}
 		});
 	}
+}
+
+function change_start_date(teacher,timetable,level_start){
+    var newLevelStart = $('#new_level_start').val();
+    //console.log(newLevelStart);
+    //return;
+    if(newLevelStart==""){
+        alert('Введите новую дату старта');
+    }else{
+        $.ajax({
+            type: 'POST',
+            url: './Attendance/ChangeLevelStartDate.php',
+            dataType: 'json',
+            data: {teacher:teacher,timetable:timetable,level_start:level_start,new_level_start:newLevelStart},
+            success: function(data) {
+                console.log(data);
+                //return;
+                if(data!=null){
+                    if(data['wrongTimetable']!=null) {
+                        alert('Данная дата не совпадает с расписанием(не тот день недели');
+                    }else{
+                    lgtt_match_fn(teacher,timetable,newLevelStart);
+                    $('.brick').remove();
+                    building_blocks(teacher,timetable,newLevelStart);
+                    }
+                }
+            },
+            error: function(xhr, str){
+                alert('Возникла ошибка: ' + xhr.responseCode);
+            }
+        });
+    }
 }
 
 function send_to_archive(r,t,u){

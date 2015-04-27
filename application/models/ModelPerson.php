@@ -159,18 +159,18 @@ class ModelPerson extends \application\core\model
         if(count($allCombinationsOfThisPerson)){
             foreach($allCombinationsOfThisPerson as $key=>$value){
                 extract($value); // $teacher,$timetable,$level_start
-                $personStart = $this->getPersonStart($id,$teacher,$timetable,$level_start);
-                $personStop = $this->getPersonStop($id,$teacher,$timetable,$level_start);
-
-                $everyLessonDate = $this->getCombinationDates($teacher,$timetable,$level_start);
-                foreach($everyLessonDate as $key=>$value){
-                    for($u=0;$u<21;$u++){
-                        if($value[$u] == $personStart){$numberOfStartLesson=$u;};
-                        if($value[$u] == $personStop){$numberOfStopLesson=$u;};
-                    }
-                }
-                $numOfLessonsOnCombination = (abs($numberOfStopLesson - $numberOfStartLesson))+1;
-                $numOfLessonsOnCombinationArr[]=$numOfLessonsOnCombination;
+//                $personStart = $this->getPersonStart($id,$teacher,$timetable,$level_start);
+//                $personStop = $this->getPersonStop($id,$teacher,$timetable,$level_start);
+//
+//                $everyLessonDate = $this->getCombinationDates($teacher,$timetable,$level_start);
+//                foreach($everyLessonDate as $key=>$value){
+//                    for($u=0;$u<21;$u++){
+//                        if($value[$u] == $personStart){$numberOfStartLesson=$u;};
+//                        if($value[$u] == $personStop){$numberOfStopLesson=$u;};
+//                    }
+//                }
+//                $numOfLessonsOnCombination = (abs($numberOfStopLesson - $numberOfStartLesson))+1;
+//                $numOfLessonsOnCombinationArr[]=$numOfLessonsOnCombination;
 
                 $frozenDatesOfStudent[] = $this->getFrozenDates($id,$teacher,$timetable,$level_start);
             }
