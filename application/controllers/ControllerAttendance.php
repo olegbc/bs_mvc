@@ -45,4 +45,9 @@ class ControllerAttendance extends \application\core\Controller
         $data = $this->model->changeLevelStartDate();
         echo json_encode($data);
     }
+    public function actionRemovePersonCombination()
+    {
+        $data = $this->model->removePersonCombination();
+        echo json_encode($data);
+    }
 }

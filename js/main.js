@@ -233,24 +233,25 @@ function deleteStudent(id,fio){
 }
 
 function remove_pers_soch(id,fio,tr){
-	// console.log(id,fio,tr);
-	var r = $(".brick[style*='blue']").children('[name="teacher_choose"]').val();
-	var t = $(".brick[style*='blue']").children('[name="timetable_choose"]').val();
-	var u = $(".brick[style*='blue']").children('[name="level_start_choose"]').val();
-	// return false;
-	if(confirm('Вы действительно хотите удалить '+fio+' из данного сочетания?')){
-		var id = id;
-		$.ajax({
-			type: 'POST',
-			url: './oldphpfiles/remove_pers_soch.php',
-			data: {id:id,teacher:r,timetable:t,level_start:u},
-			success: function(data) {
-				$("#tr"+tr).remove();
-			},
-			error:  function(xhr, str){
-				alert('Возникла ошибка: ' + xhr.responseCode);
-			}
-		});
+	var teacher = $(".brick[style*='rgb(0, 0, 255)']").children('[name="teacher_choose"]').val();
+    var timetable = $(".brick[style*='rgb(0, 0, 255)']").children('[name="timetable_choose"]').val();
+    var level_start = $(".brick[style*='rgb(0, 0, 255)']").children('[name="level_start_choose"]').val();
+    if(confirm('Вы действительно хотите удалить '+fio+' из данного сочетания?')){
+        if(confirm('Удаление приведет к удалению дат заморозки студента и проплат(вернет деньги на баланс),все равно продолжить?')) {
+            var id = id;
+            $.ajax({
+                type: 'POST',
+                url: './Attendance/RemovePersonCombination.php',
+                dataType: 'json',
+                data: {id: id, teacher: teacher, timetable: timetable, level_start: level_start},
+                success: function (data) {
+                    $("#tr" + tr).remove();
+                },
+                error: function (xhr, str) {
+                    alert('Возникла ошибка: ' + xhr.responseCode);
+                }
+            });
+        }
 	}
 }
 
@@ -539,7 +540,7 @@ function building_blocks(teacher_now,timetable_now,level_start_now){
 			$('#lgtt_form').children("input[name='timetable_choose']").val(timetable_choose);
 			$('#lgtt_form').children("input[name='level_start_choose']").val(level_start_choose);
 			lgtt_match_fn(teacher_choose,timetable_choose,level_start_choose);
-			$(this).css('borderColor','blue');
+			$(this).css('borderColor','rgb(0, 0, 255)');
 			$('.change_start_date').prop('disabled',true);
 			$('.btn_send_to_archive').prop('disabled',true);
 		});
@@ -552,7 +553,7 @@ function building_blocks(teacher_now,timetable_now,level_start_now){
             $('#lgtt_form').children("input[name='timetable_choose']").val(timetable_choose);
             $('#lgtt_form').children("input[name='level_start_choose']").val(level_start_choose);
             lgtt_match_fn(teacher_choose,timetable_choose,level_start_choose);
-            $(this).css('borderColor','blue');
+            $(this).css('borderColor','rgb(0, 0, 255)');
 		});
 		$('.combination_all .future_combinations .brick').click(function(){
 			$('.brick').css('borderColor','#000');
@@ -563,7 +564,7 @@ function building_blocks(teacher_now,timetable_now,level_start_now){
 			$('#lgtt_form').children("input[name='timetable_choose']").val(timetable_choose);
 			$('#lgtt_form').children("input[name='level_start_choose']").val(level_start_choose);
 			lgtt_match_fn(teacher_choose,timetable_choose,level_start_choose);
-			$(this).css('borderColor','blue');
+			$(this).css('borderColor','rgb(0, 0, 255)');
 			$('.btn_send_to_archive').prop('disabled',true);
 		});
 		$('.brick').each(function(){
@@ -624,11 +625,14 @@ function lgtt_match_fn(teacher,timetable,level_start){
                         var idArr = data['id'];
                         for (var i = (data['name'].length - 1); i >= 0; i--) {
                             $('#th_line').after("<tr id='tr" + i + "'></tr>");
+                            idQuoted = "'"+data['id'][i]+"'";
+                            nameQuoted = "'"+data['name'][i]+"'";
+                            iQuoted = "'"+i+"'";
                             if (data['numPayed'][i] == data['numReserved'][i]) {
-                                $('#tr' + i).html('<td id="td' + i + '_' + 0 + '"><div class="remove_pers_soch"><button  onclick="remove_pers_soch(' + data['id'][i] + ',' + data['name'][i] + ',' + i + ')">x</button></div><div class="pay_check pay_check_green">' + data['numPayed'][i] + '/' + data['numReserved'][i] + '</div><div class="fio_pers_soch">' + data['name'][i] + '</div></td>');
+                                $('#tr' + i).html('<td id="td' + i + '_' + 0 + '"><div class="remove_pers_soch"><button  onclick="remove_pers_soch(' + idQuoted + ',' + nameQuoted + ',' + iQuoted + ')">x</button></div><div class="pay_check pay_check_green">' + data['numPayed'][i] + '/' + data['numReserved'][i] + '</div><div class="fio_pers_soch">' + data['name'][i] + '</div></td>');
                                 payed_all = 1;
                             } else {
-                                $('#tr' + i).html('<td id="td' + i + '_' + 0 + '"><div class="remove_pers_soch"><button  onclick="remove_pers_soch(' + data['id'][i] + ',' + data['name'][i] + ',' + i + ')">x</button></div><div class="pay_check">' + data['numPayed'][i] + '/' + data['numReserved'][i] + '</div><div class="fio_pers_soch">' + data['name'][i] + '</div></td>');
+                                $('#tr' + i).html('<td id="td' + i + '_' + 0 + '"><div class="remove_pers_soch"><button  onclick="remove_pers_soch(' + idQuoted + ',' + nameQuoted + ',' + iQuoted + ')">x</button></div><div class="pay_check">' + data['numPayed'][i] + '/' + data['numReserved'][i] + '</div><div class="fio_pers_soch">' + data['name'][i] + '</div></td>');
                             }
                             if (data['status'][i] == -1) {
                                 $('.remove_pers_soch button').remove();
@@ -2169,11 +2173,11 @@ function remove_combination(r,t,u){
 			data: {teacher:r,timetable:t,level_start:u},
 			success: function(data) {
 				// console.log(r,t,new_level_start);
-				$(".brick[style*='blue']").remove();
+				$(".brick[style*='rgb(0, 0, 255)']").remove();
 				var r = $('.brick:first').children('[name=teacher_choose]').val();
 				var t = $('.brick:first').children('[name=timetable_choose]').val();
 				var u = $('.brick:first').children('[name=level_start_choose]').val();
-				$('.brick:first').css('borderColor','blue');
+				$('.brick:first').css('borderColor','rgb(0, 0, 255)');
 				lgtt_match_fn(r,t,u);
 			},
 			error: function(xhr, str){
@@ -2185,8 +2189,6 @@ function remove_combination(r,t,u){
 
 function change_start_date(teacher,timetable,level_start){
     var newLevelStart = $('#new_level_start').val();
-    //console.log(newLevelStart);
-    //return;
     if(newLevelStart==""){
         alert('Введите новую дату старта');
     }else{
@@ -2196,8 +2198,7 @@ function change_start_date(teacher,timetable,level_start){
             dataType: 'json',
             data: {teacher:teacher,timetable:timetable,level_start:level_start,new_level_start:newLevelStart},
             success: function(data) {
-                console.log(data);
-                //return;
+                //console.log(data);
                 if(data!=null){
                     if(data['wrongTimetable']!=null) {
                         alert('Данная дата не совпадает с расписанием(не тот день недели');
@@ -2243,8 +2244,8 @@ function send_to_archive(r,t,u){
 					success: function(data) {
 						console.log();
 						$('#level_choose_archive').val(data[0]);
-						$(".brick[style*='blue']").remove();
-						$('.brick:first').css('borderColor','blue');
+						$(".brick[style*='rgb(0, 0, 255)']").remove();
+						$('.brick:first').css('borderColor','rgb(0, 0, 255)');
 						// lgtt_match_fn(r,t,u); 
 					},
 					error: function(xhr, str){
