@@ -50,4 +50,9 @@ class ControllerAttendance extends \application\core\Controller
         $data = $this->model->removePersonCombination();
         echo json_encode($data);
     }
+    public function actionRemoveCombination()
+    {
+        $data = $this->model->removeCombination();
+        echo json_encode($data);
+    }
 }

@@ -85,7 +85,10 @@ label {width: 300px;}
 .combination_all {overflow: hidden;}
 .line_1,.line_2{width: 100%;float: left;}
 .pay_check {color:white;width: 40px;float: left;background: red;margin: 9px 5px 8px 0px;text-align: center;}
-.att_page td#td0_0{width: 300px;overflow: hidden;display: inline-block;white-space: nowrap;}
+/*.att_page td#td0_0{width: 300px;overflow: hidden;display: inline-block;white-space: nowrap;}*/
+/*.att_page td#td0_0{width: 300px;overflow: hidden;display: inline-block;white-space: nowrap;}*/
+.studentTitle{width: 300px;overflow: hidden;display: inline-block;white-space: nowrap;height: 38px;}
+#attendance_table_name{width: 300px;height: 17px;}
 .pay_check_green{background: green;}
 .send_to_archive_div {padding: 0px 0px 0px 8px;}
 .remove_combination {position: absolute;right: 7px;}

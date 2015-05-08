@@ -10,9 +10,9 @@ class ModelAttendance extends \application\core\Model
     }
 
     public function combinationDatesFittedToTimetable(){
-        $level_start = $_POST["level_start"];
         $teacher = $_POST["teacher"];
         $timetable = $_POST["timetable"];
+        $level_start = $_POST["level_start"];
 
         $start = strtotime($level_start);
 
@@ -58,8 +58,9 @@ class ModelAttendance extends \application\core\Model
             }
             $arr['dates']=$this->getCombinationDates($teacher,$timetable,$level_start);
             $arr['status']=$this->getCombinationStatus($teacher,$timetable,$level_start);
-        }
-        if(!empty($arr)){return $arr;}else{return;}
+            return $arr;
+        }else{return false;}
+//        if(!empty($arr)){return $arr;}else{return;}
     }
     public function buildingBlocks(){
         $data=$this->getAllCombinationsExistedFromLevels();
@@ -251,14 +252,23 @@ class ModelAttendance extends \application\core\Model
         $this->setDeletePersonCombinationFromDiscount($id,$teacher,$timetable,$level_start);
         $this->setDeletePersonCombinationFromFreeze($id,$teacher,$timetable,$level_start);
     }
+    public function removeCombination(){
+        $teacher=$_POST['teacher'];
+        $timetable=$_POST['timetable'];
+        $level_start=$_POST['level_start'];
 
-    /////////////////////////////////////////////////////////   /GETTERS   /////////////////////////////////////////////////////////
+        $data=$this->setDeleteCombination($teacher,$timetable,$level_start);
+
+        $sql = "DELETE FROM `levels` WHERE `teacher`='".$teacher."' AND `timetable`='".$timetable."' AND `sd_1`='".$level_start."'";
+    }
+
+    /////////////////////////////////////////////////////////   GETTERS/SETTERS   /////////////////////////////////////////////////////////
     public function getAllCombinations($teacher,$timetable,$level_start){
         $db = $this->db;
-        $sql = "SELECT * FROM `levels` WHERE `sd_1`='".$level_start."' AND `teacher`='".$teacher."' AND `timetable`='".$timetable."'";
+        $sql = "SELECT id,level,teacher,timetable,sd_1,sd_2,sd_3,sd_4,sd_5,sd_6,sd_7,sd_8,sd_9,sd_10,sd_11,sd_12,sd_13,sd_14,sd_15,sd_16,sd_17,sd_18,sd_19,sd_20,sd_21,status FROM `levels` WHERE `sd_1`='".$level_start."' AND `teacher`='".$teacher."' AND `timetable`='".$timetable."'";
         $data = $db->query($sql);
         $data = $data->fetchAll($db::FETCH_ASSOC);
-        return $data[0];
+        if(isset($data[0])){return $data[0];}else{return false;}
     }
     public function getPersonIdStartStop($teacher,$timetable,$level_start){
         $db = $this->db;
@@ -418,6 +428,22 @@ class ModelAttendance extends \application\core\Model
         $stmt = $db->prepare($sql);
 
         $stmt->bindParam(':existedId', $existedId, \PDO::PARAM_INT );
+        $stmt->execute();
+
+        $data['errorCode'] = $stmt->errorCode();
+        $data['rowCount'] = $stmt->rowCount();
+        $data['lastInsert'] = $db->lastInsertId();
+        $data['state'] = 'delete';
+        return $data;
+    }
+    public function setDeleteCombination($teacher,$timetable,$level_start){
+        $db = $this->db;
+        $sql = "DELETE FROM `levels` WHERE `teacher`=:teacher AND `timetable`=:timetable AND `sd_1`=:level_start";
+        $stmt = $db->prepare($sql);
+
+        $stmt->bindParam(':teacher', $teacher, \PDO::PARAM_STR);
+        $stmt->bindParam(':timetable', $timetable, \PDO::PARAM_STR);
+        $stmt->bindParam(':level_start', $level_start, \PDO::PARAM_STR);
         $stmt->execute();
 
         $data['errorCode'] = $stmt->errorCode();

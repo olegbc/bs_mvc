@@ -25,6 +25,7 @@
 	<div class="table_title">
 		<h1>Bad Days</h1>
 	</div>
+
 	<div class="combination_all_bad_days">
 		<div class="past_combinations"></div>
 		<div class="line_1"><hr></div>
@@ -52,4 +53,5 @@
 			<div class="right_arrow"></div>
 		</div>
 	</div>
+
 </body>
