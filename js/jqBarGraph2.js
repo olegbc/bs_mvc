@@ -29,7 +29,6 @@
  * @param type: false // for multi array data default graph type is stacked, you can change to 'multi' for multi bar type
  * @param showValues: true // you can use this for multi and stacked type and it will show values of every bar part
  * @param showValuesColor: '#fff' // color of font for values 
- * @param single: false // color of font for values 
 
  * @example  $('#divForGraph').jqBarGraph({ data: arrayOfData });  
   
@@ -44,12 +43,10 @@
 	init = function(el){
 
 		opts[el.id] = $.extend({}, $.fn.jqBarGraph.defaults, options);
-		$(el).css({ 'width': opts[el.id].width, 'height': opts[el.id].height, 'position':'relative', 'text-align':'center' });
+		$(el).css({ 'width': opts[el.id].width, 'height': opts[el.id].height, 'position':'relative', 'text-align':'center' ,'paddingTop':100});
 		doGraph(el);
 
 	};
-	//	console.log(options.single);
-	//	console.log(options.first);
 	
 	// sum of array elements
 	sum = function(ar){
@@ -57,7 +54,7 @@
 		for(val in ar){
 			total += ar[val];
 		}
-		return total.toFixed(0);
+		return total.toFixed(2);
 	};
 	
 	// count max value of array
@@ -142,25 +139,23 @@
  			if(arr.type == 'multi') color = 'none';
  				
  			if (lbl == undefined) lbl = arr.lbl;
-			
-				out  = "<div class='graphField"+el.id+"' id='graphField"+unique+"' style='position: absolute'>";
-				out += "<div class='graphValue"+el.id+"' id='graphValue"+unique+"'>"+prefix+value+postfix+"</div>";
+ 		
+ 			out  = "<div class='graphField"+el.id+"' id='graphField"+unique+"' style='position: absolute'>";
+ 			out += "<div class='graphValue"+el.id+"' id='graphValue"+unique+"'>"+prefix+value+postfix+"</div>";
  			
-				out += "<div class='FFF graphBar"+el.id+"' id='graphFieldBar"+unique+"' style='background-color:"+color+";position: relative; overflow: hidden;'></div>";
-			
+ 			out += "<div class='graphBar"+el.id+"' id='graphFieldBar"+unique+"' style='background-color:"+color+";position: relative; overflow: hidden;'></div>";
+
 			// if there is no legend or exist legends display lbl at the bottom
-			/* ----- INSCRIPTION ------ */                
-		//	if(!options.all){		
-				if(!arr.legend || arr.legends)
-					out += "<div class='graphLabel"+el.id+"' id='graphLabel"+unique+"'>"+lbl+"</div>";
-				out += "</div>";
-		//	}
+ 			if(!arr.legend || arr.legends)
+ 				out += "<div class='graphLabel"+el.id+"' id='graphLabel"+unique+"'>"+lbl+"</div>";
+ 			out += "</div>";
  			
 			$(el).append(out);
  			
  			//size of bar
- 			totalHeightBar = totalHeight - $('.graphLabel'+el.id).height() - $('.graphValue'+el.id).height(); 
+ 			totalHeightBar = totalHeight - $('.graphLabel'+el.id).height() - $('.graphValue'+el.id).height();
  			fieldHeight = (totalHeightBar*value)/max;	
+ 			if(fieldHeight === 0 || value === 0){fieldHeight = 2;}
  			$('#graphField'+unique).css({ 
  				'left': (fieldWidth)*val, 
  				'width': fieldWidth-space, 
@@ -179,22 +174,14 @@
 				
  				for (i in valueData){
  					heig = totalHeightBar*valueData[i]/maxe;
-				//	console.log(heig);
-					if(heig === 0){heig = 20;}
  					wid = parseInt((fieldWidth-space)/valueData.length);
  					sv = ''; // show values
  					fs = 0; // font size
  					if (arr.showValues){
  						sv = arr.prefix+valueData[i]+arr.postfix;
  						fs = 12; // font-size is 0 if showValues = false
-						// asdfgafsd44sdf
  					}
-					
-					if(!options.single){
-						o = "<div class='subBars"+el.id+"' style='height:"+heig+"px; background-color: "+arr.colors[i]+"; left:"+wid*i+"px; color:"+arr.showValuesColor+"; font-size:"+fs+"px' >"+sv+"</div>";
-					}else{
-						o = "<div class='subBars"+el.id+"' style='height:"+heig+"px; background-color: "+options.single_data+"; left:"+wid*i+"px; color:"+arr.showValuesColor+"; font-size:"+fs+"px' >"+sv+"</div>";
-					}
+ 					o = "<div class='subBars"+el.id+"' style='height:"+heig+"px; background-color: "+arr.colors[i]+"; left:"+wid*i+"px; color:"+arr.showValuesColor+"; font-size:"+fs+"px' >"+sv+"</div>";
  					$('#graphFieldBar'+unique).prepend(o);
  				}
  			}
@@ -211,7 +198,7 @@
  			
  			// animated apearing
  			if(arr.animate){
- 				$('#graphFieldBar'+unique).css({ 'display' : 'block', 'height' : 0 });
+ 				$('#graphFieldBar'+unique).css({ 'display' : 'none', 'height' : 0 });
  				$('#graphFieldBar'+unique).animate({'height': fieldHeight},arr.speed*1000);
  			} else {
  				$('#graphFieldBar'+unique).css({'height': fieldHeight});
@@ -223,60 +210,36 @@
  		for(var l in arr.legends){
  			leg.push([ arr.colors[l], arr.legends[l], el.id, l ]);
  		}
-		
- 	//	if(!options.single)console.log(leg); 
-	//	options.single_data
-	//	console.log(options.all);
-	//	console.log(options.first);
-	
+ 		
  		createLegend(leg); // create legend from array
  		
  		//position of legend
-		if(!options.sum ){
-			if(arr.legend){
-				$(el).append("<div id='legendHolder"+unique+"'></div>");
-				$('#legendHolder'+unique).append("<div id='legend_all'><div style='background-color: rgb(255, 0, 0); float: left; margin: 3px; height: 12px; width: 20px; font-size: 0px;'></div><div>Все</div></div>");
-				$('#legendHolder'+unique).css({ 'width': legendWidth, 'float': 'right', 'text-align' : 'left'});
-				$('#legendHolder'+unique).append(legend);
-				$('.legendBar'+el.id).css({ 'float':'left', 'margin': 3, 'height': 12, 'width': 20, 'font-size': 0});
-			}
-		}
+ 		if(arr.legend){
+			$(el).append("<div id='legendHolder"+unique+"'></div>");
+	 		$('#legendHolder'+unique).css({ 'width': legendWidth, 'float': 'right', 'text-align' : 'left'});
+	 		$('#legendHolder'+unique).append(legend);
+	 		$('.legendBar'+el.id).css({ 'float':'left', 'margin': 3, 'height': 12, 'width': 20, 'font-size': 0});
+ 		}
  		
- 		//position of title( graphHolder - main div )
-		if(options.single){
-		//	alert('single');
-			if(arr.title){
-			//	$(el).wrap("<div id='graphHolder"+unique+"' class='ffff'></div>");
-				$('#graphHolder').prepend(arr.title).css({ 'width' : arr.width+'px', 'text-align' : 'center' });
-			}
-		}else if(options.all && options.first){
-			$(el).wrap("<div id='graphHolder' class='ffff'></div>");
-			$('#graphHolder').prepend(arr.title).css({ 'width' : arr.width+'px', 'text-align' : 'center' });
-		}else if(options.all && !options.first){
-			$(el).wrap("<div id='graphHolder' class='ffff'></div>");
-			$('#graphHolder').prepend(arr.title).css({ 'width' : arr.width+'px', 'text-align' : 'center' });
-		}else if(options.sum){
-			$(el).wrap("<div id='graphHolder_sum' class='ffff'></div>");
-			$('#graphHolder_sum').prepend(arr.title).css({ 'width' : arr.width+'px', 'text-align' : 'center' });
-		}else{
-			if(arr.title){
-				$(el).wrap("<div id='graphHolder' class='ffff'></div>");
-				$('#graphHolder').prepend(arr.title).css({ 'width' : arr.width+'px', 'text-align' : 'center' });
-			}
-		}
+ 		//position of title
+ 		if(arr.title){
+ 			$(el).wrap("<div id='graphHolder"+unique+"'></div>");
+ 			$('#graphHolder'+unique).prepend(arr.title).css({ 'width' : arr.width+'px', 'text-align' : 'center' });
+ 		}
+ 		
 	};
 
 
- 	//creating legend from array
+	//creating legend from array
 	createLegend = function(legendArr){
 		legend = '';
 		for(var val in legendArr){
-	 			legend += "<div id='legend"+legendArr[val][3]+"' class='clickable' style='overflow: hidden; zoom: 1;'>";
+	 			legend += "<div id='legend"+legendArr[val][3]+"' style='overflow: hidden; zoom: 1;'>";
 	 			legend += "<div class='legendBar"+legendArr[val][2]+"' id='legendColor"+legendArr[val][3]+"' style='background-color:"+legendArr[val][0]+"'></div>";
 	 			legend += "<div class='legendLabel"+legendArr[val][2]+"' id='graphLabel"+unique+"'>"+legendArr[val][1]+"</div>";
 	 			legend += "</div>";			
 		}
-	}; 
+	};
 
 
 	this.each (
@@ -287,9 +250,7 @@
 };
 
 	// default values
-	$.fn.jqBarGraph.defaults = {
-		all: false,
-		single: false,
+	$.fn.jqBarGraph.defaults = {	
 		barSpace: 10,
 		width: 400,
 		height: 300,

@@ -55,7 +55,7 @@ $(document).ready(function(){
 	});
 	$('.btn_amount_of_money').click(function(){
         var origin = window.location.origin;
-        var pathname = "/bs_mvc/amountOfMoney";
+        var pathname = "/bs_mvc/AmountOfMoney";
         window.location.href = origin + pathname;
 	});
 	$('.btn_edit_levels').click(function(){
@@ -1237,12 +1237,13 @@ function amount_of_money_fn(){
 
 	$.ajax({
 		type:'POST',
-		url: './oldphpfiles/amount_of_money_server.php',
+		url: './AmountOfMoney/AmountOfMoney',
 		dataType: 'json',
 		data: {from:new_msg[0],to:new_msg[1]},
 		success: function(data){
-			// console.log(data);
-			// diag_money(data);	
+			console.log(data);
+            //return;
+			//diag_money(data);
 			$("#graphHolder").remove();
 			$("#Graph_money").remove();
 			$('<div id="Graph_money"></div>').prependTo($("#stackedGraph_wrapper"));
