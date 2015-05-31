@@ -25,4 +25,9 @@ class ControllerBadDays extends \application\core\Controller
         $data = $this->model->insertOrDeleteBadDay();
         echo json_encode($data);
     }
+    public function actionAttenedDates()
+    {
+        $data = $this->model->attenedDates();
+        echo json_encode($data);
+    }
 }

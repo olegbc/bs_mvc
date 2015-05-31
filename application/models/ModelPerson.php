@@ -8,143 +8,6 @@ class ModelPerson extends \application\core\model
 	public function get_data(){
 	}
 
-    public function getDiscount($id,$teacher,$timetable,$level_start){
-        $db = $this->db;
-        $sql="SELECT `discount` FROM `discounts` WHERE `id_person`='".$id."' AND `teacher`='".$teacher."' AND `timetable`='".$timetable."' AND `level_start`='".$level_start."'";
-        $data = $db->query($sql);
-        $data = $data->fetchAll($db::FETCH_ASSOC);
-        if(isset($data[0]['discount'])){$discount = $data[0]['discount'];}else{$discount = 0;}
-        return $discount;
-    }
-    public function getDefaulCostOfOneLesson()
-    {
-        $db = $this->db;
-        $sql = "SELECT `one lesson default` FROM `constants`";
-        $data = $db->query($sql);
-        $data = $data->fetchAll($db::FETCH_ASSOC);
-        if (isset($data[0]['one lesson default'])) {
-            $defaulCostOfOneLesson = $data[0]['one lesson default'];
-        }
-        return $defaulCostOfOneLesson;
-    }
-    public function getCostOfOneLessonWithDiscount($discount,$defaulCostOfOneLesson){
-        $CostOfOneLessonWithDiscount = $defaulCostOfOneLesson - round(($defaulCostOfOneLesson*($discount*0.01)),2);
-        $arr['CostOfOneLessonWithDiscount'] = $CostOfOneLessonWithDiscount;
-        return $CostOfOneLessonWithDiscount;
-    }
-    public function getCombinationDates($teacher,$timetable,$level_start){
-        $db = $this->db;
-        $sql = "SELECT sd_1,sd_2,sd_3,sd_4,sd_5,sd_6,sd_7,sd_8,sd_9,sd_10,sd_11,sd_12,sd_13,sd_14,sd_15,sd_16,sd_17,sd_18,sd_19,sd_20,sd_21 FROM `levels` WHERE levels.teacher='".$teacher."' AND levels.timetable='".$timetable."' AND levels.sd_1='".$level_start."'";
-        $everyLessonDate = $db->query($sql);
-        $everyLessonDate = $everyLessonDate->fetchAll($db::FETCH_NUM);
-        return $everyLessonDate;
-    }
-    public function getPersonStart($id,$teacher,$timetable,$level_start){
-        $db = $this->db;
-        $sql="SELECT `person_start` FROM `levels_person` WHERE id_person=".$id." AND levels_person.teacher='".$teacher."' AND levels_person.timetable='".$timetable."' AND levels_person.level_start='".$level_start."'";
-        $data = $db->query($sql);
-        $data = $data->fetchAll($db::FETCH_ASSOC);
-        if(isset($data[0]['person_start'])){$personStart = $data[0]['person_start'];}
-        return $personStart;
-    }
-    public function getPersonStop($id,$teacher,$timetable,$level_start){
-        $db = $this->db;
-        $sql="SELECT `person_stop` FROM `levels_person` WHERE id_person=".$id." AND levels_person.teacher='".$teacher."' AND levels_person.timetable='".$timetable."' AND levels_person.level_start='".$level_start."'";
-        $data = $db->query($sql);
-        $data = $data->fetchAll($db::FETCH_ASSOC);
-        if(isset($data[0]['person_stop'])){$personStop = $data[0]['person_stop'];}
-        return $personStop;
-    }
-    public function getAllCombinationsOfThisPerson($id){
-        $db = $this->db;
-        $sql="SELECT `teacher`,`timetable`,`level_start`,`level` FROM `levels_person` WHERE id_person=".$id;
-        $data = $db->query($sql);
-        $data = $data->fetchAll($db::FETCH_ASSOC);
-        return $data;
-    }
-    public function getBalance($id){
-        $db = $this->db;
-        $sql="SELECT `balance` FROM `balance` WHERE id_person=".$id;
-        $data = $db->query($sql);
-        $data = $data->fetchAll($db::FETCH_ASSOC);
-        if(isset($data[0]['balance'])){$balance = $data[0]['balance'];}else{$balance = 0;}
-        return $balance;
-    }
-    public function getFrozenDates($id,$teacher,$timetable,$level_start){
-        $db = $this->db;
-        $sql = "SELECT `frozen_day` FROM `levels_person` LEFT JOIN `freeze` ON levels_person.id_person = freeze.id_person AND levels_person.teacher = freeze.teacher AND levels_person.timetable = freeze.timetable AND levels_person.level_start = freeze.level_start WHERE levels_person.teacher='".$teacher."' AND levels_person.level_start='".$level_start."' AND levels_person.timetable='".$timetable."' AND freeze.id_person=".$id;
-        $data = $db->query($sql);
-        $data = $data->fetchAll($db::FETCH_COLUMN);
-        return $data;
-    }
-    public function getPersonDiscountReason(){
-        $db = $this->db;
-        $sql="SELECT `discount`,`reason` FROM `discounts` WHERE `id_person`=".$_POST["id"]." AND `teacher`=".$_POST["teacher"]." AND `timetable`=".$_POST["timetable"]." AND `level_start`=".$_POST["level_start"];
-        $data = $db->query($sql);
-        $data = $data->fetchAll($db::FETCH_ASSOC);
-        if(isset($data['0'])){
-            return $data['0'];
-        }else{
-            return $data;
-        }
-    }
-    public function getAllCombinations($teacher,$timetable,$level_start){
-        $db = $this->db;
-        $sql = "SELECT * FROM `levels` WHERE `sd_1`='".$level_start."' AND `teacher`='".$teacher."' AND `timetable`='".$timetable."'";
-        $data = $db->query($sql);
-        $data = $data->fetchAll($db::FETCH_ASSOC);
-        return $data[0];
-    }
-    public function getDatesOfVisit($id,$teacher,$timetable,$level_start){
-        $db = $this->db;
-        $sql = "SELECT `date_of_visit` FROM `levels_person` LEFT JOIN `attendance` ON levels_person.id_person = attendance.id_visit WHERE levels_person.teacher='" . $teacher . "' AND levels_person.level_start='" . $level_start . "' AND levels_person.timetable='" . $timetable . "' AND `id_person`=" . $id;
-        $data = $db->query($sql);
-        $data = $data->fetchAll($db::FETCH_COLUMN);
-        return $data;
-    }
-    public function getName($id){
-        $db = $this->db;
-        $sql = "SELECT `fio` FROM `main` WHERE `id`='".$id."'";
-        $data = $db->query($sql);
-        $data = $data->fetchAll($db::FETCH_ASSOC);
-        $name = $data[0]['fio'];
-        return $name;
-    }
-    public function getSumGiven($id){
-        $db = $this->db;
-        $sql = "SELECT `given` FROM `payment_has` WHERE `fio_id`=".$id;
-        $data = $db->query($sql);
-        $data = $data->fetchAll($db::FETCH_NUM);
-        $sum = 0;
-        foreach($data as $value){
-            $sum = $sum + $value[0];
-        }
-        return $sum;
-    }
-    public function getNumPayedNumReserved($id,$teacher,$timetable,$level_start){
-        $db = $this->db;
-        $sql="SELECT `num_payed`,`num_reserved` FROM `payed_lessons` WHERE `id_person` ='".$id."' AND `teacher` = '".$teacher."' AND `level_start` = '".$level_start."' AND `timetable` ='".$timetable."'";
-        $data = $db->query($sql);
-        $data = $data->fetchAll($db::FETCH_ASSOC);
-        return $data;
-    }
-    public function getCheckForAnyAttendedLessonOfPerson($id,$teacher,$timetable,$level_start){
-        $db = $this->db;
-        $sql = "SELECT DISTINCT `id` FROM `attendance` WHERE `teacher`='".$teacher."' AND `timetable`='".$timetable."' AND `level_start`='".$level_start."' AND `id_visit`='".$id."' LIMIT 1";
-        $data = $db->query($sql);
-        $data = $data->fetchAll($db::FETCH_ASSOC);
-        if(isset($data[0])){return $data[0];}else{return;}
-    }
-    public function getCheckForAnyFrozenDates($id,$teacher,$timetable,$level_start){
-        $db = $this->db;
-        $sql = "SELECT `id` FROM `freeze` WHERE teacher='".$teacher."' AND level_start='".$level_start."' AND timetable='".$timetable."' AND id_person=".$id;
-        $data = $db->query($sql);
-        $data = $data->fetchAll($db::FETCH_COLUMN);
-        return $data;
-    }
-
-    /////////////////////////////////////////////////////////   /GETTERS   /////////////////////////////////////////////////////////
-
 	public function nameSumCombinationsFrozenDatesBalance(){
         $db = $this->db;
         $id=$_POST['id'];
@@ -338,21 +201,316 @@ class ModelPerson extends \application\core\model
 
         if($payedLessonExists==1 or $attendedLessonExists==1 or $frozenLessonExists==1){return false;}else{return true;}
     }
-    public function removePersonComboPayedLessonsFrozenLessons(){
+    public function removePersonOnThisCombinationFromLevelsPersonAndPayedLessons(){
         $id = $_POST["id"];
         $level_start = $_POST["level_start"];
         $teacher = $_POST["teacher"];
         $timetable = $_POST["timetable"];
 
-        $db = $this->db;
-        $sql = "DELETE FROM `levels_person` WHERE `teacher`='".$teacher."' AND `timetable`='".$timetable."' AND `level_start`='".$level_start."' AND `id_person`=".$id;
-        $db->query($sql);
-
-        $sql = "DELETE FROM `payed_lessons` WHERE `teacher`='".$teacher."' AND `timetable`='".$timetable."' AND `level_start`='".$level_start."' AND `id_person`=".$id;
-        $db->query($sql);
-
-        $sql = "DELETE FROM `freeze` WHERE `teacher`='".$teacher."' AND `timetable`='".$timetable."' AND `level_start`='".$level_start."' AND `id_person`=".$id;
-        $db->query($sql);
+        $this->setDeletePersonOnThisCombinationFromLevelsPerson($teacher,$timetable,$level_start,$id);
+        $this->setDeletePersonOnThisCombinationFromPayedLessons($teacher,$timetable,$level_start,$id);
     }
+    public function personDiscountReason(){
+        $id = $_POST["id"];
+        $teacher = $_POST["teacher"];
+        $level_start = $_POST["level_start"];
+        $timetable = $_POST["timetable"];
+
+        $data = $this->getPersonDiscountReason($id,$teacher,$timetable,$level_start);
+        return $data;
+    }
+    public function addDiscount(){
+        $teacher=$_POST["teacher"];
+        $timetable=$_POST["timetable"];
+        $level_start=$_POST["level_start"];
+        $discountValue=$_POST["discountValue"];
+        $id=$_POST["id"];
+
+        $data = $this->getIsThereDiscountForThisCombinationAndThisStudent($id,$teacher,$timetable,$level_start);
+
+        if($data){
+            $this->setUpdateDiscont($discountValue,$teacher,$timetable,$level_start,$id);
+        }else{
+            $this->setInsertDiscont($discountValue,$teacher,$timetable,$level_start,$id);
+        }
+    }
+    public function addDiscountReason(){
+        $teacher=$_POST["teacher"];
+        $timetable=$_POST["timetable"];
+        $level_start=$_POST["level_start"];
+        $id=$_POST["id"];
+        $discountReason=$_POST["reason"];
+
+        $data = $this->getIsThereDiscountReasonForThisCombinationAndThisStudent($id,$teacher,$timetable,$level_start);
+
+        if($data){
+            $this->setUpdateDiscontReason($discountReason,$teacher,$timetable,$level_start,$id);
+        }else{
+            $this->setInsertDiscontReason($discountReason,$teacher,$timetable,$level_start,$id);
+        }
+    }
+
+    /////////////////////////////////////////////////////////   GETTERS/SETTERS   /////////////////////////////////////////////////////////
+
+    public function getDiscount($id,$teacher,$timetable,$level_start){
+        $db = $this->db;
+        $sql="SELECT `discount` FROM `discounts` WHERE `id_person`='".$id."' AND `teacher`='".$teacher."' AND `timetable`='".$timetable."' AND `level_start`='".$level_start."'";
+        $data = $db->query($sql);
+        $data = $data->fetchAll($db::FETCH_ASSOC);
+        if(isset($data[0]['discount'])){$discount = $data[0]['discount'];}else{$discount = 0;}
+        return $discount;
+    }
+    public function getDefaulCostOfOneLesson()
+    {
+        $db = $this->db;
+        $sql = "SELECT `one lesson default` FROM `constants`";
+        $data = $db->query($sql);
+        $data = $data->fetchAll($db::FETCH_ASSOC);
+        if (isset($data[0]['one lesson default'])) {
+            $defaulCostOfOneLesson = $data[0]['one lesson default'];
+        }
+        return $defaulCostOfOneLesson;
+    }
+    public function getCostOfOneLessonWithDiscount($discount,$defaulCostOfOneLesson){
+        $CostOfOneLessonWithDiscount = $defaulCostOfOneLesson - round(($defaulCostOfOneLesson*($discount*0.01)),2);
+        $arr['CostOfOneLessonWithDiscount'] = $CostOfOneLessonWithDiscount;
+        return $CostOfOneLessonWithDiscount;
+    }
+    public function getCombinationDates($teacher,$timetable,$level_start){
+        $db = $this->db;
+        $sql = "SELECT sd_1,sd_2,sd_3,sd_4,sd_5,sd_6,sd_7,sd_8,sd_9,sd_10,sd_11,sd_12,sd_13,sd_14,sd_15,sd_16,sd_17,sd_18,sd_19,sd_20,sd_21 FROM `levels` WHERE levels.teacher='".$teacher."' AND levels.timetable='".$timetable."' AND levels.sd_1='".$level_start."'";
+        $everyLessonDate = $db->query($sql);
+        $everyLessonDate = $everyLessonDate->fetchAll($db::FETCH_NUM);
+        return $everyLessonDate;
+    }
+    public function getPersonStart($id,$teacher,$timetable,$level_start){
+        $db = $this->db;
+        $sql="SELECT `person_start` FROM `levels_person` WHERE id_person=".$id." AND levels_person.teacher='".$teacher."' AND levels_person.timetable='".$timetable."' AND levels_person.level_start='".$level_start."'";
+        $data = $db->query($sql);
+        $data = $data->fetchAll($db::FETCH_ASSOC);
+        if(isset($data[0]['person_start'])){$personStart = $data[0]['person_start'];}
+        return $personStart;
+    }
+    public function getPersonStop($id,$teacher,$timetable,$level_start){
+        $db = $this->db;
+        $sql="SELECT `person_stop` FROM `levels_person` WHERE id_person=".$id." AND levels_person.teacher='".$teacher."' AND levels_person.timetable='".$timetable."' AND levels_person.level_start='".$level_start."'";
+        $data = $db->query($sql);
+        $data = $data->fetchAll($db::FETCH_ASSOC);
+        if(isset($data[0]['person_stop'])){$personStop = $data[0]['person_stop'];}
+        return $personStop;
+    }
+    public function getAllCombinationsOfThisPerson($id){
+        $db = $this->db;
+        $sql="SELECT `teacher`,`timetable`,`level_start`,`level` FROM `levels_person` WHERE id_person=".$id;
+        $data = $db->query($sql);
+        $data = $data->fetchAll($db::FETCH_ASSOC);
+        return $data;
+    }
+    public function getBalance($id){
+        $db = $this->db;
+        $sql="SELECT `balance` FROM `balance` WHERE id_person=".$id;
+        $data = $db->query($sql);
+        $data = $data->fetchAll($db::FETCH_ASSOC);
+        if(isset($data[0]['balance'])){$balance = $data[0]['balance'];}else{$balance = 0;}
+        return $balance;
+    }
+    public function getFrozenDates($id,$teacher,$timetable,$level_start){
+        $db = $this->db;
+        $sql = "SELECT `frozen_day` FROM `levels_person` LEFT JOIN `freeze` ON levels_person.id_person = freeze.id_person AND levels_person.teacher = freeze.teacher AND levels_person.timetable = freeze.timetable AND levels_person.level_start = freeze.level_start WHERE levels_person.teacher='".$teacher."' AND levels_person.level_start='".$level_start."' AND levels_person.timetable='".$timetable."' AND freeze.id_person=".$id;
+        $data = $db->query($sql);
+        $data = $data->fetchAll($db::FETCH_COLUMN);
+        return $data;
+    }
+    public function getPersonDiscountReason($id,$teacher,$timetable,$level_start){
+        $db = $this->db;
+        $sql="SELECT `discount`,`reason` FROM `discounts` WHERE `id_person`='".$id."' AND `teacher`='".$teacher."' AND `timetable`='".$timetable."' AND `level_start`='".$level_start."'";
+        $data = $db->query($sql);
+        $data = $data->fetchAll($db::FETCH_ASSOC);
+        if(isset($data['0'])){
+            return $data['0'];
+        }else{
+            return $data;
+        }
+    }
+    public function getAllCombinations($teacher,$timetable,$level_start){
+        $db = $this->db;
+        $sql = "SELECT * FROM `levels` WHERE `sd_1`='".$level_start."' AND `teacher`='".$teacher."' AND `timetable`='".$timetable."'";
+        $data = $db->query($sql);
+        $data = $data->fetchAll($db::FETCH_ASSOC);
+        return $data[0];
+    }
+    public function getDatesOfVisit($id,$teacher,$timetable,$level_start){
+        $db = $this->db;
+        $sql = "SELECT `date_of_visit` FROM `levels_person` LEFT JOIN `attendance` ON levels_person.id_person = attendance.id_visit WHERE levels_person.teacher='" . $teacher . "' AND levels_person.level_start='" . $level_start . "' AND levels_person.timetable='" . $timetable . "' AND `id_person`=" . $id;
+        $data = $db->query($sql);
+        $data = $data->fetchAll($db::FETCH_COLUMN);
+        return $data;
+    }
+    public function getName($id){
+        $db = $this->db;
+        $sql = "SELECT `fio` FROM `main` WHERE `id`='".$id."'";
+        $data = $db->query($sql);
+        $data = $data->fetchAll($db::FETCH_ASSOC);
+        $name = $data[0]['fio'];
+        return $name;
+    }
+    public function getSumGiven($id){
+        $db = $this->db;
+        $sql = "SELECT `given` FROM `payment_has` WHERE `fio_id`=".$id;
+        $data = $db->query($sql);
+        $data = $data->fetchAll($db::FETCH_NUM);
+        $sum = 0;
+        foreach($data as $value){
+            $sum = $sum + $value[0];
+        }
+        return $sum;
+    }
+    public function getNumPayedNumReserved($id,$teacher,$timetable,$level_start){
+        $db = $this->db;
+        $sql="SELECT `num_payed`,`num_reserved` FROM `payed_lessons` WHERE `id_person` ='".$id."' AND `teacher` = '".$teacher."' AND `level_start` = '".$level_start."' AND `timetable` ='".$timetable."'";
+        $data = $db->query($sql);
+        $data = $data->fetchAll($db::FETCH_ASSOC);
+        return $data;
+    }
+    public function getCheckForAnyAttendedLessonOfPerson($id,$teacher,$timetable,$level_start){
+        $db = $this->db;
+        $sql = "SELECT DISTINCT `id` FROM `attendance` WHERE `teacher`='".$teacher."' AND `timetable`='".$timetable."' AND `level_start`='".$level_start."' AND `id_visit`='".$id."' LIMIT 1";
+        $data = $db->query($sql);
+        $data = $data->fetchAll($db::FETCH_ASSOC);
+        if(isset($data[0])){return $data[0];}else{return;}
+    }
+    public function getCheckForAnyFrozenDates($id,$teacher,$timetable,$level_start){
+        $db = $this->db;
+        $sql = "SELECT `id` FROM `freeze` WHERE teacher='".$teacher."' AND level_start='".$level_start."' AND timetable='".$timetable."' AND id_person=".$id;
+        $data = $db->query($sql);
+        $data = $data->fetchAll($db::FETCH_COLUMN);
+        return $data;
+    }
+    public function getIsThereDiscountForThisCombinationAndThisStudent($id,$teacher,$timetable,$level_start){
+        $db = $this->db;
+        $sql="SELECT `discount` FROM `discounts` WHERE `teacher`='".$teacher."' AND `timetable`='".$timetable."' AND `level_start`='".$level_start."' AND `id_person`='".$id."'";
+        $data = $db->query($sql);
+        $data = $data->fetchAll($db::FETCH_COLUMN);
+        if(empty($data)){return false;}else{return true;}
+    }
+    public function getIsThereDiscountReasonForThisCombinationAndThisStudent($id,$teacher,$timetable,$level_start){
+        $db = $this->db;
+        $sql="SELECT `reason` FROM `discounts` WHERE `teacher`='".$teacher."' AND `timetable`='".$timetable."' AND `level_start`='".$level_start."' AND `id_person`='".$id."'";
+        $data = $db->query($sql);
+        $data = $data->fetchAll($db::FETCH_COLUMN);
+        if(empty($data)){return false;}else{return true;}
+    }
+
+    public function setUpdateDiscont($discountValue,$teacher,$timetable,$level_start,$id){
+        $db = $this->db;
+        $sql = "UPDATE `discounts` SET `discount`=:discountValue WHERE `teacher`=:teacher AND `timetable`=:timetable AND `level_start`=:level_start AND `id_person`=:id";
+        $stmt = $db->prepare($sql);
+
+        $stmt->bindParam(':discountValue', $discountValue, \PDO::PARAM_INT);
+        $stmt->bindParam(':teacher', $teacher, \PDO::PARAM_STR);
+        $stmt->bindParam(':timetable', $timetable, \PDO::PARAM_STR);
+        $stmt->bindParam(':level_start', $level_start, \PDO::PARAM_STR);
+        $stmt->bindParam(':id', $id, \PDO::PARAM_INT );
+
+        $stmt->execute();
+
+        $data['errorCode'] = $stmt->errorCode();
+        $data['rowCount'] = $stmt->rowCount();
+        $data['state'] = 'update';
+        return $data;
+
+    }
+    public function setInsertDiscont($discountValue,$teacher,$timetable,$level_start,$id){
+        $db = $this->db;
+        $sql = "INSERT INTO `discounts` (`id_person`,`teacher`,`timetable`,`level_start`,`discount`) VALUE (:id,:teacher,:timetable,:level_start,:discountValue)";
+        $stmt = $db->prepare($sql);
+
+        $stmt->bindParam(':discountValue', $discountValue, \PDO::PARAM_INT);
+        $stmt->bindParam(':teacher', $teacher, \PDO::PARAM_STR);
+        $stmt->bindParam(':timetable', $timetable, \PDO::PARAM_STR);
+        $stmt->bindParam(':level_start', $level_start, \PDO::PARAM_STR);
+        $stmt->bindParam(':id', $id, \PDO::PARAM_INT );
+
+        $stmt->execute();
+
+        $data['errorCode'] = $stmt->errorCode();
+        $data['rowCount'] = $stmt->rowCount();
+        $data['lastInsert'] = $db->lastInsertId();
+        $data['state'] = 'insert';
+        return $data;
+    }
+    public function setUpdateDiscontReason($discountReason,$teacher,$timetable,$level_start,$id){
+        $db = $this->db;
+        $sql = "UPDATE `discounts` SET `reason`=:discountReason WHERE `teacher`=:teacher AND `timetable`=:timetable AND `level_start`=:level_start AND `id_person`=:id";
+        $stmt = $db->prepare($sql);
+
+        $stmt->bindParam(':discountReason', $discountReason, \PDO::PARAM_STR);
+        $stmt->bindParam(':teacher', $teacher, \PDO::PARAM_STR);
+        $stmt->bindParam(':timetable', $timetable, \PDO::PARAM_STR);
+        $stmt->bindParam(':level_start', $level_start, \PDO::PARAM_STR);
+        $stmt->bindParam(':id', $id, \PDO::PARAM_INT );
+
+        $stmt->execute();
+
+        $data['errorCode'] = $stmt->errorCode();
+        $data['rowCount'] = $stmt->rowCount();
+        $data['state'] = 'update';
+        return $data;
+
+    }
+    public function setInsertDiscontReason($discountReason,$teacher,$timetable,$level_start,$id){
+        $db = $this->db;
+        $sql = "INSERT INTO `discounts` (`id_person`,`teacher`,`timetable`,`level_start`,`reason`) VALUE (:id,:teacher,:timetable,:level_start,:discountReason)";
+        $stmt = $db->prepare($sql);
+
+        $stmt->bindParam(':discountReason', $discountReason, \PDO::PARAM_INT);
+        $stmt->bindParam(':teacher', $teacher, \PDO::PARAM_STR);
+        $stmt->bindParam(':timetable', $timetable, \PDO::PARAM_STR);
+        $stmt->bindParam(':level_start', $level_start, \PDO::PARAM_STR);
+        $stmt->bindParam(':id', $id, \PDO::PARAM_INT );
+
+        $stmt->execute();
+
+        $data['errorCode'] = $stmt->errorCode();
+        $data['rowCount'] = $stmt->rowCount();
+        $data['lastInsert'] = $db->lastInsertId();
+        $data['state'] = 'insert';
+        return $data;
+    }
+    public function setDeletePersonOnThisCombinationFromLevelsPerson($teacher,$timetable,$level_start,$id){
+        $db = $this->db;
+        $sql = "DELETE FROM `levels_person` WHERE `teacher`=:teacher AND `timetable`=:timetable AND `level_start`=:level_start AND `id_person`=:id";
+        $stmt = $db->prepare($sql);
+
+        $stmt->bindParam(':teacher', $teacher, \PDO::PARAM_STR);
+        $stmt->bindParam(':timetable', $timetable, \PDO::PARAM_STR);
+        $stmt->bindParam(':level_start', $level_start, \PDO::PARAM_STR);
+        $stmt->bindParam(':id', $id, \PDO::PARAM_STR);
+        $stmt->execute();
+
+        $data['errorCode'] = $stmt->errorCode();
+        $data['rowCount'] = $stmt->rowCount();
+        $data['lastInsert'] = $db->lastInsertId();
+        $data['state'] = 'delete';
+        return $data;
+    }
+    public function setDeletePersonOnThisCombinationFromPayedLessons($teacher,$timetable,$level_start,$id){
+        $db = $this->db;
+        $sql = "DELETE FROM `payed_lessons` WHERE `teacher`=:teacher AND `timetable`=:timetable AND `level_start`=:level_start AND `id_person`=:id";
+        $stmt = $db->prepare($sql);
+
+        $stmt->bindParam(':teacher', $teacher, \PDO::PARAM_STR);
+        $stmt->bindParam(':timetable', $timetable, \PDO::PARAM_STR);
+        $stmt->bindParam(':level_start', $level_start, \PDO::PARAM_STR);
+        $stmt->bindParam(':id', $id, \PDO::PARAM_STR);
+        $stmt->execute();
+
+        $data['errorCode'] = $stmt->errorCode();
+        $data['rowCount'] = $stmt->rowCount();
+        $data['lastInsert'] = $db->lastInsertId();
+        $data['state'] = 'delete';
+        return $data;
+    }
+
 
 }

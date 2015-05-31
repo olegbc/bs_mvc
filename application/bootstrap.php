@@ -5,4 +5,4 @@ function load($class_name) {
 }
 set_include_path(dirname(__FILE__));
 spl_autoload_register('load');
-application\core\route::start();
+application\core\Route::start();

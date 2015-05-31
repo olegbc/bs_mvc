@@ -118,15 +118,18 @@ class ModelMain extends \application\core\Model
         $id = $_POST["id"];
         $AmountOfMoney = $_POST["amount"];
 
-        $this->setInsertAmountOfMoneyToPaymentHas($AmountOfMoney,$id);
-
-        $data = $this->getIsThereAPersonBalance($id);
+        $data = $this->setInsertAmountOfMoneyToPaymentHas($AmountOfMoney,$id);
 
         if($data){
-             $this->setUpdateBalanceToBalance($AmountOfMoney,$id);
-        }else{
-            $this->setInsertBalanceToBalance($AmountOfMoney,$id);
-        }
+            $data = $this->getIsThereAPersonBalance($id);
+
+            if ($data) {
+                $this->setUpdateBalanceToBalance($AmountOfMoney, $id);
+            } else {
+                $this->setInsertBalanceToBalance($AmountOfMoney, $id);
+            }
+            return (bool)true;
+        }else{return (bool)false;}
     }
     public function deleteStudent(){
         $id = $_POST["id"];
@@ -321,13 +324,19 @@ class ModelMain extends \application\core\Model
         $stmt->bindParam(':given', $AmountOfMoney, \PDO::PARAM_INT );
         $stmt->bindParam(':id', $id, \PDO::PARAM_INT );
 
-        $stmt->execute();
+        try{
+            $stmt->execute();
+            return true;
+        }catch(\PDOException $e){
+            return false;
+        }
 
-        $data['errorCode'] = $stmt->errorCode();
-        $data['rowCount'] = $stmt->rowCount();
-        $data['lastInsert'] = $db->lastInsertId();
-        $data['state'] = 'insert';
-        return $data;
+//        $data['errorCode'] = $stmt->errorCode();
+//        $data['rowCount'] = $stmt->rowCount();
+//        $data['lastInsert'] = $db->lastInsertId();
+//        $data['state'] = 'insert';
+//        return $data;
+//        return true;
     }
     public function getIsThereAPersonBalance($id){
         $db = $this->db;

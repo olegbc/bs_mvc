@@ -109,7 +109,7 @@ class ModelAttendance extends \application\core\Model
         $data = $this->getIdOfCombination($teacher,$timetable,$level_start);
         if(!empty($data['id'])){
             $dataMain['id'] = $data['id'];
-            $id = $data['id'];
+//            $id = $data['id'];
             if(date("N",$start)== $first_week_lesson or date("N",$start)== $second_week_lesson or date("N",$start)== $third_week_lesson){
                 $data = $this->getAllBadDaysOfCombination($teacher,$timetable,$level_start);
                 $dataMain['badDays'] = $data;
@@ -144,21 +144,22 @@ class ModelAttendance extends \application\core\Model
                     $numReserved = $dataMain['numPayedNumReserved']['num_reserved'];
                     $dataMain['combinationDates'] = $this->getCombinationDates($teacher,$timetable,$level_start);
                     if(isset($calculatedLevelStop)){
-                        if(strtotime($person_stop)>strtotime($calculatedLevelStop)){
+                        if(strtotime($person_stop)>strtotime($calculatedLevelStop)){ //←
                             $num_minus=0;	//	количество скушаных в конце уроков
-                            if(strtotime($person_start)>$calculatedLevelStop){
-                                $this->setUpdatePersonStartEqualCalculatedLevelStop($calculatedLevelStop,$teacher,$timetable,$level_start,$id_person);
+                            if(strtotime($person_start)>strtotime($calculatedLevelStop)){
+//                                $this->setUpdatePersonStartEqualCalculatedLevelStop($calculatedLevelStop,$teacher,$timetable,$level_start,$id_person);
+                                $this->removePersonCombination($id_person,$teacher,$timetable,$level_start);
                             }else{
                                 for($j=0;$j<count($dataMain['combinationDates']);$j++){
-                                    if($dataMain['combinationDates'][$j]==date("Y-m-d",$calculatedLevelStop)){
+                                    if($dataMain['combinationDates'][$j]==$calculatedLevelStop){
                                         $num_minus = 20-$j;
                                     }
                                 }
                             }
-                            if(strtotime($person_start)>$calculatedLevelStop){
-                                $num_minus = $numPayed;
-                                $num_minus_reserverd = $numReserved;
-                            }
+//                            if(strtotime($person_start)>$calculatedLevelStop){
+//                                $num_minus = $numPayed;
+//                                $num_minus_reserverd = $numReserved;
+//                            }
                             if($numPayed>($numReserved-$num_minus)){
                                 $discount=$this->getDiscount($id_person,$teacher,$timetable,$level_start);
                                 $defaulCostOfOneLesson=$this->getDefaulCostOfOneLesson();
@@ -166,8 +167,8 @@ class ModelAttendance extends \application\core\Model
                                 $this->setUpdateBalance($costOfOneLessonWithDiscount,$num_minus,$id_person);
                                 $this->setUpdateNumPayedToPayedLessons($num_minus,$id_person);
                             }
-                            if(strtotime($person_start)>$calculatedLevelStop){
-                                $this->setUpdateNumReservedToPayedLessons($num_minus_reserverd,$id_person,$teacher,$timetable,$level_start);
+                            if(strtotime($person_start)>strtotime($calculatedLevelStop)){
+//                                $this->setUpdateNumReservedToPayedLessons($num_minus_reserverd,$id_person,$teacher,$timetable,$level_start);
                             }else{
                                 $this->setUpdateNumReservedByNumMinusToPayedLessons($num_minus,$id_person,$teacher,$timetable,$level_start);
                             }
@@ -175,7 +176,7 @@ class ModelAttendance extends \application\core\Model
                             $this->setUpdateLevelStartToLevelsPerson($new_level_start,$id_person,$teacher,$timetable,$level_start);
                             $this->setUpdateLevelStartToPayedLessons($new_level_start,$id_person,$teacher,$timetable,$level_start);
                         }
-                        else if(strtotime($person_start)<strtotime($new_level_start)){
+                        else if(strtotime($person_start)<strtotime($new_level_start)){ //→
                             $num_eaten=0;	//	съедено в начале
 //                            $num_minus=0;	//	съедено в конце
                             for($j=0;$j<count($dataMain['combinationDates']);$j++){
@@ -230,11 +231,13 @@ class ModelAttendance extends \application\core\Model
         }
 
     }
-    public function removePersonCombination(){
-        $id = $_POST["id"];
-        $teacher = $_POST["teacher"];
-        $timetable = $_POST["timetable"];
-        $level_start = $_POST["level_start"];
+    public function removePersonCombination($id,$teacher,$timetable,$level_start){
+        if(isset($_POST["id"]) and isset($_POST["teacher"]) and isset($_POST["timetable"]) and isset($_POST["level_start"])) {
+            $id = $_POST["id"];
+            $teacher = $_POST["teacher"];
+            $timetable = $_POST["timetable"];
+            $level_start = $_POST["level_start"];
+        }
 
         $discount = $this->getDiscount($id,$teacher,$timetable,$level_start);
         $defaulCostOfOneLesson=$this->getDefaulCostOfOneLesson();
@@ -257,9 +260,7 @@ class ModelAttendance extends \application\core\Model
         $timetable=$_POST['timetable'];
         $level_start=$_POST['level_start'];
 
-        $data=$this->setDeleteCombination($teacher,$timetable,$level_start);
-
-        $sql = "DELETE FROM `levels` WHERE `teacher`='".$teacher."' AND `timetable`='".$timetable."' AND `sd_1`='".$level_start."'";
+        $this->setDeleteCombination($teacher,$timetable,$level_start);
     }
 
     /////////////////////////////////////////////////////////   GETTERS/SETTERS   /////////////////////////////////////////////////////////
@@ -573,7 +574,7 @@ class ModelAttendance extends \application\core\Model
     }
     public function setUpdateNumPayedToPayedLessons($num_minus,$id_person){
         $db = $this->db;
-        $sql="UPDATE `payed_lessons` SET `num_payed`=num_payed-(:num_minus-1) WHERE `id_person`=:id_person";
+        $sql="UPDATE `payed_lessons` SET `num_payed`=num_payed-:num_minus WHERE `id_person`=:id_person";
         $stmt = $db->prepare($sql);
 
         $stmt->bindParam(':num_minus', $num_minus, \PDO::PARAM_INT);

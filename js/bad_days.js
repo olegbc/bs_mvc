@@ -10,11 +10,11 @@ $(document).ready(function(){
 		$(this).css('borderColor','rgb(0, 0, 255)');
 	});
 
-	var r = $('.peresent_combinations .brick:first').children('[name=teacher_choose]').val();
-	var t = $('.peresent_combinations .brick:first').children('[name=timetable_choose]').val();
-	var u = $('.peresent_combinations .brick:first').children('[name=level_start_choose]').val();
+	var teacher = $('.peresent_combinations .brick:first').children('[name=teacher_choose]').val();
+	var timetable = $('.peresent_combinations .brick:first').children('[name=timetable_choose]').val();
+	var level_start = $('.peresent_combinations .brick:first').children('[name=level_start_choose]').val();
 	$('.brick').css('borderColor','#000');
-	findComboDays(r,t,u);
+	findComboDays(teacher,timetable,level_start);
 	$('.peresent_combinations .brick:first').css('borderColor','rgb(0, 0, 255)');
 
 	Date.prototype.mGetDay = function() {
@@ -127,6 +127,82 @@ function findComboDays(teacher,timetable,level_start,shift){
 	});
 }
 
+function markAttenedDays(teacher,timetable,level_start){
+    $.ajax({
+        type: 'POST',
+        url: './BadDays/AttenedDates',
+        async: 'false',
+        dataType: 'json',
+        data: {teacher:teacher,timetable:timetable,level_start:level_start},
+        success: function(data){
+            var AttenedYearMounthDay = new Array();
+            var month_arr = new Array();
+            month_arr[0] = "January";
+            month_arr[1] = "February";
+            month_arr[2] = "March";
+            month_arr[3] = "April";
+            month_arr[4] = "May";
+            month_arr[5] = "June";
+            month_arr[6] = "July";
+            month_arr[7] = "August";
+            month_arr[8] = "September";
+            month_arr[9] = "October";
+            month_arr[10] = "November";
+            month_arr[11] = "December";
+
+            for(i in data){
+                AttenedYearMounthDay[i] = data[i].split('-');
+
+                $('.bad_days_calendar').find('.month_year_div').each(function(){
+                    if($(this).text() == month_arr[(parseInt(AttenedYearMounthDay[i][1])-1)]+' '+AttenedYearMounthDay[i][0]){
+                        //$(this).css('color','red');
+                        $(this).parent().find('td.day.combo_day').each(function(){
+                            if(parseInt($(this).text()) == parseInt(AttenedYearMounthDay[i][2])){
+                                $(this).css({'background':'red','border':'2px solid black','color':'black'}).addClass('attenedDay');
+                            }
+                        });
+                    }
+                });
+            }
+            $('.attenedDay').click(function(){
+                alert('Вы не можете установить  bad day в дату с посещением');
+            });
+            $('.day').not('.attenedDay').click(function(){
+                var badDayClicked=$(this).attr('date-ymd');
+                if(badDayClicked!=level_start){
+                    $.ajax({
+                        type: 'POST',
+                        url: './BadDays/InsertOrDeleteBadDay',
+                        dataType: 'json',
+                        data: {badDayClicked:badDayClicked,teacher:teacher,timetable:timetable,level_start:level_start},
+                        success: function(data){
+                            $.ajax({
+                                type:'POST',
+                                url: './LevelCalculation/calculateLevelDates',
+                                dataType: 'json',
+                                data: {teacher:teacher,timetable:timetable,level_start:level_start},
+                                success: function(data){
+                                    findComboDays(teacher,timetable,level_start);
+                                },
+                                error:  function(xhr, str){
+                                    alert('Возникла ошибка: ' + xhr.responseCode);
+                                }
+                            });
+                            findComboDays(teacher,timetable,level_start);
+                        },
+                        error: function(xhr, str){
+                            alert('Возникла ошибка: ' + xhr.responseCode);
+                        }
+                    });
+                }else{alert('Если дата старта не подходящий день, перенесите дату старта на странице управления attendance_table');}
+            });
+        },
+        error: function(xhr, str){
+            alert('Возникла ошибка: ' + xhr.responseCode);
+        }
+    });
+}
+
 function combiOnBadDaysTable(){
 	var text= '2014';
 	var text2 = $('.month_year_div').text();
@@ -235,6 +311,7 @@ function displayCalendarTable(month,year,yearMonthDay,teacher,timetable,level_st
 	$('.bad_days_calendar_3 table').empty();
 	$('.bad_days_calendar_4 table').empty();
 
+
 //	/построение шапки
 	var d = new Date();
 	var month_2 = d.getMonth()+1;
@@ -248,6 +325,11 @@ function displayCalendarTable(month,year,yearMonthDay,teacher,timetable,level_st
 	if(month == 11){var month_after = month_arr[month-11];var year_of_month_after =year+1;}else{var month_after = month_arr[month+1];var year_of_month_after =year;}
 	if(month == 11){var month_afterafter = month_arr[month-10];var year_of_month_afterafter =year+1;}else if(month+1 == 11){var month_afterafter = month_arr[month-10];var year_of_month_afterafter =year+1;}else{var month_afterafter = month_arr[month+2];var year_of_month_afterafter =year;}
 	var year_now = d.getFullYear();
+
+    $('.bad_days_calendar_1').addClass('bad_days_calendar');
+    $('.bad_days_calendar_2').addClass('bad_days_calendar');
+    $('.bad_days_calendar_3').addClass('bad_days_calendar');
+    $('.bad_days_calendar_4').addClass('bad_days_calendar');
 
 	$('.bad_days_calendar_1 table').html('<tbody><tr id="week_days_names"><th class="" id="">Пн</th><th class="" id="">Вт</th><th class="" id="">Ср</th><th class="" id="">Чт</th><th class="" id="">Пц</th><th class="" id="">Сб</th><th class="" id="">Вс</th></tr></tbody>');
 	$('.bad_days_calendar_2 table').html('<tbody><tr id="week_days_names"><th class="" id="">Пн</th><th class="" id="">Вт</th><th class="" id="">Ср</th><th class="" id="">Чт</th><th class="" id="">Пц</th><th class="" id="">Сб</th><th class="" id="">Вс</th></tr></tbody>');
@@ -278,35 +360,39 @@ function displayCalendarTable(month,year,yearMonthDay,teacher,timetable,level_st
 	betweenComboDays(yearMonthDay);
 
 	//	/бэд дэй в базу
-	$('.day').click(function(){
-		var badDayClicked=$(this).attr('date-ymd');
-		if(badDayClicked!=level_start){
-			$.ajax({
-				type: 'POST',
-				url: './BadDays/InsertOrDeleteBadDay',
-				dataType: 'json',
-				data: {badDayClicked:badDayClicked,teacher:teacher,timetable:timetable,level_start:level_start},
-				success: function(data){
-					$.ajax({
-						type:'POST',
-						url: './LevelCalculation/calculateLevelDates',
-                        dataType: 'json',
-						data: {teacher:teacher,timetable:timetable,level_start:level_start},
-						success: function(data){
-							findComboDays(teacher,timetable,level_start);
-						},
-						error:  function(xhr, str){
-							alert('Возникла ошибка: ' + xhr.responseCode);
-						}
-					});
-					findComboDays(teacher,timetable,level_start);
-				},
-				error: function(xhr, str){
-					alert('Возникла ошибка: ' + xhr.responseCode);
-				}
-			});
-		}else{alert('Если дата старта не подходящий день, перенесите дату старта на странице управления attendance_table');}
-	});
+	//$('.day').click(function(){
+     //   if($(this).hasClass('.attenedDay')){
+     //       alert('55');
+     //   }
+     //   return;
+	//	var badDayClicked=$(this).attr('date-ymd');
+	//	if(badDayClicked!=level_start){
+	//		$.ajax({
+	//			type: 'POST',
+	//			url: './BadDays/InsertOrDeleteBadDay',
+	//			dataType: 'json',
+	//			data: {badDayClicked:badDayClicked,teacher:teacher,timetable:timetable,level_start:level_start},
+	//			success: function(data){
+	//				$.ajax({
+	//					type:'POST',
+	//					url: './LevelCalculation/calculateLevelDates',
+     //                   dataType: 'json',
+	//					data: {teacher:teacher,timetable:timetable,level_start:level_start},
+	//					success: function(data){
+	//						findComboDays(teacher,timetable,level_start);
+	//					},
+	//					error:  function(xhr, str){
+	//						alert('Возникла ошибка: ' + xhr.responseCode);
+	//					}
+	//				});
+	//				findComboDays(teacher,timetable,level_start);
+	//			},
+	//			error: function(xhr, str){
+	//				alert('Возникла ошибка: ' + xhr.responseCode);
+	//			}
+	//		});
+	//	}else{alert('Если дата старта не подходящий день, перенесите дату старта на странице управления attendance_table');}
+	//});
 	//	/бэд дэй в базу
 
 	function daysNstartingPos(month,year,table,badDayDates){
@@ -375,6 +461,44 @@ function displayCalendarTable(month,year,yearMonthDay,teacher,timetable,level_st
 			$('.'+table+' table tbody .tr_'+num_tr+' .td_'+(i-(7*t))).html('&nbsp;');
 		}
 	}
+    markAttenedDays(teacher,timetable,level_start);
+
+    //	/бэд дэй в базу
+    //$('.day').not('.attenedDay').click(function(){
+    //    //if($(this).hasClass('.attenedDay')){
+    //    //    alert('55');
+    //    //}
+    //    alert('55');
+    //    return;
+    //    var badDayClicked=$(this).attr('date-ymd');
+    //    if(badDayClicked!=level_start){
+    //        $.ajax({
+    //            type: 'POST',
+    //            url: './BadDays/InsertOrDeleteBadDay',
+    //            dataType: 'json',
+    //            data: {badDayClicked:badDayClicked,teacher:teacher,timetable:timetable,level_start:level_start},
+    //            success: function(data){
+    //                $.ajax({
+    //                    type:'POST',
+    //                    url: './LevelCalculation/calculateLevelDates',
+    //                    dataType: 'json',
+    //                    data: {teacher:teacher,timetable:timetable,level_start:level_start},
+    //                    success: function(data){
+    //                        findComboDays(teacher,timetable,level_start);
+    //                    },
+    //                    error:  function(xhr, str){
+    //                        alert('Возникла ошибка: ' + xhr.responseCode);
+    //                    }
+    //                });
+    //                findComboDays(teacher,timetable,level_start);
+    //            },
+    //            error: function(xhr, str){
+    //                alert('Возникла ошибка: ' + xhr.responseCode);
+    //            }
+    //        });
+    //    }else{alert('Если дата старта не подходящий день, перенесите дату старта на странице управления attendance_table');}
+    //});
+    //	/бэд дэй в базу
 }
 
 

@@ -65,7 +65,7 @@
     <form name="take_to_bd" action="javascript:void(null);" method="post" onsubmit="saveAmountOfMoney()" id="take_to_bd_form">
         <div class="item"><label for="id_take">ID:</label> <input id="id_take" class="add_form_input" type="text" name="id_take" readonly></div>
         <div class="item"><label for="fio_take">ФИО:</label> <input id="fio_take" class="add_form_input" type="text" name="fio_take" readonly></div>
-        <div class="item"><label for="take_person_money">Принять:</label> <input class="add_form_input" type="text" id="take_person_money" name="take_person_money"></div>
+        <div class="item"><label for="take_person_money">Принять:</label> <input class="add_form_input" type="text" id="take_person_money" name="take_person_money"><cite>Если вносятся копейки - формат ввода 555.55(точка, а не запятая)</cite></div>
         <div class="item last"><input type="submit" class="add_form_btn" value="Сохранить" /></div>
     </form>
 </div>

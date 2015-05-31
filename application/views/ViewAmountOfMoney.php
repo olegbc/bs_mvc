@@ -11,6 +11,7 @@
         </form>
     </div>
 </div>
-<div id="stackedGraph_wrapper">
-    <div id="Graph_money"></div>
-</div>
+<div id="container" style="min-width: 310px;width: 1211px; height: 400px; margin: 0 auto"></div>
+<!--<div id="stackedGraph_wrapper">-->
+<!--    <div id="Graph_money"></div>-->
+<!--</div>-->

@@ -33,6 +33,14 @@ class ModelBadDays extends \application\core\model
             $this->setInsertBadDay($teacher,$timetable,$level_start,$badDayClicked);
         }
     }
+    public function attenedDates(){
+        $teacher = $_POST["teacher"];
+        $timetable = $_POST["timetable"];
+        $level_start = $_POST["level_start"];
+
+        $data = $this->getAttenedDates($teacher,$timetable,$level_start);
+        return $data;
+    }
 
     /////////////////////////////////////////////////////////   GETTERS/SETTERS   /////////////////////////////////////////////////////////
 
@@ -56,6 +64,13 @@ class ModelBadDays extends \application\core\model
         $data = $db->query($sql);
         $data = $data->fetchAll($db::FETCH_COLUMN);
         if(empty($data)){return false;}else{return true;}
+    }
+    public function getAttenedDates($teacher,$timetable,$level_start){
+        $db = $this->db;
+        $sql = "SELECT `date_of_visit` FROM `attendance` WHERE `teacher`='" . $teacher . "' AND `level_start`='" . $level_start . "' AND `timetable`='" . $timetable . "'";
+        $data = $db->query($sql);
+        $data = $data->fetchAll($db::FETCH_COLUMN);
+        return $data;
     }
 
     public function setDeleteBadDay($teacher,$timetable,$level_start,$badDayClicked){

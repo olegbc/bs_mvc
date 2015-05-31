@@ -117,7 +117,8 @@ a.fio_links:visited{color:rgb(0, 0, 238);}
 .bad_days_calendar_monthes tr {height: 26px; }
 .combination_all_bad_days{overflow:hidden;}
 .bad_days_calendar_monthes_wrapper {display: none;}
-.combo_day{border: 2px solid #fbcb09 !important; background: #fdf5ce !important; color: #c77405 !important;}
+/*.combo_day{border: 2px solid #fbcb09 !important; background: #fdf5ce !important; color: #c77405 ;}*/
+div.bad_days_calendar_monthes td.day.combo_day.betweenComboDays{border: 2px solid #fbcb09 ; background: #fdf5ce; color: #c77405;}
 div.bad_days_calendar_monthes td.day.betweenComboDays{border: 2px solid rgba(251, 203, 9, 0.44);  background: rgba(253, 245, 206, 0.45);  color: rgba(199, 116, 5, 0.43);}
 .bad_day{background: #76B9D2 !important;color: #125E7D !important;border: 2px solid rgba(0, 40, 255, 0.29) !important;}
 .payment_mark,.attendence_mark{-moz-user-select: none; -o-user-select:none; -khtml-user-select: none; -webkit-user-select: none; -ms-user-select: none; user-select: none; }
@@ -127,6 +128,10 @@ img.ui-datepicker-trigger {margin: 0px 5px 0px 5px; }
 .warning {float: left;width: 477px;color: rgb(207, 0, 0);display: none;}
 .removePersonFromCombo button {float: right; display: block;margin: 0px 0px 20px 20px; color: red;cursor:pointer;}
 .reason_set{margin-left:10px;color:red;}
+cite{ font-style: normal; color: red; }
+button.change_start_date {
+    margin-right: 10px;
+}
 
 
 

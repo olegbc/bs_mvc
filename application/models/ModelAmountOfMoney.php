@@ -25,8 +25,15 @@ class ModelAmountOfMoney extends \application\core\model
 
             $data = $this->getSumMoneyForThisWeek($start_week,$stop_week);
 
-            $arr[$t][0]=$data[0];
-            $arr[$t][1]=$start_week." - ".$stop_week;
+//            $arr[$t][0]=$data[0];
+//            $arr[$t][1]=$start_week." - ".$stop_week;
+            if($data[0]==null){
+                $arr['amount'][]=0;
+            }else{
+                $arr['amount'][]=(int)$data[0];
+            }
+            $arr['weekRange'][]=date('M',$start_week_range_unix + (604800*$t))." :".$start_week." - ".$stop_week;
+
         }
         return $arr;
     }

@@ -184,11 +184,13 @@ class ModelFreeze extends \application\core\model {
     }
     public function getFrozenDates($id,$teacher,$timetable,$level_start){
         $db = $this->db;
-        $sql = "SELECT `frozen_day` FROM `levels_person` LEFT JOIN `freeze` ON levels_person.id_person = freeze.id_person AND levels_person.teacher = freeze.teacher AND levels_person.timetable = freeze.timetable AND levels_person.level_start = freeze.level_start WHERE levels_person.teacher='" . $teacher . "' AND levels_person.level_start='" . $level_start . "' AND levels_person.timetable='" . $timetable . "' AND freeze.id_person=" . $id;
+//        $sql = "SELECT `frozen_day` FROM `levels_person` LEFT JOIN `freeze` ON levels_person.id_person = freeze.id_person AND levels_person.teacher = freeze.teacher AND levels_person.timetable = freeze.timetable AND levels_person.level_start = freeze.level_start WHERE levels_person.teacher= AND levels_person.level_start='" . $level_start . "' AND levels_person.timetable='" . $timetable . "' AND freeze.id_person=" . $id;
+        $sql = "SELECT `frozen_day` FROM `freeze` WHERE `teacher`='" . $teacher . "' AND `level_start`='" . $level_start . "'  AND `timetable`='" . $timetable . "'  AND `id_person`=" . $id;
         $data = $db->query($sql);
         $data = $data->fetchAll($db::FETCH_COLUMN);
         return $data;
     }
+
     public function getAllCombinations($teacher,$timetable,$level_start){
         $db = $this->db;
         $sql = "SELECT * FROM `levels` WHERE `sd_1`='".$level_start."' AND `teacher`='".$teacher."' AND `timetable`='".$timetable."'";
