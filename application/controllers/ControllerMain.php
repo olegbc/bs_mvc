@@ -14,8 +14,8 @@ class ControllerMain extends \application\core\Controller
 		$this->view->generate('ViewMain.php', 'ViewTemplate.php',$data);
 	}
 
-    public function actionTimeTables(){
-        $data = $this->model->timeTables();
+    public function actionTimetables(){
+        $data = $this->model->timetables();
         echo json_encode($data);
     }
     public function actionLevelStart(){
@@ -44,6 +44,14 @@ class ControllerMain extends \application\core\Controller
     }
     public function actionAddStudent(){
         $data = $this->model->addStudent();
+        echo json_encode($data);
+    }
+    public function actionIntensiveLevelStart(){
+        $data = $this->model->intensiveLevelStart();
+        echo json_encode($data);
+    }
+    public function actionStudentStartStop(){
+        $data = $this->model->studentStartStop();
         echo json_encode($data);
     }
 }

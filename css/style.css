@@ -129,9 +129,10 @@ img.ui-datepicker-trigger {margin: 0px 5px 0px 5px; }
 .removePersonFromCombo button {float: right; display: block;margin: 0px 0px 20px 20px; color: red;cursor:pointer;}
 .reason_set{margin-left:10px;color:red;}
 cite{ font-style: normal; color: red; }
-button.change_start_date {
-    margin-right: 10px;
-}
+button.change_start_date { margin-right: 10px; }
+.combinations{float:left;}
+.combinationsTitle{text-align: left;margin-left:20px;}
+#IntensiveCheckIn { width: 14px; float: left !important; }
 
 
 

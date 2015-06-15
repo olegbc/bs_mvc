@@ -39,9 +39,11 @@ class ModelAttendance extends \application\core\Model
         $timetable = $_POST["timetable"];
         $level_start = $_POST["level_start"];
 
-
         $students = $this->getPersonIdStartStop($teacher,$timetable,$level_start);
+//        return $students;
         if(count($students) != 0){
+            $arr['paymentExists'] = 0;
+            $arr['attendenceExists'] = 0;
             for ($i=0; $i <count($students); $i++) {
                 $id=$students[$i]['id_person'];
                 $arr['id'][]=$students[$i]['id_person'];
@@ -51,20 +53,38 @@ class ModelAttendance extends \application\core\Model
                 $arr['personStop'][]=$students[$i]['person_stop'];
                 $data=$this->getNumPayedNumReserved($id,$teacher,$timetable,$level_start);
                 $arr['numPayed'][]=$data['num_payed'];
+                if($data['num_payed'] > 0){$arr['paymentExists'] = 1;}
                 $arr['numReserved'][]=$data['num_reserved'];
                 $data=$this->getAttenedDates($id,$teacher,$timetable,$level_start);
                 $arr['attenedDates'][]=$data;
+                if(count($data) > 0){$arr['attendenceExists'] = 1;}
                 $arr['frozenDates'][]=$this->getFrozenDates($id,$teacher,$timetable,$level_start);
             }
             $arr['dates']=$this->getCombinationDates($teacher,$timetable,$level_start);
-            $arr['status']=$this->getCombinationStatus($teacher,$timetable,$level_start);
+            $arr['archive']=$this->getIsItAnArchiveCombination($teacher,$timetable,$level_start);
             return $arr;
         }else{return false;}
 //        if(!empty($arr)){return $arr;}else{return;}
     }
     public function buildingBlocks(){
         $data=$this->getAllCombinationsExistedFromLevels();
-        return $data;
+        $mainData = $data;
+        foreach($data as $key=>$value){
+            $payment=$this->getPayment($value['teacher'],$value['timetable'],$value['sd_1']);
+            $attendance=$this->getAttendance($value['teacher'],$value['timetable'],$value['sd_1']);
+//            $mainData[$key]['attendance'] = $attendance;
+            $mainData[$key]['paymentExists'] = 0;
+            $mainData[$key]['attendanceExists'] = 0;
+            foreach($payment as $k=>$v){
+//                $mainData[$key]['payment222'] = $value['num_payed'];
+                if($v['num_payed'] >0){$mainData[$key]['paymentExists'] = 1;}
+            }
+            foreach($attendance as $k=>$v){
+                if(count($v['date_of_visit']) > 0){$mainData[$key]['attendanceExists'] = 1;}
+            }
+//            $mainData[$key]['attendance222'] = $mainData[$key]['attendanceExists'];
+        }
+        return $mainData;
     }
     public function deleteAttenedDateFromAttendanceTable(){
         $id = $_POST["id"];
@@ -262,11 +282,18 @@ class ModelAttendance extends \application\core\Model
 
         $this->setDeleteCombination($teacher,$timetable,$level_start);
     }
+    public function toArchive(){
+        $teacher=$_POST['teacher'];
+        $timetable=$_POST['timetable'];
+        $level_start=$_POST['level_start'];
+
+        $this->setUpdateArchive($teacher,$timetable,$level_start);
+    }
 
     /////////////////////////////////////////////////////////   GETTERS/SETTERS   /////////////////////////////////////////////////////////
     public function getAllCombinations($teacher,$timetable,$level_start){
         $db = $this->db;
-        $sql = "SELECT id,level,teacher,timetable,sd_1,sd_2,sd_3,sd_4,sd_5,sd_6,sd_7,sd_8,sd_9,sd_10,sd_11,sd_12,sd_13,sd_14,sd_15,sd_16,sd_17,sd_18,sd_19,sd_20,sd_21,status FROM `levels` WHERE `sd_1`='".$level_start."' AND `teacher`='".$teacher."' AND `timetable`='".$timetable."'";
+        $sql = "SELECT id,level,teacher,timetable,sd_1,sd_2,sd_3,sd_4,sd_5,sd_6,sd_7,sd_8,sd_9,sd_10,sd_11,sd_12,sd_13,sd_14,sd_15,sd_16,sd_17,sd_18,sd_19,sd_20,sd_21,archive,intensive FROM `levels` WHERE `sd_1`='".$level_start."' AND `teacher`='".$teacher."' AND `timetable`='".$timetable."'";
         $data = $db->query($sql);
         $data = $data->fetchAll($db::FETCH_ASSOC);
         if(isset($data[0])){return $data[0];}else{return false;}
@@ -309,9 +336,9 @@ class ModelAttendance extends \application\core\Model
         $everyLessonDate = $everyLessonDate->fetchAll($db::FETCH_NUM);
         if(!empty($everyLessonDate[0])){return $everyLessonDate[0];}else{return false;}
     }
-    public function getCombinationStatus($teacher,$timetable,$level_start){
+    public function getIsItAnArchiveCombination($teacher,$timetable,$level_start){
         $db = $this->db;
-        $sql = "SELECT `status` FROM `levels` WHERE `teacher`='".$teacher."' AND `sd_1`='".$level_start."' AND `timetable`='".$timetable."'";
+        $sql = "SELECT `archive` FROM `levels` WHERE `teacher`='".$teacher."' AND `sd_1`='".$level_start."' AND `timetable`='".$timetable."'";
         $everyLessonDate = $db->query($sql);
         $everyLessonDate = $everyLessonDate->fetchAll($db::FETCH_NUM);
         return $everyLessonDate[0];
@@ -340,7 +367,7 @@ class ModelAttendance extends \application\core\Model
     }
     public function getAllCombinationsExistedFromLevels(){
         $db = $this->db;
-        $sql = "SELECT `teacher`, `timetable`, `sd_1`,`level`,`status` FROM `levels` ORDER BY `teacher` ";
+        $sql = "SELECT `teacher`, `timetable`, `sd_1`,`level`,`archive`,`intensive` FROM `levels` ORDER BY `teacher` ";
         $data = $db->query($sql);
         $data = $data->fetchAll($db::FETCH_ASSOC);
         return $data;
@@ -366,6 +393,37 @@ class ModelAttendance extends \application\core\Model
         $data = $data->fetchAll($db::FETCH_COLUMN);
         return $data;
     }
+    public function getDefaulCostOfOneLesson()
+    {
+        $db = $this->db;
+        $sql = "SELECT `one lesson default` FROM `constants`";
+        $data = $db->query($sql);
+        $data = $data->fetchAll($db::FETCH_ASSOC);
+        if (isset($data[0]['one lesson default'])) {
+            $defaulCostOfOneLesson = $data[0]['one lesson default'];
+        }
+        return $defaulCostOfOneLesson;
+    }
+    public function getCostOfOneLessonWithDiscount($discount,$defaulCostOfOneLesson){
+        $CostOfOneLessonWithDiscount = $defaulCostOfOneLesson - round(($defaulCostOfOneLesson*($discount*0.01)),2);
+        $arr['CostOfOneLessonWithDiscount'] = $CostOfOneLessonWithDiscount;
+        return $CostOfOneLessonWithDiscount;
+    }
+    public function getAttendance($teacher,$timetable,$level_start){
+        $db = $this->db;
+        $sql = "SELECT `date_of_visit` FROM `attendance` WHERE `teacher`='".$teacher."' AND `timetable`='".$timetable."' AND `level_start`='".$level_start."'";
+        $data = $db->query($sql);
+        $data = $data->fetchAll($db::FETCH_ASSOC);
+        return $data;
+    }
+    public function getPayment($teacher,$timetable,$level_start){
+        $db = $this->db;
+        $sql = "SELECT `num_payed` FROM `payed_lessons` WHERE `teacher`='".$teacher."' AND `timetable`='".$timetable."' AND `level_start`='".$level_start."'";
+        $data = $db->query($sql);
+        $data = $data->fetchAll($db::FETCH_ASSOC);
+        return $data;
+    }
+
     public function setUpdatePersonStartEqualCalculatedLevelStop($calculatedLevelStop,$teacher,$timetable,$level_start,$id_person){
 //        return $calculatedLevelStop;
         $DayOfCalculatedLevelStop = date("Y-m-d",$calculatedLevelStop);
@@ -387,23 +445,6 @@ class ModelAttendance extends \application\core\Model
         return $data;
 
     }
-    public function getDefaulCostOfOneLesson()
-    {
-        $db = $this->db;
-        $sql = "SELECT `one lesson default` FROM `constants`";
-        $data = $db->query($sql);
-        $data = $data->fetchAll($db::FETCH_ASSOC);
-        if (isset($data[0]['one lesson default'])) {
-            $defaulCostOfOneLesson = $data[0]['one lesson default'];
-        }
-        return $defaulCostOfOneLesson;
-    }
-    public function getCostOfOneLessonWithDiscount($discount,$defaulCostOfOneLesson){
-        $CostOfOneLessonWithDiscount = $defaulCostOfOneLesson - round(($defaulCostOfOneLesson*($discount*0.01)),2);
-        $arr['CostOfOneLessonWithDiscount'] = $CostOfOneLessonWithDiscount;
-        return $CostOfOneLessonWithDiscount;
-    }
-
     public function setInsertFromAttendanceTable($id,$attenedDate,$teacher,$timetable,$level_start){
         $db = $this->db;
         $sql = "INSERT INTO `attendance` (`date_of_visit`,`id_visit`,`teacher`,`timetable`,`level_start`) VALUES(:date_of_visit,:id_visit,:teacher,:timetable,:level_start)";
@@ -723,6 +764,24 @@ class ModelAttendance extends \application\core\Model
 
         $stmt->bindParam(':i', $i, \PDO::PARAM_INT);
         $stmt->bindParam(':newDatesOfCombination', $newDatesOfCombination, \PDO::PARAM_STR);
+        $stmt->bindParam(':teacher', $teacher, \PDO::PARAM_STR);
+        $stmt->bindParam(':timetable', $timetable, \PDO::PARAM_STR);
+        $stmt->bindParam(':level_start', $level_start, \PDO::PARAM_STR);
+        $stmt->execute();
+
+        $data['errorCode'] = $stmt->errorCode();
+        $data['rowCount'] = $stmt->rowCount();
+        $data['state'] = 'update';
+        return $data;
+
+    }
+    public function setUpdateArchive($teacher,$timetable,$level_start){
+        $db = $this->db;
+        $archiveTrue = 1;
+        $sql="UPDATE `levels` SET `archive`=:archiveTrue WHERE `teacher`=:teacher AND `timetable`=:timetable AND `sd_1`=:level_start";
+        $stmt = $db->prepare($sql);
+
+        $stmt->bindParam(':archiveTrue', $archiveTrue, \PDO::PARAM_INT);
         $stmt->bindParam(':teacher', $teacher, \PDO::PARAM_STR);
         $stmt->bindParam(':timetable', $timetable, \PDO::PARAM_STR);
         $stmt->bindParam(':level_start', $level_start, \PDO::PARAM_STR);

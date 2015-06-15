@@ -55,4 +55,14 @@ class ControllerAttendance extends \application\core\Controller
         $data = $this->model->removeCombination();
         echo json_encode($data);
     }
+    public function actionIsTodayWithinCombinationDates()
+    {
+        $data = $this->model->isTodayWithinCombinationDates();
+        echo json_encode($data);
+    }
+    public function actionToArchive()
+    {
+        $data = $this->model->toArchive();
+        echo json_encode($data);
+    }
 }

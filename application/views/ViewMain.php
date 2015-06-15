@@ -43,6 +43,7 @@
     <form name="level_person_form" action="javascript:void(null);" method="post" onsubmit="createCombinationOrUpdateStartStopDates()" id="level_person_form">
         <div class="item"><label for="id_person">ID:</label> <input id="id_person" class="add_form_input" type="text" name="id_person" readonly></div>
         <div class="item"><label for="fio_person">ФИО:</label> <input id="fio_person" class="add_form_input" type="text" name="fio_person" readonly></div>
+        <div class="item"><label for="fio_person">Интенсив:</label> <input id="IntensiveCheckIn" class="add_form_input" type="checkbox" name="IntensiveCheckIn"></div>
         <div class="item teacher_soch"><label for="teacher">Учитель:</label>
             <select name="teacher" id="teacher" class="add_form_select" onchange="get_timetable(this.value)">
                 <option value="choose_teacher" selected>Выберите учителя</option>

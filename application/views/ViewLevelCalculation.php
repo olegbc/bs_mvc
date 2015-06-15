@@ -4,6 +4,7 @@
         <input type="text" name="level_choose" id="level_choose"  /><label for="level_choose" >Уровень*</label><Br>
         <input type="text" name="teacher_choose" id="teacher_choose"  /><label for="teacher_choose" >Преподаватель*</label><Br>
         <input type="text" name="timetable_choose" id="timetable_choose"  /><label for="timetable_choose" >Расписание*</label><Br>
+        <input type="checkbox" name="intensive_choose" id="intensive_choose" /><label for="timetable_choose" >Интенсив</label><Br>
         <input type="submit" />
     </form>
 </div>
