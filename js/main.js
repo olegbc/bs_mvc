@@ -127,13 +127,12 @@ $(document).ready(function(){
 		$('.level_person_form').hide();
 		});
 
-	$('.btn_add').click(
-		function (){
-			$('.add_form').show();
-			$('.back_gray').show();
-			$("#add_form")[0].reset();
-		}
-	);
+	$('.btn_add').click(function(){
+        $('.add_form').show();
+        $('.back_gray').show();
+        $("#add_form")[0].reset();
+	});
+
 });
 /*------------------- /ready -----------------*/
 
@@ -523,7 +522,7 @@ function building_blocks(teacher_now,timetable_now,level_start_now){
 			async: false,
 			url: './Attendance/BuildingBlocks.php',
 			dataType: 'json',
-			success: function(data) {
+			success: function(data){
                 //console.log(data);
                 var dayNow = new Date();
 				for(var i in data) {
@@ -548,7 +547,7 @@ function building_blocks(teacher_now,timetable_now,level_start_now){
                             $('.future_combinations').append('<div class="brick"><div class="remove_combination remove_combination_' + i + '"><button class="btn_remove_combination" onclick="remove_combination(' + teacherQuoted + ',' + timetableQuoted + ',' + levelStartQuoted + ')" disabled hidden >x</button></div><input class="brick_input" type="text" name="teacher_choose" id="teacher_choose_' + i + '" value="'+teacher+'" disabled /><input class="brick_input" type="text" name="timetable_choose" id="timetable_choose_' + i + '" value="'+timetable+'" disabled /><input class="brick_input" type="text" name="level_start_choose" id="level_start_choose_' + i + '" value="'+level_start+'" disabled /><input class="brick_input" type="text" name="level_choose" id="level_choose_' + i + '"  value="'+level+'" disabled /></div>');
                         }else{
                             if(intensive){
-                                $('.peresent_combinations').append('<div class="brick"><div class="remove_combination remove_combination_' + i + '"><button class="btn_remove_combination" onclick="remove_combination(' + teacherQuoted + ',' + timetableQuoted + ',' + levelStartQuoted + ')" disabled hidden >x</button></div><input class="brick_input" type="text" name="teacher_choose" id="teacher_choose_' + i + '" value="' + teacher + '" disabled /><input class="brick_input" type="text" name="timetable_choose" id="timetable_choose_' + i + '" value="' + timetable + '" disabled hidden /><input class="brick_input" type="text" name="level_start_choose" id="level_start_choose_' + i + '" value="' + level_start + '" disabled /><input class="brick_input" type="text" name="level_choose" id="level_choose_' + i + '"  value="' + level + '" disabled hidden /><input class="brick_input" type="text" name="intensive" id="intensive_choose_' + i + '"  value="intensive" disabled /><input class="brick_input" type="text" name="choose" id="choose" value="" disabled /></div>');
+                                $('.peresent_combinations').append('<div class="brick"><div class="remove_combination remove_combination_' + i + '"><button class="btn_remove_combination" onclick="remove_combination(' + teacherQuoted + ',' + timetableQuoted + ',' + levelStartQuoted + ')" disabled hidden >x</button></div><input class="brick_input" type="text" name="teacher_choose" id="teacher_choose_' + i + '" value="' + teacher + '" disabled /><input class="brick_input" type="text" name="timetable_choose" id="timetable_choose_' + i + '" value="' + timetable + '" disabled hidden /><input class="brick_input" type="text" name="level_start_choose" id="level_start_choose_' + i + '" value="' + level_start + '" disabled /><input class="brick_input" type="text" name="level_choose" id="level_choose_' + i + '"  value="' + level + '" disabled hidden /><input class="brick_input" type="text" name="intensive" id="intensive_choose intensive_choose_' + i + '"  value="intensive" disabled /><input class="brick_input" type="text" name="choose" id="choose" value="" disabled /></div>');
                             }else{
                                 $('.peresent_combinations').append('<div class="brick"><div class="remove_combination remove_combination_' + i + '"><button class="btn_remove_combination" onclick="remove_combination(' + teacherQuoted + ',' + timetableQuoted + ',' + levelStartQuoted + ')" disabled hidden >x</button></div><input class="brick_input" type="text" name="teacher_choose" id="teacher_choose_' + i + '" value="' + teacher + '" disabled /><input class="brick_input" type="text" name="timetable_choose" id="timetable_choose_' + i + '" value="' + timetable + '" disabled /><input class="brick_input" type="text" name="level_start_choose" id="level_start_choose_' + i + '" value="' + level_start + '" disabled /><input class="brick_input" type="text" name="level_choose" id="level_choose_' + i + '"  value="' + level + '" disabled /></div>');
                             }
@@ -642,6 +641,7 @@ function building_blocks(teacher_now,timetable_now,level_start_now){
 				alert('Возникла ошибка: ' + xhr.responseCode);
 			}
 		});
+
 		$('.combination_all .past_combinations .brick').click(function(){
 			$('.brick').css('borderColor','#000');
 			var teacher_choose = $(this).children("input[name='teacher_choose']").val();
@@ -656,15 +656,27 @@ function building_blocks(teacher_now,timetable_now,level_start_now){
 			//$('.btn_send_to_archive').prop('disabled',true);
 		});
 		$('.combination_all .peresent_combinations .brick').click(function(){
-			$('.brick').css('borderColor','#000');
-            var teacher_choose = $(this).children("input[name='teacher_choose']").val();
-            var timetable_choose = $(this).children("input[name='timetable_choose']").val();
-            var level_start_choose = $(this).children("input[name='level_start_choose']").val();
-            $('#lgtt_form').children("input[name='teacher_choose']").val(teacher_choose);
-            $('#lgtt_form').children("input[name='timetable_choose']").val(timetable_choose);
-            $('#lgtt_form').children("input[name='level_start_choose']").val(level_start_choose);
-            lgtt_match_fn(teacher_choose,timetable_choose,level_start_choose);
-            $(this).css('borderColor','rgb(0, 0, 255)');
+            if($(this).children("input[name='intensive']").val() == 'intensive'){
+                $('.brick').css('borderColor', '#000');
+                var teacher_choose = $(this).children("input[name='teacher_choose']").val();
+                var level_start_choose = $(this).children("input[name='level_start_choose']").val();
+                var intensive = 1;
+                $('#lgtt_form').children("input[name='teacher_choose']").val(teacher_choose);
+                $('#lgtt_form').children("input[name='level_start_choose']").val(level_start_choose);
+                $('#lgtt_form').children("input[name='intensive']").val(intensive);
+                lgtt_match_fn(teacher_choose,undefined, level_start_choose, intensive);
+                $(this).css('borderColor', 'rgb(0, 0, 255)');
+            }else{
+                $('.brick').css('borderColor', '#000');
+                var teacher_choose = $(this).children("input[name='teacher_choose']").val();
+                var timetable_choose = $(this).children("input[name='timetable_choose']").val();
+                var level_start_choose = $(this).children("input[name='level_start_choose']").val();
+                $('#lgtt_form').children("input[name='teacher_choose']").val(teacher_choose);
+                $('#lgtt_form').children("input[name='timetable_choose']").val(timetable_choose);
+                $('#lgtt_form').children("input[name='level_start_choose']").val(level_start_choose);
+                lgtt_match_fn(teacher_choose, timetable_choose, level_start_choose);
+                $(this).css('borderColor', 'rgb(0, 0, 255)');
+            }
 		});
 		$('.combination_all .future_combinations .brick').click(function(){
 			$('.brick').css('borderColor','#000');
@@ -686,32 +698,34 @@ function building_blocks(teacher_now,timetable_now,level_start_now){
 		});
 }
 
-function lgtt_match_fn(teacher,timetable,level_start){
-    //console.log(teacher,timetable,level_start);
-    //return;
-		// построение блоков сочетаний
-		var msg;
-		if(teacher!=undefined && timetable!=undefined && level_start!=undefined){
-			msg = {teacher:teacher,timetable:timetable,level_start:level_start};
-		}else{
-			msg = $('#lgtt_form').serialize();
-		}
-		var level_date = [] ;
-        var levelStop = '';
-			
-			//----- Построение шапки таблицы ;
-		$('#attendance_table').empty();
-		$('#attendance_table').html('<tbody><tr id="th_line"><th class="attendance_name_th" id="name_th"><div id="attendance_table_name">Имя</div></th></tr></tbody>');
+function lgtt_match_fn(teacher,timetable,level_start,intensive){
+    intensive == undefined ? false : intensive;
+    timetable == undefined ? false : timetable;
+
+    var msg;
+    if(!intensive && teacher!=undefined && timetable!=undefined && level_start!=undefined){
+        msg = {teacher:teacher,timetable:timetable,level_start:level_start};
+    }else if(intensive && teacher!=undefined && level_start!=undefined){
+        msg = {teacher:teacher,level_start:level_start,intensive:intensive};
+    }else{
+        msg = $('#lgtt_form').serialize();
+    }
+
+    var level_date = [] ;
+    var levelStop = '';
+
+        //----- Построение шапки таблицы ;
+	$('#attendance_table').empty();
+	$('#attendance_table').html('<tbody><tr id="th_line"><th class="attendance_name_th" id="name_th"><div id="attendance_table_name">Имя</div></th></tr></tbody>');
 		
-			$.ajax({
+    $.ajax({
 				type: 'POST',
 				async: false,
 				url: './Attendance/CombinationDatesFittedToTimetable.php',
 				dataType: 'json',
 				data: msg,
 				success: function(data) {
-                    //console.log(data);
-                    if(parseInt(data['intensive'])){
+                    if(intensive){
                         levelStop = data['sd_10'];
                         for (var g = 10; g > 0; g--) {
                             $('#name_th').after("<th class='attendance_th'><div class='rotateText'>" + data['sd_' + g] + "</div></th>");
@@ -732,7 +746,7 @@ function lgtt_match_fn(teacher,timetable,level_start){
     //return;
 			//----- /Построение шапки таблицы
 
-
+    //return;
 
 			//----- Фамилии даты
 			$.ajax({
@@ -742,7 +756,8 @@ function lgtt_match_fn(teacher,timetable,level_start){
 				dataType: 'json',
 				data: msg,
 				success: function(data) {
-                    //console.log(data);
+                    console.log(data);
+                    //return;
                     var teacherQuoted = "'" + teacher + "'";
                     var timetableQuoted = "'" + timetable + "'";
                     var level_startQuoted = "'" + level_start + "'";
@@ -1073,15 +1088,15 @@ function lgtt_match_fn(teacher,timetable,level_start){
     }
 
 			/*----- /Фамилии даты -------*/
-			
+
 	//	}
 }
 
 function level_culc_fn(){
 	//var msg = $('#level_culc').serialize();
-	if($('#level_culc input#teacher_choose')[0]['value'] != "" && 
-		$('#level_culc input#timetable_choose')[0]['value'] != "" && 
-		$('#level_culc input#level_start_date')[0]['value'] != "" && 
+	if($('#level_culc input#teacher_choose')[0]['value'] != "" &&
+		$('#level_culc input#timetable_choose')[0]['value'] != "" &&
+		$('#level_culc input#level_start_date')[0]['value'] != "" &&
 		$('#level_culc input#level_choose')[0]['value'] != "" ){
 		var teacher = $('#level_culc input#teacher_choose')[0]['value'];
 		var timetable = $('#level_culc input#timetable_choose')[0]['value'];
@@ -1203,49 +1218,49 @@ function datepicker_fn(){
 var f = true;
 function diag(e,all_teachers,color_arr){
 	arrayOfDataMulti = e;
-	
+
 	var first = f; // whether it first time legend_all clicked
-	
+
 	build(false,first,all_teachers,color_arr); // first time, we do need inscriptions and legend
 	build2(all_teachers,color_arr);
 	init(); // initialization .clickable and legend_all
-	
-	function init(){	
+
+	function init(){
 		$('.clickable').click(function(){
-			var r = $(this).attr('id'); 
+			var r = $(this).attr('id');
 			var t;
 			t = $(this).attr('id').substr(-1);
-			
+
 			var legend_arr  = new Array();
-			
+
 			for(i in arrayOfDataMulti){
 				legend_arr[i]  = new Array();
 				legend_arr[i][0]  = new Array();
 				legend_arr[i][0][0]  = new Array();
-				
+
 				legend_arr[i][0][0] = arrayOfDataMulti[i][0][t];
 				legend_arr[i][1] = arrayOfDataMulti[i][1];
-			} 
+			}
 			$("#stackedGraph_multi").empty();
 			$("#stackedGraph_multi").attr('style','');
 			$("#stackedGraph_multi").prev('h3').remove();
-			
+
 			build_single(t,legend_arr,all_teachers,color_arr);
 			init();
 		});
-	
+
 		$('#legend_all').click(function(){
 			$("#graphHolder").remove();
 			$('<div id="stackedGraph_multi"></div>').prependTo($("#stackedGraph_wrapper"));
-			
-			build(true,first,all_teachers,color_arr); // build(all,times)	
+
+			build(true,first,all_teachers,color_arr); // build(all,times)
 			first = false;
-			init();	
-			
+			init();
+
 		});
 	}
 	f = false;
-}		
+}
 function build(e,p,all_teachers,color_arr){
 	$("#graphHolder").remove();
 	$("#stackedGraph_multi").remove();
@@ -1285,7 +1300,7 @@ function build_single(e,r,all_teachers,color_arr){
 	//	postfix: ' учеников',
 		title: '<h3>Количество учеников  <br /><small>по неделям у каждого преподавателя</small></h3>'
 	});
-} 
+}
 function build2(all_teachers,color_arr){
 	$("#graphHolder_sum").remove();
 	$("#stackedGraph").remove();
@@ -1321,7 +1336,7 @@ function teacher_calculate(){
 		},
 		error: function(xhr, str){
 			alert('Возникла ошибка: ' + xhr.responseCode);
-		}   
+		}
 	});
 }
 
@@ -1366,7 +1381,7 @@ function teacher_calculate(){
 // 		},
 // 		error: function(xhr, str){
 // 			alert('Возникла ошибка: ' + xhr.responseCode);
-// 		}   
+// 		}
 // 	});
 // }
 
@@ -1482,7 +1497,8 @@ function person_match(id){
 		dataType: 'json',
 		data: {id:id},
 		success: function(data) {
-
+            //console.log(data);
+            //return;
             $('#attendance_table').html(data);
 			name = data['name'];
 			$('#attendance_table').html("<div class='table_title'><h3>"+name+"</h3></div>");
@@ -1498,11 +1514,17 @@ function person_match(id){
                     var timetable = data['allCombinationsOfThisPerson'][i]['timetable'];
                     var level_start = data['allCombinationsOfThisPerson'][i]['level_start'];
                     var level = data['allCombinationsOfThisPerson'][i]['level'];
+                    var intensive = parseInt(data['allCombinationsOfThisPerson'][i]['intensive']);
                     var level_date = [];
                     var person_start;
                     var person_stop;
                     var numberOfStartLesson;
-                    $('#attendance_table').append("<div class='xxx'><p id='stack_" + i + "'>" + teacher + "/" + timetable + "/" + level_start + "/" + level + "</p></div>");
+                    if(intensive){
+                        $('#attendance_table').append("<div class='xxx'><p id='stack_" + i + "'>" + teacher + "/" + level_start + "/intensive</p></div>");
+                    }else{
+                        $('#attendance_table').append("<div class='xxx'><p id='stack_" + i + "'>" + teacher + "/" + timetable + "/" + level_start + "/" + level + "</p></div>");
+                    }
+
                     $('#attendance_table').append("<div class='main_form  main_form_" + i + "'><table width='50%'' class='attendance_table default_table' id='attendance_table_" + i + "'></table></div>")
                     //----- Построение шапки таблицы ;
                     $("#attendance_table_" + i).empty();
@@ -1517,19 +1539,23 @@ function person_match(id){
 						async: false,
                         url: './Person/CombinationDatesFittedToTimetable',
 						dataType: 'json',
-						data: {teacher:teacher,timetable:timetable,level_start:level_start},
-						success: function(data) {
-							for(var g=21;g>0;g--){
-								$('#name_th_'+i).after("<th class='attendance_th'><div class='rotateText'>"+data['sd_'+g]+"</div></th>");
-								level_date[g-1]=data['sd_'+g];
-							}
+						data: {teacher:teacher,timetable:timetable,level_start:level_start,intensive:intensive},
+						success: function(data){
+                            //console.log(data);
+                            //return;
+                            var numberOfStartLesson = 21;
+                            if(intensive){numberOfStartLesson = 10;}
+                            for (var g = numberOfStartLesson; g > 0; g--) {
+                                $('#name_th_' + i).after("<th class='attendance_th'><div class='rotateText'>" + data['sd_' + g] + "</div></th>");
+                                level_date[g - 1] = data['sd_' + g];
+                            }
+
 						},
 						error: function(xhr, str){
 							alert('Возникла ошибка: ' + xhr.responseCode);
 						}
 					});
 					//----- /Построение шапки таблицы
-
 					//----- Фамилии даты
 
 					$.ajax({
@@ -1537,7 +1563,7 @@ function person_match(id){
 						async: false,
 						url: './Person/StudentNameAndDates.php',
 						dataType: 'json',
-						data: {id:id,teacher:teacher,timetable:timetable,level_start:level_start},
+						data: {id:id,teacher:teacher,timetable:timetable,level_start:level_start,intensive:intensive},
 						success: function(data){
                             person_start = data['person_start'];
                             person_stop = data['person_stop'];
@@ -1553,99 +1579,102 @@ function person_match(id){
 							var flag = 0;
                             $('#attendance_table_'+i+' #tr'+y).after("<tr id='tr"+(y+1)+"'></tr>");
                             $('#attendance_table_'+i+' #tr'+y).html("<td id='td"+y+"_"+w+"'>"+data['name']+"</td>");
-                            for(var q=0;q<21;q++){
-                                color = 0;
-                                color_freeze = 0;
-                                start_date = 0;
-                                stop_date = 0;
-                                before_person_start = 1;
-                                after_person_stop = 0;
-                                for(var c in data['datesOfVisit']){
-                                    if(level_date[q]  == data['datesOfVisit'][c]){
-                                        match = data['datesOfVisit'][c];
-                                        color = 1;
-                                    }else{
-                                        match = level_date[q];
-                                    }	// ДАТЫ ПОСЕЩЕНИЙ (совпадение с датами сочетания)
-                                    if(level_date[q] < data['person_start']){
+                            var numberOfLessons = 21;
+                            if(intensive){numberOfLessons = 10;}
+                            for (var q = 0; q < numberOfLessons; q++) {
+                                    color = 0;
+                                    color_freeze = 0;
+                                    start_date = 0;
+                                    stop_date = 0;
+                                    before_person_start = 1;
+                                    after_person_stop = 0;
+                                    for (var c in data['datesOfVisit']) {
+                                        if (level_date[q] == data['datesOfVisit'][c]) {
+                                            match = data['datesOfVisit'][c];
+                                            color = 1;
+                                        } else {
+                                            match = level_date[q];
+                                        }	// ДАТЫ ПОСЕЩЕНИЙ (совпадение с датами сочетания)
+                                        if (level_date[q] < data['person_start']) {
                                             before_person_start = 1;
-                                    }else if(level_date[q] >= data['person_start']){
+                                        } else if (level_date[q] >= data['person_start']) {
                                             before_person_start = 0;
-                                    }	// ОПРЕДИЛЕНИЕ ДО/ПОСЛЕ ДАТЫ СТАРТА ПЕРСОНЫ НА ДАННОМ СОЧЕТАНИИ
-                                    if(level_date[q] > data['person_stop']){
-                                        after_person_stop = 1;
-                                    }else if(level_date[q] <= data['person_stop']){
-                                        after_person_stop = 0;
-                                    }	// ОПРЕДИЛЕНИЕ ДО/ПОСЛЕ ДАТЫ СТОП ПЕРСОНЫ НА ДАННОМ СОЧЕТАНИИ
-                                }
-                                for(var g in freeze_dates_arr[i]){
-                                    if(level_date[q]  == freeze_dates_arr[i][g]){
-                                        color_freeze = 1;
+                                        }	// ОПРЕДИЛЕНИЕ ДО/ПОСЛЕ ДАТЫ СТАРТА ПЕРСОНЫ НА ДАННОМ СОЧЕТАНИИ
+                                        if (level_date[q] > data['person_stop']) {
+                                            after_person_stop = 1;
+                                        } else if (level_date[q] <= data['person_stop']) {
+                                            after_person_stop = 0;
+                                        }	// ОПРЕДИЛЕНИЕ ДО/ПОСЛЕ ДАТЫ СТОП ПЕРСОНЫ НА ДАННОМ СОЧЕТАНИИ
                                     }
+                                    for (var g in freeze_dates_arr[i]) {
+                                        if (level_date[q] == freeze_dates_arr[i][g]) {
+                                            color_freeze = 1;
+                                        }
+                                    }
+
+                                    if (level_date[q] == data['person_start']) {
+                                        start_date = 1;
+                                    }
+                                    if (level_date[q] == data['person_stop']) {
+                                        stop_date = 1;
+                                    }	// ОПРЕДИЛЕНИЕ ДАТЫ СТАРТ/СТОП ПЕРСОНЫ НА ДАННОМ СОЧЕТАНИИ
+                                    if (color == 1 && start_date == 0 && stop_date === 0 && before_person_start == 1) {
+                                        $('#attendance_table_' + i + ' #td' + y + '_' + w).after("<td id='td" + y + "_" + (w + 1) + "' class='payment_mark  before_person_start_mark color'>" + match + "</td>");
+                                        //	before_person_start_mark
+                                    } else if (color == 1 && start_date == 0 && stop_date === 0 && before_person_start == 0) {
+                                        $('#attendance_table_' + i + ' #td' + y + '_' + w).after("<td  id='td" + y + "_" + (w + 1) + "' class='payment_mark  color'>" + match + "</td>");
+                                    } else if (color == 1 && start_date == 0 && stop_date === 0 && before_person_start == 0 && after_person_stop == 1) {
+                                        $('#attendance_table_' + i + ' #td' + y + '_' + w).after("<td  id='td" + y + "_" + (w + 1) + "' class='payment_mark  before_person_start_mark color'>" + match + "</td>");
+                                        //	before_person_start_mark
+                                    } else if (color == 1 && start_date == 0 && stop_date === 0 && after_person_stop == 0) {
+                                        $('#attendance_table_' + i + ' #td' + y + '_' + w).after("<td  id='td" + y + "_" + (w + 1) + "' class='payment_mark  color'>" + match + "</td>");
+                                    } else if (color == 1 && start_date == 1) {
+                                        $('#attendance_table_' + i + ' #td' + y + '_' + w).after("<td  bordercolor='#0000FF' id='td" + y + "_" + (w + 1) + "' class='payment_mark  person_start_mark color'>" + match + "</td>");
+                                    }
+                                    // color_freeze
+                                    else if (color_freeze == 1 && start_date == 0 && stop_date === 0 && before_person_start == 1) {
+                                        $('#attendance_table_' + i + ' #td' + y + '_' + w).after("<td id='td" + y + "_" + (w + 1) + "' class='payment_mark  before_person_start_mark color_freeze'>" + match + "</td>");
+                                        //	before_person_start_mark
+                                    } else if (color_freeze == 1 && start_date == 0 && stop_date === 0 && before_person_start == 0) {
+                                        $('#attendance_table_' + i + ' #td' + y + '_' + w).after("<td  id='td" + y + "_" + (w + 1) + "' class='payment_mark  color_freeze'>" + match + "</td>");
+                                    } else if (color_freeze == 1 && start_date == 0 && stop_date === 0 && before_person_start == 0 && after_person_stop == 1) {
+                                        $('#attendance_table_' + i + ' #td' + y + '_' + w).after("<td  id='td" + y + "_" + (w + 1) + "' class='payment_mark  before_person_start_mark color_freeze'>" + match + "</td>");
+                                        //	before_person_start_mark
+                                    } else if (color_freeze == 1 && start_date == 0 && stop_date === 0 && after_person_stop == 0) {
+                                        $('#attendance_table_' + i + ' #td' + y + '_' + w).after("<td  id='td" + y + "_" + (w + 1) + "' class='payment_mark  color_freeze'>" + match + "</td>");
+                                    } else if (color_freeze == 1 && start_date == 1) {
+                                        $('#attendance_table_' + i + ' #td' + y + '_' + w).after("<td  bordercolor='#0000FF' id='td" + y + "_" + (w + 1) + "' class='payment_mark  person_start_mark color_freeze'>" + match + "</td>");
+                                    }
+                                    // /color_freeze
+
+                                    else if (color == 0 && start_date == 1) {
+                                        $('#attendance_table_' + i + ' #td' + y + '_' + w).after("<td id='td" + y + "_" + (w + 1) + "' class='payment_mark  person_start_mark'>" + match + "</td>");
+                                    } else if (color == 1 && stop_date == 1) {
+                                        // console.log(color, stop_date);
+                                        $('#attendance_table_' + i + ' #td' + y + '_' + w).after("<td  bordercolor='#0000FF' id='td" + y + "_" + (w + 1) + "' class='payment_mark  person_stop_mark color'>" + match + "</td>");
+                                    }
+                                    // color_freeze
+                                    else if (color_freeze == 1 && stop_date == 1) {
+                                        // console.log(color, stop_date);
+                                        $('#attendance_table_' + i + ' #td' + y + '_' + w).after("<td  bordercolor='#0000FF' id='td" + y + "_" + (w + 1) + "' class='payment_mark  person_stop_mark color_freeze'>" + match + "</td>");
+                                    }
+                                    // /color_freeze
+                                    else if (color == 0 && stop_date == 1) {
+                                        $('#attendance_table_' + i + ' #td' + y + '_' + w).after("<td id='td" + y + "_" + (w + 1) + "' class='payment_mark  person_stop_mark'>" + match + "</td>");
+                                    } else if (color == 0 && before_person_start == 1) {
+                                        $('#attendance_table_' + i + ' #td' + y + '_' + w).after("<td id='td" + y + "_" + (w + 1) + "' class='payment_mark  before_person_start_mark'>" + match + "</td>");
+                                        //	before_person_start_mark
+                                    } else if (color == 0 && after_person_stop == 0 && before_person_start == 0) {
+                                        $('#attendance_table_' + i + ' #td' + y + '_' + w).after("<td id='td" + y + "_" + (w + 1) + "' class='payment_mark '>" + match + "</td>");
+                                    } else if (color == 0 && after_person_stop == 1) {
+                                        $('#attendance_table_' + i + ' #td' + y + '_' + w).after("<td id='td" + y + "_" + (w + 1) + "' class='payment_mark  before_person_start_mark'>" + match + "</td>");
+                                        //	before_person_start_mark
+                                    } else if (color == 0 && after_person_stop == 0) {
+                                        $('#attendance_table_' + i + ' #td' + y + '_' + w).after("<td id='td" + y + "_" + (w + 1) + "' class='payment_mark '>" + match + "</td>");
+                                    }
+                                    w++;
                                 }
 
-                                if(level_date[q]  == data['person_start']){
-                                    start_date = 1;
-                                }
-                                if(level_date[q] == data['person_stop']){
-                                    stop_date = 1;
-                                }	// ОПРЕДИЛЕНИЕ ДАТЫ СТАРТ/СТОП ПЕРСОНЫ НА ДАННОМ СОЧЕТАНИИ
-                                if(color == 1 && start_date == 0 && stop_date === 0  && before_person_start == 1){
-                                    $('#attendance_table_'+i+' #td'+y+'_'+w).after("<td id='td"+y+"_"+(w+1)+"' class='payment_mark attendence_mark before_person_start_mark color'>"+match+"</td>");
-                                    //	before_person_start_mark
-                                }else if(color == 1 && start_date == 0 && stop_date === 0 && before_person_start == 0){
-                                    $('#attendance_table_'+i+' #td'+y+'_'+w).after("<td  id='td"+y+"_"+(w+1)+"' class='payment_mark attendence_mark color'>"+match+"</td>");
-                                }else if(color == 1 && start_date == 0  && stop_date === 0 && before_person_start == 0 && after_person_stop == 1){
-                                    $('#attendance_table_'+i+' #td'+y+'_'+w).after("<td  id='td"+y+"_"+(w+1)+"' class='payment_mark attendence_mark before_person_start_mark color'>"+match+"</td>");
-                                    //	before_person_start_mark
-                                }else if(color == 1 && start_date == 0 && stop_date === 0 && after_person_stop == 0){
-                                    $('#attendance_table_'+i+' #td'+y+'_'+w).after("<td  id='td"+y+"_"+(w+1)+"' class='payment_mark attendence_mark color'>"+match+"</td>");
-                                }else if(color == 1 && start_date == 1){
-                                    $('#attendance_table_'+i+' #td'+y+'_'+w).after("<td  bordercolor='#0000FF' id='td"+y+"_"+(w+1)+"' class='payment_mark attendence_mark person_start_mark color'>"+match+"</td>");
-                                }
-                                // color_freeze
-                                else if(color_freeze == 1 && start_date == 0 && stop_date === 0  && before_person_start == 1){
-                                    $('#attendance_table_'+i+' #td'+y+'_'+w).after("<td id='td"+y+"_"+(w+1)+"' class='payment_mark attendence_mark before_person_start_mark color_freeze'>"+match+"</td>");
-                                    //	before_person_start_mark
-                                }else if(color_freeze == 1 && start_date == 0 && stop_date === 0 && before_person_start == 0){
-                                    $('#attendance_table_'+i+' #td'+y+'_'+w).after("<td  id='td"+y+"_"+(w+1)+"' class='payment_mark attendence_mark color_freeze'>"+match+"</td>");
-                                }else if(color_freeze == 1 && start_date == 0  && stop_date === 0 && before_person_start == 0 && after_person_stop == 1){
-                                    $('#attendance_table_'+i+' #td'+y+'_'+w).after("<td  id='td"+y+"_"+(w+1)+"' class='payment_mark attendence_mark before_person_start_mark color_freeze'>"+match+"</td>");
-                                    //	before_person_start_mark
-                                }else if(color_freeze == 1 && start_date == 0 && stop_date === 0 && after_person_stop == 0){
-                                    $('#attendance_table_'+i+' #td'+y+'_'+w).after("<td  id='td"+y+"_"+(w+1)+"' class='payment_mark attendence_mark color_freeze'>"+match+"</td>");
-                                }else if(color_freeze == 1 && start_date == 1){
-                                    $('#attendance_table_'+i+' #td'+y+'_'+w).after("<td  bordercolor='#0000FF' id='td"+y+"_"+(w+1)+"' class='payment_mark attendence_mark person_start_mark color_freeze'>"+match+"</td>");
-                                }
-                                // /color_freeze
-
-                                else if(color == 0 && start_date == 1){
-                                    $('#attendance_table_'+i+' #td'+y+'_'+w).after("<td id='td"+y+"_"+(w+1)+"' class='payment_mark attendence_mark person_start_mark'>"+match+"</td>");
-                                }else if(color == 1 && stop_date == 1){
-                                    // console.log(color, stop_date);
-                                    $('#attendance_table_'+i+' #td'+y+'_'+w).after("<td  bordercolor='#0000FF' id='td"+y+"_"+(w+1)+"' class='payment_mark attendence_mark person_stop_mark color'>"+match+"</td>");
-                                }
-                                // color_freeze
-                                else if(color_freeze == 1 && stop_date == 1){
-                                    // console.log(color, stop_date);
-                                    $('#attendance_table_'+i+' #td'+y+'_'+w).after("<td  bordercolor='#0000FF' id='td"+y+"_"+(w+1)+"' class='payment_mark attendence_mark person_stop_mark color_freeze'>"+match+"</td>");
-                                }
-                                // /color_freeze
-                                else if(color == 0 && stop_date == 1){
-                                    $('#attendance_table_'+i+' #td'+y+'_'+w).after("<td id='td"+y+"_"+(w+1)+"' class='payment_mark attendence_mark person_stop_mark'>"+match+"</td>");
-                                }else if(color == 0 && before_person_start == 1){
-                                    $('#attendance_table_'+i+' #td'+y+'_'+w).after("<td id='td"+y+"_"+(w+1)+"' class='payment_mark attendence_mark before_person_start_mark'>"+match+"</td>");
-                                    //	before_person_start_mark
-                                }else if(color == 0 && after_person_stop == 0 && before_person_start == 0){
-                                    $('#attendance_table_'+i+' #td'+y+'_'+w).after("<td id='td"+y+"_"+(w+1)+"' class='payment_mark attendence_mark'>"+match+"</td>");
-                                }else if(color == 0 && after_person_stop == 1){
-                                    $('#attendance_table_'+i+' #td'+y+'_'+w).after("<td id='td"+y+"_"+(w+1)+"' class='payment_mark attendence_mark before_person_start_mark'>"+match+"</td>");
-                                    //	before_person_start_mark
-                                }else if(color == 0 && after_person_stop == 0){
-                                    $('#attendance_table_'+i+' #td'+y+'_'+w).after("<td id='td"+y+"_"+(w+1)+"' class='payment_mark attendence_mark'>"+match+"</td>");
-                                }
-                                w++;
-                            }
                             y++;
 						},
 						error: function(xhr, str){
@@ -1654,6 +1683,7 @@ function person_match(id){
 					});
                     markAllPayedDates();
                     checkForPayedLessonToManipulateWithBtnAddDiscountAbilities();
+
 				}
 				function markAllPayedDates(){
 					var person_start_arr =[];
@@ -1758,12 +1788,6 @@ function person_match(id){
 
 	if(location.pathname == "/bs_mvc/person"){
 		$('.payment_mark').not('.before_person_start_mark').not('.color_freeze').click(function(){
-			function getParameterByName(name) {
-				name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
-				var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
-				results = regex.exec(location.search);
-				return results == null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
-			}
 			var id = getParameterByName('id');
 			var pay_flag = 0;
 			var IfThisDatePayed = $(event.target).attr('class');
@@ -1776,18 +1800,32 @@ function person_match(id){
             var whatComboByNumber = whatCombo.split("_");
             var ComboNumber = whatComboByNumber[2];
             var Combo = $('#stack_'+ComboNumber).text().split('/');
+            //console.log(Combo);
             // console.log(stack);
 			// return false;
-			var teacher = Combo[0];
-			var timetable = Combo[1];
-			var level_start = Combo[2];
+            var intensive = 0;
+            var teacher = false;
+            var timetable = false;
+            var level_start = false;
+            //console.log(Combo);
+            if(Combo[2] == 'intensive'){
+                teacher = Combo[0];
+                level_start = Combo[1];
+                intensive = 1;
+            }else{
+                teacher = Combo[0];
+                timetable = Combo[1];
+                level_start = Combo[2];
+            }
+            //console.log(teacher,timetable,level_start,intensive,pay_flag);
 			if(pay_flag == 0){
 				var addOrRemove = 1; // добавляем занятие, отнимаем из баланса
 				$.ajax({
 					type:'POST',
 					url: './Person/AddOrRemovePayedDate',
-					data: {id:id,addOrRemove:addOrRemove,teacher:teacher,timetable:timetable,level_start:level_start},
+					data: {id:id,addOrRemove:addOrRemove,teacher:teacher,timetable:timetable,level_start:level_start,intensive:intensive},
 					success: function(data){
+                        //console.log(data);
 						person_match(id);
 					},
 					error:  function(xhr, str){
@@ -1799,7 +1837,7 @@ function person_match(id){
 				$.ajax({
 					type:'POST',
                     url: './Person/AddOrRemovePayedDate',
-					data: {id:id,addOrRemove:addOrRemove,teacher:teacher,timetable:timetable,level_start:level_start},
+					data: {id:id,addOrRemove:addOrRemove,teacher:teacher,timetable:timetable,level_start:level_start,intensive:intensive},
 					success: function(data){
 						person_match(id);
 					},
@@ -1810,6 +1848,13 @@ function person_match(id){
 			}
 		});
 	}
+}
+
+function getParameterByName(name) {
+    name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+    var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
+        results = regex.exec(location.search);
+    return results == null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
 }
 
 function freeze_match(id){
@@ -1865,7 +1910,7 @@ function freeze_match(id){
 
 
 
-					//----- Фамилии даты 
+					//----- Фамилии даты
 
 
 					//$.ajax({
@@ -2270,9 +2315,9 @@ function get_timetable(teacher){
                 $('.teacher_soch').after('<div class="item level_start_soch"><label for="level_start_sel">Дата старта уровня:</label><select name="level_start_sel" id="level_start_sel" class="add_form_select"  onchange="get_level(' + teacherQuoted + ',undefined,this.value,' + id_person + ')" ></select></div>');
                 //onchange="get_level_start(' + teacherQuoted + ',this.value)"
                 if(data.length > 0){
-                    $('#level_start_sel').append('<option value="choose_timetable">Выберите расисание</option>');
+                    $('#level_start_sel').append('<option value="choose_level_start">Выберите дату старта уровня</option>');
                 }else{
-                    $('#level_start_sel').append('<option value="choose_timetable">Нет интенсивов с данным преподавателем</option>');
+                    $('#level_start_sel').append('<option value="choose_level_start">Нет интенсивов с данным преподавателем</option>');
                 }
                 for (var i in data) {
                     $('#level_start_sel').append('<option value="' + data[i] + '">' + data[i] + '</option>');
@@ -2287,7 +2332,7 @@ function get_timetable(teacher){
 
 function get_level_start(teacher,timetable){
     timetable = typeof timetable !== 'undefined' ?  timetable : false;
-    console.log($('#IntensiveCheckIn').attr('checked'));
+    //console.log($('#IntensiveCheckIn').attr('checked'));
     if($('#IntensiveCheckIn').attr('checked') == undefined) {
         var intensive = 0;
         if ($('.level_start_soch')) {
@@ -2305,6 +2350,10 @@ function get_level_start(teacher,timetable){
         if (timetable == "choose_timetable") {
             if ($('.level_start_soch')) {
                 $('.level_start_soch').remove();
+            }if ($('.person_start_soch')) {
+                $('.person_start_soch').remove();
+            }if ($('.person_stop_soch')) {
+                $('.person_stop_soch').remove();
             }
         } else {
             var teacherQuoted = "'" + teacher + "'";
@@ -2340,6 +2389,10 @@ function get_level(teacher,timetable,level_start,id){
     //return;
     var intensive = 0;
     if(!timetable){intensive = 1;}
+    if(intensive){
+        $('.person_start_soch').remove();
+        $('.person_stop_soch').remove();
+    }
     //console.log(intensive);
     //return;
 	if($('.level_soch')){$('.level_soch').remove();}
@@ -2361,10 +2414,10 @@ function get_level(teacher,timetable,level_start,id){
                     dataType: 'json',
                     data: {teacher:teacher,timetable:timetable,level_start:level_start,intensive:intensive},
                     success: function(data){
-                        //console.log(333333);
                         if(!intensive){var CombinationLevel = data['combinationLevel'][0][0];}
                         var CombinationDates = data['combinationDates'][0];
                         if(AreAnyPayedOrAttenedOrFrozenLessonsExist) {
+                            console.log(333333);
                             if (!intensive){
                                 $('.level_soch').remove();
                                 $('.level_start_soch').after('<div class="item level_soch"><label for="level_soch">Уровень:</label> <input class="add_form_select" type="text" id="level_soch" name="level_soch" value=' + CombinationLevel + ' style="border:none;" readonly></div>');
@@ -2390,7 +2443,7 @@ function get_level(teacher,timetable,level_start,id){
 
                             $('.warning').show();
                         }else{
-                            //console.log(333333);
+                            //console.log(444444);
                             $('.warning').hide();
                             if(!intensive){
                                 $('.level_soch').remove();
@@ -2399,9 +2452,9 @@ function get_level(teacher,timetable,level_start,id){
 
                             $.ajax({
                                 type: 'POST',
-                                url: './Main/StudentStartStop.php',
+                                url: './Main/StudentStartStop',
                                 dataType: 'json',
-                                data: {teacher: teacher, timetable: timetable, level_start:level_start,id:id},
+                                data: {teacher: teacher, timetable: timetable, level_start:level_start,id:id,intensive:intensive},
                                 success: function (data) {
                                     //console.log(data);
                                     $('.person_start_soch').remove();
@@ -2635,8 +2688,8 @@ function createCombinationOrUpdateStartStopDates(){
         dataType: 'json',
         data: msg,
         success: function(data){
-            console.log(data);
-            return;
+            //console.log(data);
+            //return;
             $('.level_person_form').hide();
             $("#level_person_form")[0].reset();
             if(data['state'] == 'insert'){alert( "Для "+data['fio_person']+" создан уровень: "+data['level']);}

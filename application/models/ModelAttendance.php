@@ -11,60 +11,101 @@ class ModelAttendance extends \application\core\Model
 
     public function combinationDatesFittedToTimetable(){
         $teacher = $_POST["teacher"];
-        $timetable = $_POST["timetable"];
+        $timetable = false;
+        if(isset($_POST["timetable"])){$timetable = $_POST["timetable"];}
         $level_start = $_POST["level_start"];
+        $intensive = false;
+        if(isset($_POST["intensive"])){$intensive = $_POST["intensive"];}
 
         $start = strtotime($level_start);
+        if($timetable){
+            if($timetable == "ПУ" or $timetable == "ПД" or $timetable == "ПВ"){
+                $first_week_lesson=1;
+                $second_week_lesson=3;
+                $third_week_lesson=5;
+            }
+            if($timetable == "ВУ" or $timetable == "ВД" or $timetable == "ВВ"){
+                $first_week_lesson=2;
+                $second_week_lesson=4;
+                $third_week_lesson=6;
+            }
 
-        if($timetable == "ПУ" or $timetable == "ПД" or $timetable == "ПВ"){
-            $first_week_lesson=1;
-            $second_week_lesson=3;
-            $third_week_lesson=5;
+            if(date("N",$start)== $first_week_lesson or date("N",$start)== $second_week_lesson or date("N",$start)== $third_week_lesson){
+                $data = $this->getAllCombinations($teacher,$timetable,$level_start);
+                return $data;
+            }else{
+                echo "Дата старта уровня не соответствует расписанию";
+            }
         }
-        if($timetable == "ВУ" or $timetable == "ВД" or $timetable == "ВВ"){
-            $first_week_lesson=2;
-            $second_week_lesson=4;
-            $third_week_lesson=6;
-        }
-
-        if(date("N",$start)== $first_week_lesson or date("N",$start)== $second_week_lesson or date("N",$start)== $third_week_lesson){
-            $data = $this->getAllCombinations($teacher,$timetable,$level_start);
+        if($intensive){
+            $data = $this->getAllCombinations($teacher,'undefined',$level_start,$intensive);
             return $data;
-        }else{
-            echo "Дата старта уровня не соответствует расписанию";
         }
     }
     public function studentsInformation(){
         $teacher = $_POST["teacher"];
-        $timetable = $_POST["timetable"];
+        $timetable = false;
+        if(isset($_POST["timetable"])){$timetable = $_POST["timetable"];}
         $level_start = $_POST["level_start"];
+        $intensive = false;
+        if(isset($_POST["intensive"])){$intensive = $_POST["intensive"];}
 
-        $students = $this->getPersonIdStartStop($teacher,$timetable,$level_start);
-//        return $students;
-        if(count($students) != 0){
-            $arr['paymentExists'] = 0;
-            $arr['attendenceExists'] = 0;
-            for ($i=0; $i <count($students); $i++) {
-                $id=$students[$i]['id_person'];
-                $arr['id'][]=$students[$i]['id_person'];
-                $arr['discount'][]=$this->getDiscount($id,$teacher,$timetable,$level_start);
-                $arr['name'][]=$this->getName($id);
-                $arr['personStart'][]=$students[$i]['person_start'];
-                $arr['personStop'][]=$students[$i]['person_stop'];
-                $data=$this->getNumPayedNumReserved($id,$teacher,$timetable,$level_start);
-                $arr['numPayed'][]=$data['num_payed'];
-                if($data['num_payed'] > 0){$arr['paymentExists'] = 1;}
-                $arr['numReserved'][]=$data['num_reserved'];
-                $data=$this->getAttenedDates($id,$teacher,$timetable,$level_start);
-                $arr['attenedDates'][]=$data;
-                if(count($data) > 0){$arr['attendenceExists'] = 1;}
-                $arr['frozenDates'][]=$this->getFrozenDates($id,$teacher,$timetable,$level_start);
+        if($timetable){
+            $students = $this->getPersonIdStartStop($teacher,$timetable,$level_start,$intensive);
+            if(count($students) != 0){
+                $arr['paymentExists'] = 0;
+                $arr['attendenceExists'] = 0;
+                for ($i=0; $i <count($students); $i++) {
+                    $id=$students[$i]['id_person'];
+                    $arr['id'][]=$students[$i]['id_person'];
+                    $arr['discount'][]=$this->getDiscount($id,$teacher,$timetable,$level_start);
+                    $arr['name'][]=$this->getName($id);
+                    $arr['personStart'][]=$students[$i]['person_start'];
+                    $arr['personStop'][]=$students[$i]['person_stop'];
+                    $data=$this->getNumPayedNumReserved($id,$teacher,$timetable,$level_start);
+                    $arr['numPayed'][]=$data['num_payed'];
+                    if($data['num_payed'] > 0){$arr['paymentExists'] = 1;}
+                    $arr['numReserved'][]=$data['num_reserved'];
+                    $data=$this->getAttenedDates($id,$teacher,$timetable,$level_start);
+                    $arr['attenedDates'][]=$data;
+                    if(count($data) > 0){$arr['attendenceExists'] = 1;}
+                    $arr['frozenDates'][]=$this->getFrozenDates($id,$teacher,$timetable,$level_start);
+                }
+                $arr['dates']=$this->getCombinationDates($teacher,$timetable,$level_start);
+                $arr['archive']=$this->getIsItAnArchiveCombination($teacher,$timetable,$level_start);
+                return $arr;
+            }else{
+                return false;
             }
-            $arr['dates']=$this->getCombinationDates($teacher,$timetable,$level_start);
-            $arr['archive']=$this->getIsItAnArchiveCombination($teacher,$timetable,$level_start);
-            return $arr;
-        }else{return false;}
-//        if(!empty($arr)){return $arr;}else{return;}
+        }
+        if($intensive){
+            $students = $this->getPersonIdStartStop($teacher,'undefined',$level_start,$intensive);
+            if(count($students) != 0){
+                $arr['paymentExists'] = 0;
+                $arr['attendenceExists'] = 0;
+                for ($i=0; $i <count($students); $i++) {
+                    $id=$students[$i]['id_person'];
+                    $arr['id'][]=$students[$i]['id_person'];
+                    $arr['discount'][]=$this->getDiscount($id,$teacher,$timetable,$level_start,$intensive);
+                    $arr['name'][]=$this->getName($id);
+                    $arr['personStart'][]=$students[$i]['person_start'];
+                    $arr['personStop'][]=$students[$i]['person_stop'];
+                    $data=$this->getNumPayedNumReserved($id,$teacher,$timetable,$level_start,$intensive);
+                    $arr['numPayed'][]=$data['num_payed'];
+                    if($data['num_payed'] > 0){$arr['paymentExists'] = 1;}
+                    $arr['numReserved'][]=$data['num_reserved'];
+                    $data=$this->getAttenedDates($id,$teacher,$timetable,$level_start,$intensive);
+                    $arr['attenedDates'][]=$data;
+                    if(count($data) > 0){$arr['attendenceExists'] = 1;}
+                    $arr['frozenDates'][]=$this->getFrozenDates($id,$teacher,$timetable,$level_start,$intensive);
+                }
+                $arr['dates']=$this->getCombinationDates($teacher,'undefined',$level_start,$intensive);
+                $arr['archive']=$this->getIsItAnArchiveCombination($teacher,'undefined',$level_start,$intensive);
+                return $arr;
+            }else{
+                return false;
+            }
+        }
     }
     public function buildingBlocks(){
         $data=$this->getAllCombinationsExistedFromLevels();
@@ -291,16 +332,25 @@ class ModelAttendance extends \application\core\Model
     }
 
     /////////////////////////////////////////////////////////   GETTERS/SETTERS   /////////////////////////////////////////////////////////
-    public function getAllCombinations($teacher,$timetable,$level_start){
+    public function getAllCombinations($teacher,$timetable=null,$level_start,$intensive=null)
+    {
         $db = $this->db;
-        $sql = "SELECT id,level,teacher,timetable,sd_1,sd_2,sd_3,sd_4,sd_5,sd_6,sd_7,sd_8,sd_9,sd_10,sd_11,sd_12,sd_13,sd_14,sd_15,sd_16,sd_17,sd_18,sd_19,sd_20,sd_21,archive,intensive FROM `levels` WHERE `sd_1`='".$level_start."' AND `teacher`='".$teacher."' AND `timetable`='".$timetable."'";
+        if ($intensive) {
+            $sql = "SELECT id,level,teacher,timetable,sd_1,sd_2,sd_3,sd_4,sd_5,sd_6,sd_7,sd_8,sd_9,sd_10,archive FROM `levels` WHERE `sd_1`='" . $level_start . "' AND `teacher`='" . $teacher . "' AND `intensive`='" . $intensive . "'";
+        }else{
+            $sql = "SELECT id,level,teacher,timetable,sd_1,sd_2,sd_3,sd_4,sd_5,sd_6,sd_7,sd_8,sd_9,sd_10,sd_11,sd_12,sd_13,sd_14,sd_15,sd_16,sd_17,sd_18,sd_19,sd_20,sd_21,archive FROM `levels` WHERE `sd_1`='" . $level_start . "' AND `teacher`='" . $teacher . "' AND `timetable`='" . $timetable . "'";
+        }
         $data = $db->query($sql);
         $data = $data->fetchAll($db::FETCH_ASSOC);
         if(isset($data[0])){return $data[0];}else{return false;}
     }
-    public function getPersonIdStartStop($teacher,$timetable,$level_start){
+    public function getPersonIdStartStop($teacher,$timetable=null,$level_start,$intensive=null){
         $db = $this->db;
-        $sql="SELECT `id_person`,`person_start`,`person_stop` FROM `levels_person` WHERE `teacher`='".$teacher."' AND `timetable`='".$timetable."' AND `level_start`='".$level_start."'";
+        if ($intensive) {
+            $sql = "SELECT `id_person`,`person_start`,`person_stop` FROM `levels_person` WHERE `teacher`='" . $teacher . "' AND `intensive`='" . $intensive . "' AND `level_start`='" . $level_start . "'";
+        }else {
+            $sql = "SELECT `id_person`,`person_start`,`person_stop` FROM `levels_person` WHERE `teacher`='" . $teacher . "' AND `timetable`='" . $timetable . "' AND `level_start`='" . $level_start . "'";
+        }
         $data = $db->query($sql);
         $data = $data->fetchAll($db::FETCH_ASSOC);
         return $data;
@@ -329,38 +379,57 @@ class ModelAttendance extends \application\core\Model
         return $name;
 
     }
-    public function getCombinationDates($teacher,$timetable,$level_start){
+    public function getCombinationDates($teacher,$timetable=null,$level_start,$intensive=null){
         $db = $this->db;
-        $sql = "SELECT sd_1,sd_2,sd_3,sd_4,sd_5,sd_6,sd_7,sd_8,sd_9,sd_10,sd_11,sd_12,sd_13,sd_14,sd_15,sd_16,sd_17,sd_18,sd_19,sd_20,sd_21 FROM `levels` WHERE levels.teacher='".$teacher."' AND levels.timetable='".$timetable."' AND levels.sd_1='".$level_start."'";
+        if($intensive) {
+            $sql = "SELECT sd_1,sd_2,sd_3,sd_4,sd_5,sd_6,sd_7,sd_8,sd_9,sd_10 FROM `levels` WHERE teacher='" . $teacher . "' AND intensive='" . $intensive . "' AND sd_1='" . $level_start . "'";
+        }else {
+            $sql = "SELECT sd_1,sd_2,sd_3,sd_4,sd_5,sd_6,sd_7,sd_8,sd_9,sd_10,sd_11,sd_12,sd_13,sd_14,sd_15,sd_16,sd_17,sd_18,sd_19,sd_20,sd_21 FROM `levels` WHERE teacher='" . $teacher . "' AND timetable='" . $timetable . "' AND sd_1='" . $level_start . "'";
+        }
         $everyLessonDate = $db->query($sql);
         $everyLessonDate = $everyLessonDate->fetchAll($db::FETCH_NUM);
         if(!empty($everyLessonDate[0])){return $everyLessonDate[0];}else{return false;}
     }
-    public function getIsItAnArchiveCombination($teacher,$timetable,$level_start){
+    public function getIsItAnArchiveCombination($teacher,$timetable=null,$level_start,$intensive=null){
         $db = $this->db;
-        $sql = "SELECT `archive` FROM `levels` WHERE `teacher`='".$teacher."' AND `sd_1`='".$level_start."' AND `timetable`='".$timetable."'";
+        if($intensive) {
+            $sql = "SELECT `archive` FROM `levels` WHERE `teacher`='" . $teacher . "' AND `sd_1`='" . $level_start . "' AND `intensive`='" . $intensive . "'";
+        }else{
+            $sql = "SELECT `archive` FROM `levels` WHERE `teacher`='" . $teacher . "' AND `sd_1`='" . $level_start . "' AND `timetable`='" . $timetable . "'";
+        }
         $everyLessonDate = $db->query($sql);
         $everyLessonDate = $everyLessonDate->fetchAll($db::FETCH_NUM);
         return $everyLessonDate[0];
     }
-    public function getNumPayedNumReserved($id,$teacher,$timetable,$level_start){
+    public function getNumPayedNumReserved($id,$teacher,$timetable=null,$level_start,$intensive=null){
         $db = $this->db;
-        $sql="SELECT `num_payed`,`num_reserved` FROM `payed_lessons` WHERE id_person='".$id."' AND `teacher`='".$teacher."' AND `timetable`='".$timetable."' AND `level_start`='".$level_start."'";
-//        return $sql;
+        if($intensive) {
+            $sql = "SELECT `num_payed`,`num_reserved` FROM `payed_lessons` WHERE id_person='" . $id . "' AND `teacher`='" . $teacher . "' AND `intensive`='" . $intensive . "' AND `level_start`='" . $level_start . "'";
+        }else {
+            $sql = "SELECT `num_payed`,`num_reserved` FROM `payed_lessons` WHERE id_person='" . $id . "' AND `teacher`='" . $teacher . "' AND `timetable`='" . $timetable . "' AND `level_start`='" . $level_start . "'";
+        }
         $data = $db->query($sql);
         $data = $data->fetchAll($db::FETCH_ASSOC);
         if(!empty($data[0])){return $data[0];}else{return false;}
     }
-    public function getFrozenDates($id,$teacher,$timetable,$level_start){
+    public function getFrozenDates($id,$teacher,$timetable=null,$level_start,$intensive=null){
         $db = $this->db;
-        $sql = "SELECT `frozen_day` FROM `levels_person` LEFT JOIN `freeze` ON levels_person.id_person = freeze.id_person AND levels_person.teacher = freeze.teacher AND levels_person.timetable = freeze.timetable AND levels_person.level_start = freeze.level_start WHERE levels_person.teacher='" . $teacher . "' AND levels_person.level_start='" . $level_start . "' AND levels_person.timetable='" . $timetable . "' AND freeze.id_person=" . $id;
+        if($intensive) {
+            $sql = "SELECT `frozen_day` FROM `levels_person` LEFT JOIN `freeze` ON levels_person.id_person = freeze.id_person AND levels_person.teacher = freeze.teacher AND levels_person.timetable = freeze.timetable AND levels_person.level_start = freeze.level_start WHERE levels_person.teacher='" . $teacher . "' AND levels_person.level_start='" . $level_start . "' AND levels_person.intensive='" . $intensive . "' AND freeze.id_person=" . $id;
+        }else {
+            $sql = "SELECT `frozen_day` FROM `levels_person` LEFT JOIN `freeze` ON levels_person.id_person = freeze.id_person AND levels_person.teacher = freeze.teacher AND levels_person.timetable = freeze.timetable AND levels_person.level_start = freeze.level_start WHERE levels_person.teacher='" . $teacher . "' AND levels_person.level_start='" . $level_start . "' AND levels_person.timetable='" . $timetable . "' AND freeze.id_person=" . $id;
+        }
         $data = $db->query($sql);
         $data = $data->fetchAll($db::FETCH_COLUMN);
         return $data;
     }
-    public function getAttenedDates($id,$teacher,$timetable,$level_start){
+    public function getAttenedDates($id,$teacher,$timetable=null,$level_start,$intensive=null){
         $db = $this->db;
-        $sql = "SELECT `date_of_visit` FROM `attendance` WHERE `teacher`='" . $teacher . "' AND `level_start`='" . $level_start . "' AND `timetable`='" . $timetable . "' AND `id_visit`=" . $id;
+        if($intensive){
+            $sql = "SELECT `date_of_visit` FROM `attendance` WHERE `teacher`='" . $teacher . "' AND `level_start`='" . $level_start . "' AND `intensive`='" . $intensive . "' AND `id_visit`=" . $id;
+        }else{
+            $sql = "SELECT `date_of_visit` FROM `attendance` WHERE `teacher`='" . $teacher . "' AND `level_start`='" . $level_start . "' AND `timetable`='" . $timetable . "' AND `id_visit`=" . $id;
+        }
         $data = $db->query($sql);
         $data = $data->fetchAll($db::FETCH_COLUMN);
         return $data;

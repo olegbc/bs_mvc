@@ -23,10 +23,14 @@ class ModelMain extends \application\core\Model
     public function studentStartStop(){
         $id = $_POST['id'];
         $teacher = $_POST["teacher"];
-        $timetable = $_POST["timetable"];
+        $timetable = false;
+        if(isset($_POST['timetable'])){$timetable = $_POST["timetable"];}
         $level_start = $_POST["level_start"];
-        $data['studentStart'] = $this->getPersonStart($id,$teacher,$timetable,$level_start);
-        $data['studentStop'] = $this->getPersonStop($id,$teacher,$timetable,$level_start);
+        $intensive = false;
+        if(isset($_POST['intensive'])){$intensive = $_POST["intensive"];}
+
+        $data['studentStart'] = $this->getPersonStart($id,$teacher,$timetable,$level_start,$intensive);
+        $data['studentStop'] = $this->getPersonStop($id,$teacher,$timetable,$level_start,$intensive);
         return $data;
     }
     public function timetables(){
@@ -97,9 +101,10 @@ class ModelMain extends \application\core\Model
         $data = $this->getIsThereStudentOnASuchCombination($id,$teacher,$timetable,$level_start,$intensive);
 
         if($data){
-            $this->setUpdatePersonStartStopToLevelPerson($id,$teacher,$timetable,$level_start,$person_start,$person_stop,$level,$intensive);
+            $data = $this->setUpdatePersonStartStopToLevelPerson($id,$teacher,$timetable,$level_start,$person_start,$person_stop,$intensive);
+            return $data;
         }else{
-            $this->setInsertPersonStartStopToLevelPerson($id,$teacher,$timetable,$level_start,$person_start,$person_stop,$level,$intensive);
+            $this->setInsertPersonStartStopToLevelPerson($id,$teacher,$timetable,$level_start,$person_start,$person_stop,$intensive);
         }
 
         $everyLessonDate = $this->getCombinationDates($teacher,$timetable,$level_start,$intensive);
@@ -178,9 +183,6 @@ class ModelMain extends \application\core\Model
 
 /////////////////////////////////////////////////////////   GETTERS/SETTERS   /////////////////////////////////////////////////////////
 
-    public function checkVariable($check){
-        return $check;
-    }
     public function getLevelStart($teacher,$timetable=null){
         $db = $this->db;
         if($timetable==null){
@@ -296,7 +298,7 @@ class ModelMain extends \application\core\Model
         $data['state'] = 'insert';
         return $data;
     }
-    public function setUpdatePersonStartStopToLevelPerson($id,$teacher,$timetable=null,$level_start,$person_start,$person_stop,$intensive=null){
+    public function setUpdatePersonStartStopToLevelPerson($id,$teacher,$timetable,$level_start,$person_start,$person_stop,$intensive){
         $db = $this->db;
         if($intensive){
             $sql = "UPDATE `levels_person` SET `person_start`=:person_start,`person_stop`=:person_stop WHERE `id_person`=:id_person AND `teacher`=:teacher AND `intensive`=:intensive AND `level_start`=:level_start";
@@ -325,7 +327,7 @@ class ModelMain extends \application\core\Model
     public function getPersonStart($id,$teacher,$timetable=null,$level_start,$intensive=null){
         $db = $this->db;
         if($intensive){
-            $sql = "SELECT `person_start` FROM `levels_person` WHERE id_person=" . $id . " AND teacher='" . $teacher . "' AND timetable='" . $intensive . "' AND level_start='" . $level_start . "'";
+            $sql = "SELECT `person_start` FROM `levels_person` WHERE id_person=" . $id . " AND teacher='" . $teacher . "' AND intensive='" . $intensive . "' AND level_start='" . $level_start . "'";
         }else{
             $sql = "SELECT `person_start` FROM `levels_person` WHERE id_person=" . $id . " AND teacher='" . $teacher . "' AND timetable='" . $timetable . "' AND level_start='" . $level_start . "'";
         }

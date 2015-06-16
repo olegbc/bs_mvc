@@ -21,7 +21,9 @@ class ModelPerson extends \application\core\model
 
         if(count($allCombinationsOfThisPerson)){
             foreach($allCombinationsOfThisPerson as $key=>$value){
-                extract($value); // $teacher,$timetable,$level_start
+                $timetable = 'undefined';
+                extract($value);
+                // $teacher,$timetable,$level_start
 //                $personStart = $this->getPersonStart($id,$teacher,$timetable,$level_start);
 //                $personStop = $this->getPersonStop($id,$teacher,$timetable,$level_start);
 //
@@ -34,8 +36,7 @@ class ModelPerson extends \application\core\model
 //                }
 //                $numOfLessonsOnCombination = (abs($numberOfStopLesson - $numberOfStartLesson))+1;
 //                $numOfLessonsOnCombinationArr[]=$numOfLessonsOnCombination;
-
-                $frozenDatesOfStudent[] = $this->getFrozenDates($id,$teacher,$timetable,$level_start);
+                $frozenDatesOfStudent[] = $this->getFrozenDates($id, $teacher, $timetable, $level_start, $intensive);
             }
         }
 
@@ -54,52 +55,98 @@ class ModelPerson extends \application\core\model
 		return $mainArr;
     }
     public function combinationDatesFittedToTimetable(){
-        $level_start = $_POST["level_start"];
         $teacher = $_POST["teacher"];
-        $timetable = $_POST["timetable"];
+        $timetable = false;
+        if(isset($_POST["timetable"])){$timetable = $_POST["timetable"];}
+        $level_start = $_POST["level_start"];
+        $intensive = false;
+        if(isset($_POST["intensive"])){$intensive = $_POST["intensive"];}
 
         $start = strtotime($level_start);
+//        if($timetable == "ПУ" or $timetable == "ПД" or $timetable == "ПВ"){
+//            $first_week_lesson=1;
+//            $second_week_lesson=3;
+//            $third_week_lesson=5;
+//        }
+//        if($timetable == "ВУ" or $timetable == "ВД" or $timetable == "ВВ"){
+//            $first_week_lesson=2;
+//            $second_week_lesson=4;
+//            $third_week_lesson=6;
+//        }
+//
+//        if(date("N",$start)== $first_week_lesson or date("N",$start)== $second_week_lesson or date("N",$start)== $third_week_lesson){
+//            $data = $this->getAllCombinations($teacher,$timetable,$level_start);
+//            return $data;
+//        }else{
+//            echo "Дата старта уровня не соответствует расписанию";
+//        }
+        if($timetable){
+            if($timetable == "ПУ" or $timetable == "ПД" or $timetable == "ПВ"){
+                $first_week_lesson=1;
+                $second_week_lesson=3;
+                $third_week_lesson=5;
+            }
+            if($timetable == "ВУ" or $timetable == "ВД" or $timetable == "ВВ"){
+                $first_week_lesson=2;
+                $second_week_lesson=4;
+                $third_week_lesson=6;
+            }
 
-        if($timetable == "ПУ" or $timetable == "ПД" or $timetable == "ПВ"){
-            $first_week_lesson=1;
-            $second_week_lesson=3;
-            $third_week_lesson=5;
+            if(date("N",$start)== $first_week_lesson or date("N",$start)== $second_week_lesson or date("N",$start)== $third_week_lesson){
+                $data = $this->getAllCombinations($teacher,$timetable,$level_start);
+                return $data;
+            }else{
+                echo "Дата старта уровня не соответствует расписанию";
+            }
         }
-        if($timetable == "ВУ" or $timetable == "ВД" or $timetable == "ВВ"){
-            $first_week_lesson=2;
-            $second_week_lesson=4;
-            $third_week_lesson=6;
-        }
-
-        if(date("N",$start)== $first_week_lesson or date("N",$start)== $second_week_lesson or date("N",$start)== $third_week_lesson){
-            $data = $this->getAllCombinations($teacher,$timetable,$level_start);
+        if($intensive){
+            $data = $this->getAllCombinations($teacher,'undefined',$level_start,$intensive);
             return $data;
-        }else{
-            echo "Дата старта уровня не соответствует расписанию";
         }
     }
     public function studentNameAndDates(){
         $level_start = $_POST["level_start"];
         $teacher = $_POST["teacher"];
-        $timetable = $_POST["timetable"];
+        $timetable = false;
+        if(isset($_POST["timetable"])){$timetable = $_POST["timetable"];}
         $id = $_POST["id"];
+        $intensive = false;
+        if(isset($_POST["intensive"])){$intensive = $_POST["intensive"];}
         $numberOfStartLesson = 0;
         $arrAll = array();
 
-        $personStart = $this->getPersonStart($id,$teacher,$timetable,$level_start);
-        $personStop = $this->getPersonStop($id,$teacher,$timetable,$level_start);
+        if($intensive){
+            $personStart = $this->getPersonStart($id, $teacher, 'undefined', $level_start, $intensive);
+            $personStop = $this->getPersonStop($id, $teacher, 'undefined', $level_start, $intensive);
+        }else{
+            $personStart = $this->getPersonStart($id, $teacher, $timetable, $level_start, $intensive);
+            $personStop = $this->getPersonStop($id, $teacher, $timetable, $level_start, $intensive);
+        }
 
-        $combinationDates = $this->getCombinationDates($teacher,$timetable,$level_start);
+        if($intensive){
+            $combinationDates = $this->getCombinationDates($teacher,'undefined',$level_start,$intensive);
+        }else{
+            $combinationDates = $this->getCombinationDates($teacher,$timetable,$level_start,$intensive);
+        }
+//        $combinationDates = $this->getCombinationDates($teacher,$timetable,$level_start,$intensive);
         foreach($combinationDates[0] as $key=>$combinationDate){
             if($combinationDate == $personStart){$numberOfStartLesson = $key+1;}
         }
 
-        $discount = $this->getDiscount($id,$teacher,$timetable,$level_start);
+        if($intensive){
+            $discount = $this->getDiscount($id,$teacher,'undefined',$level_start,$intensive);
+        }else{
+            $discount = $this->getDiscount($id,$teacher,$timetable,$level_start,$intensive);
+        }
 
-        $defaulCostOfOneLesson = $this->getDefaulCostOfOneLesson();
+        $defaulCostOfOneLesson = $this->getDefaulCostOfOneLesson($intensive);
         $costOfOneLessonWithDiscount = $this->getCostOfOneLessonWithDiscount($discount,$defaulCostOfOneLesson);
 
-        $datesOfVisit = $this->getDatesOfVisit($id,$teacher,$timetable,$level_start);
+        if($intensive){
+            $datesOfVisit = $this->getDatesOfVisit($id, $teacher, 'undefined', $level_start,$intensive);
+        }else{
+            $datesOfVisit = $this->getDatesOfVisit($id, $teacher, $timetable, $level_start,$intensive);
+        }
 
         $name = $this->getName($id);
 
@@ -137,47 +184,58 @@ class ModelPerson extends \application\core\model
     }
     public function addOrRemovePayedDate(){
         $db = $this->db;
+
         $id = $_POST["id"];
         $addOrRemove = $_POST["addOrRemove"];
         $teacher = $_POST["teacher"];
-        $timetable = $_POST["timetable"];
+        $timetable = false;
+        if(isset($_POST["timetable"])){$timetable = $_POST["timetable"];}
         $level_start = $_POST["level_start"];
+        $intensive = false;
+        if(isset($_POST["intensive"])){$intensive = $_POST["intensive"];}
 
-        $discount = $this->getDiscount($id,$teacher,$timetable,$level_start);
+        if($intensive){
+            $discount = $this->getDiscount($id,$teacher,'undefined',$level_start,$intensive);
+        }else{
+            $discount = $this->getDiscount($id,$teacher,$timetable,$level_start,$intensive);
+        }
 
-        $defaulCostOfOneLesson = $this->getDefaulCostOfOneLesson();
+        $defaulCostOfOneLesson = $this->getDefaulCostOfOneLesson($intensive);
         $costOfOneLessonWithDiscount = $this->getCostOfOneLessonWithDiscount($discount,$defaulCostOfOneLesson);
         $arr['CostOfOneLessonWithDiscount'] = $costOfOneLessonWithDiscount;
 
         $balance = $this->getBalance($id);
 
-        $NumPayedNumReserved = $this->getNumPayedNumReserved($id,$teacher,$timetable,$level_start);
+        $NumPayedNumReserved = $this->getNumPayedNumReserved($id,$teacher,$timetable,$level_start,$intensive);
         $NumPayed = $NumPayedNumReserved[0]['num_payed'];
         $NumReserved = $NumPayedNumReserved[0]['num_reserved'];
 
         if($addOrRemove>0){
             //	BALANCE DECREASE + PAYED LESSONS INCREASE
             if($balance>=$costOfOneLessonWithDiscount){
-                $balanceDecreased = $balance - $costOfOneLessonWithDiscount;
-
+                $balanceUpdate = $balance - $costOfOneLessonWithDiscount;
                 if($NumPayed<$NumReserved){
-                    $sql="UPDATE `balance` SET `balance`=".$balanceDecreased." WHERE `id_person`=".$id;
-                    $db->query($sql);
-                    $num_payedIncreased = $NumPayed+1;
-                    $sql="UPDATE `payed_lessons` SET `num_payed`=".$num_payedIncreased." WHERE `id_person`=".$id." AND `teacher`='".$teacher."' AND `timetable`='".$timetable."' AND `level_start`='".$level_start."'";
-                    $db->query($sql);
+                    $this->setUpdateBalance($balanceUpdate,$id);
+                    $num_payedUpdate = $NumPayed+1;
+                    if($intensive){
+                        $this->setUpdateNumPayed($num_payedUpdate,$id,$teacher,'undefined',$level_start,$intensive);
+                    }else{
+                        $this->setUpdateNumPayed($num_payedUpdate,$id,$teacher,$timetable,$level_start,$intensive);
+                    }
                 }
             }
         }elseif($addOrRemove<0){
             //	BALANCE INCREASE + PAYED LESSONS DECREASE
-            $balanceIncreased = $balance + $costOfOneLessonWithDiscount;
+            $balanceUpdate = $balance + $costOfOneLessonWithDiscount;
 
             if($NumPayed>=1){
-                $sql="UPDATE `balance` SET `balance`=".$balanceIncreased." WHERE `id_person`=".$id;
-                $db->query($sql);
-                $num_payedDecreased = $NumPayed-1;
-                $sql="UPDATE `payed_lessons` SET `num_payed`=".$num_payedDecreased." WHERE `id_person`=".$id." AND `teacher`='".$teacher."' AND `timetable`='".$timetable."' AND `level_start`='".$level_start."'";
-                $db->query($sql);
+                $this->setUpdateBalance($balanceUpdate,$id);
+                $num_payedUpdate = $NumPayed-1;
+                if($intensive){
+                    $this->setUpdateNumPayed($num_payedUpdate, $id, $teacher, 'undefined', $level_start, $intensive);
+                }else {
+                    $this->setUpdateNumPayed($num_payedUpdate, $id, $teacher, $timetable, $level_start, $intensive);
+                }
             }
         }
     }
@@ -252,22 +310,33 @@ class ModelPerson extends \application\core\model
 
     /////////////////////////////////////////////////////////   GETTERS/SETTERS   /////////////////////////////////////////////////////////
 
-    public function getDiscount($id,$teacher,$timetable,$level_start){
+    public function getDiscount($id,$teacher,$timetable=null,$level_start,$intensive=null){
         $db = $this->db;
-        $sql="SELECT `discount` FROM `discounts` WHERE `id_person`='".$id."' AND `teacher`='".$teacher."' AND `timetable`='".$timetable."' AND `level_start`='".$level_start."'";
+        if($intensive){
+            $sql = "SELECT `discount` FROM `discounts` WHERE `id_person`='" . $id . "' AND `teacher`='" . $teacher . "' AND `intensive`='" . $intensive . "' AND `level_start`='" . $level_start . "'";
+        }else{
+            $sql = "SELECT `discount` FROM `discounts` WHERE `id_person`='" . $id . "' AND `teacher`='" . $teacher . "' AND `timetable`='" . $timetable . "' AND `level_start`='" . $level_start . "'";
+        }
         $data = $db->query($sql);
         $data = $data->fetchAll($db::FETCH_ASSOC);
         if(isset($data[0]['discount'])){$discount = $data[0]['discount'];}else{$discount = 0;}
         return $discount;
     }
-    public function getDefaulCostOfOneLesson()
+    public function getDefaulCostOfOneLesson($intensive=null)
     {
         $db = $this->db;
-        $sql = "SELECT `one lesson default` FROM `constants`";
+        if($intensive){
+            $sql = "SELECT `one intensive default` FROM `constants`";
+        }else {
+            $sql = "SELECT `one lesson default` FROM `constants`";
+        }
         $data = $db->query($sql);
         $data = $data->fetchAll($db::FETCH_ASSOC);
-        if (isset($data[0]['one lesson default'])) {
+        if(isset($data[0]['one lesson default'])) {
             $defaulCostOfOneLesson = $data[0]['one lesson default'];
+        }
+        if(isset($data[0]['one intensive default'])) {
+            $defaulCostOfOneLesson = $data[0]['one intensive default'];
         }
         return $defaulCostOfOneLesson;
     }
@@ -276,24 +345,36 @@ class ModelPerson extends \application\core\model
         $arr['CostOfOneLessonWithDiscount'] = $CostOfOneLessonWithDiscount;
         return $CostOfOneLessonWithDiscount;
     }
-    public function getCombinationDates($teacher,$timetable,$level_start){
+    public function getCombinationDates($teacher,$timetable=null,$level_start,$intensive=null){
         $db = $this->db;
-        $sql = "SELECT sd_1,sd_2,sd_3,sd_4,sd_5,sd_6,sd_7,sd_8,sd_9,sd_10,sd_11,sd_12,sd_13,sd_14,sd_15,sd_16,sd_17,sd_18,sd_19,sd_20,sd_21 FROM `levels` WHERE levels.teacher='".$teacher."' AND levels.timetable='".$timetable."' AND levels.sd_1='".$level_start."'";
+        if($intensive){
+            $sql = "SELECT sd_1,sd_2,sd_3,sd_4,sd_5,sd_6,sd_7,sd_8,sd_9,sd_10 FROM `levels` WHERE teacher='" . $teacher . "' AND intensive='" . $intensive . "' AND sd_1='" . $level_start . "'";
+        }else {
+            $sql = "SELECT sd_1,sd_2,sd_3,sd_4,sd_5,sd_6,sd_7,sd_8,sd_9,sd_10,sd_11,sd_12,sd_13,sd_14,sd_15,sd_16,sd_17,sd_18,sd_19,sd_20,sd_21 FROM `levels` WHERE teacher='" . $teacher . "' AND timetable='" . $timetable . "' AND sd_1='" . $level_start . "'";
+        }
         $everyLessonDate = $db->query($sql);
         $everyLessonDate = $everyLessonDate->fetchAll($db::FETCH_NUM);
         return $everyLessonDate;
     }
-    public function getPersonStart($id,$teacher,$timetable,$level_start){
+    public function getPersonStart($id,$teacher,$timetable=null,$level_start,$intensive=null){
         $db = $this->db;
-        $sql="SELECT `person_start` FROM `levels_person` WHERE id_person=".$id." AND levels_person.teacher='".$teacher."' AND levels_person.timetable='".$timetable."' AND levels_person.level_start='".$level_start."'";
+        if($intensive){
+            $sql = "SELECT `person_start` FROM `levels_person` WHERE id_person=" . $id . " AND teacher='" . $teacher . "' AND intensive='" . $intensive . "' AND level_start='" . $level_start . "'";
+        }else{
+            $sql = "SELECT `person_start` FROM `levels_person` WHERE id_person=" . $id . " AND teacher='" . $teacher . "' AND timetable='" . $timetable . "' AND level_start='" . $level_start . "'";
+        }
         $data = $db->query($sql);
         $data = $data->fetchAll($db::FETCH_ASSOC);
         if(isset($data[0]['person_start'])){$personStart = $data[0]['person_start'];}
         return $personStart;
     }
-    public function getPersonStop($id,$teacher,$timetable,$level_start){
+    public function getPersonStop($id,$teacher,$timetable=null,$level_start,$intensive=null){
         $db = $this->db;
-        $sql="SELECT `person_stop` FROM `levels_person` WHERE id_person=".$id." AND levels_person.teacher='".$teacher."' AND levels_person.timetable='".$timetable."' AND levels_person.level_start='".$level_start."'";
+        if($intensive){
+            $sql = "SELECT `person_stop` FROM `levels_person` WHERE id_person=" . $id . " AND teacher='" . $teacher . "' AND intensive='" . $intensive . "' AND level_start='" . $level_start . "'";
+        }else {
+            $sql = "SELECT `person_stop` FROM `levels_person` WHERE id_person=" . $id . " AND teacher='" . $teacher . "' AND timetable='" . $timetable . "' AND level_start='" . $level_start . "'";
+        }
         $data = $db->query($sql);
         $data = $data->fetchAll($db::FETCH_ASSOC);
         if(isset($data[0]['person_stop'])){$personStop = $data[0]['person_stop'];}
@@ -301,7 +382,7 @@ class ModelPerson extends \application\core\model
     }
     public function getAllCombinationsOfThisPerson($id){
         $db = $this->db;
-        $sql="SELECT `teacher`,`timetable`,`level_start`,`level` FROM `levels_person` WHERE id_person=".$id;
+        $sql="SELECT `teacher`,`timetable`,`level_start`,`level`,`intensive` FROM `levels_person` WHERE id_person=".$id;
         $data = $db->query($sql);
         $data = $data->fetchAll($db::FETCH_ASSOC);
         return $data;
@@ -314,9 +395,13 @@ class ModelPerson extends \application\core\model
         if(isset($data[0]['balance'])){$balance = $data[0]['balance'];}else{$balance = 0;}
         return $balance;
     }
-    public function getFrozenDates($id,$teacher,$timetable,$level_start){
+    public function getFrozenDates($id,$teacher,$timetable=null,$level_start,$intensive=null){
         $db = $this->db;
-        $sql = "SELECT `frozen_day` FROM `levels_person` LEFT JOIN `freeze` ON levels_person.id_person = freeze.id_person AND levels_person.teacher = freeze.teacher AND levels_person.timetable = freeze.timetable AND levels_person.level_start = freeze.level_start WHERE levels_person.teacher='".$teacher."' AND levels_person.level_start='".$level_start."' AND levels_person.timetable='".$timetable."' AND freeze.id_person=".$id;
+        if($intensive){
+            $sql = "SELECT `frozen_day` FROM `levels_person` LEFT JOIN `freeze` ON levels_person.id_person = freeze.id_person AND levels_person.teacher = freeze.teacher AND levels_person.timetable = freeze.timetable AND levels_person.level_start = freeze.level_start WHERE levels_person.teacher='" . $teacher . "' AND levels_person.level_start='" . $level_start . "' AND levels_person.intensive='" . $intensive . "' AND freeze.id_person=" . $id;
+        }else{
+            $sql = "SELECT `frozen_day` FROM `levels_person` LEFT JOIN `freeze` ON levels_person.id_person = freeze.id_person AND levels_person.teacher = freeze.teacher AND levels_person.timetable = freeze.timetable AND levels_person.level_start = freeze.level_start WHERE levels_person.teacher='" . $teacher . "' AND levels_person.level_start='" . $level_start . "' AND levels_person.timetable='" . $timetable . "' AND freeze.id_person=" . $id;
+        }
         $data = $db->query($sql);
         $data = $data->fetchAll($db::FETCH_COLUMN);
         return $data;
@@ -332,16 +417,24 @@ class ModelPerson extends \application\core\model
             return $data;
         }
     }
-    public function getAllCombinations($teacher,$timetable,$level_start){
+    public function getAllCombinations($teacher,$timetable=null,$level_start,$intensive=null){
         $db = $this->db;
-        $sql = "SELECT * FROM `levels` WHERE `sd_1`='".$level_start."' AND `teacher`='".$teacher."' AND `timetable`='".$timetable."'";
+        if($intensive){
+            $sql = "SELECT * FROM `levels` WHERE `sd_1`='" . $level_start . "' AND `teacher`='" . $teacher . "' AND `intensive`='" . $intensive . "'";
+        }else{
+            $sql = "SELECT * FROM `levels` WHERE `sd_1`='" . $level_start . "' AND `teacher`='" . $teacher . "' AND `timetable`='" . $timetable . "'";
+        }
         $data = $db->query($sql);
         $data = $data->fetchAll($db::FETCH_ASSOC);
         return $data[0];
     }
-    public function getDatesOfVisit($id,$teacher,$timetable,$level_start){
+    public function getDatesOfVisit($id,$teacher,$timetable,$level_start,$intensive){
         $db = $this->db;
-        $sql = "SELECT `date_of_visit` FROM `levels_person` LEFT JOIN `attendance` ON levels_person.id_person = attendance.id_visit WHERE levels_person.teacher='" . $teacher . "' AND levels_person.level_start='" . $level_start . "' AND levels_person.timetable='" . $timetable . "' AND `id_person`=" . $id;
+        if($intensive){
+            $sql = "SELECT `date_of_visit` FROM `levels_person` LEFT JOIN `attendance` ON levels_person.id_person = attendance.id_visit WHERE levels_person.teacher='" . $teacher . "' AND levels_person.level_start='" . $level_start . "' AND levels_person.intensive='" . $intensive . "' AND `id_person`=" . $id;
+        }else {
+            $sql = "SELECT `date_of_visit` FROM `levels_person` LEFT JOIN `attendance` ON levels_person.id_person = attendance.id_visit WHERE levels_person.teacher='" . $teacher . "' AND levels_person.level_start='" . $level_start . "' AND levels_person.timetable='" . $timetable . "' AND `id_person`=" . $id;
+        }
         $data = $db->query($sql);
         $data = $data->fetchAll($db::FETCH_COLUMN);
         return $data;
@@ -365,9 +458,13 @@ class ModelPerson extends \application\core\model
         }
         return $sum;
     }
-    public function getNumPayedNumReserved($id,$teacher,$timetable,$level_start){
+    public function getNumPayedNumReserved($id,$teacher,$timetable=null,$level_start,$intensive=null){
         $db = $this->db;
-        $sql="SELECT `num_payed`,`num_reserved` FROM `payed_lessons` WHERE `id_person` ='".$id."' AND `teacher` = '".$teacher."' AND `level_start` = '".$level_start."' AND `timetable` ='".$timetable."'";
+        if($intensive){
+            $sql = "SELECT `num_payed`,`num_reserved` FROM `payed_lessons` WHERE `id_person` ='" . $id . "' AND `teacher` = '" . $teacher . "' AND `level_start` = '" . $level_start . "' AND `intensive` ='" . $intensive . "'";
+        }else {
+            $sql = "SELECT `num_payed`,`num_reserved` FROM `payed_lessons` WHERE `id_person` ='" . $id . "' AND `teacher` = '" . $teacher . "' AND `level_start` = '" . $level_start . "' AND `timetable` ='" . $timetable . "'";
+        }
         $data = $db->query($sql);
         $data = $data->fetchAll($db::FETCH_ASSOC);
         return $data;
@@ -401,6 +498,44 @@ class ModelPerson extends \application\core\model
         if(empty($data)){return false;}else{return true;}
     }
 
+    public function setUpdateBalance($balanceUpdate,$id){
+        $db = $this->db;
+        $sql="UPDATE `balance` SET `balance`=:balanceUpdate WHERE `id_person`=:id";
+        $stmt = $db->prepare($sql);
+
+        $stmt->bindParam(':balanceUpdate', $balanceUpdate, \PDO::PARAM_INT);
+        $stmt->bindParam(':id', $id, \PDO::PARAM_INT );
+
+        $stmt->execute();
+
+        $data['errorCode'] = $stmt->errorCode();
+        $data['rowCount'] = $stmt->rowCount();
+        $data['state'] = 'update';
+        return $data;
+    }
+    public function setUpdateNumPayed($num_payedUpdate,$id,$teacher,$timetable,$level_start,$intensive){
+        $db = $this->db;
+        if($intensive){
+            $sql="UPDATE `payed_lessons` SET `num_payed`=:num_payedUpdate WHERE `id_person`=:id AND `teacher`=:teacher AND `intensive`=:intensive AND `level_start`=:level_start";
+        }else{
+            $sql="UPDATE `payed_lessons` SET `num_payed`=:num_payedUpdate WHERE `id_person`=:id AND `teacher`=:teacher AND `timetable`=:timetable AND `level_start`=:level_start";
+        }
+        $stmt = $db->prepare($sql);
+
+        $stmt->bindParam(':num_payedUpdate', $num_payedUpdate, \PDO::PARAM_INT);
+        if($intensive){$stmt->bindParam(':intensive', $intensive, \PDO::PARAM_INT);}
+        $stmt->bindParam(':teacher', $teacher, \PDO::PARAM_STR);
+        if(!$intensive){$stmt->bindParam(':timetable', $timetable, \PDO::PARAM_STR);}
+        $stmt->bindParam(':level_start', $level_start, \PDO::PARAM_STR);
+        $stmt->bindParam(':id', $id, \PDO::PARAM_INT );
+
+        $stmt->execute();
+
+        $data['errorCode'] = $stmt->errorCode();
+        $data['rowCount'] = $stmt->rowCount();
+        $data['state'] = 'update';
+        return $data;
+    }
     public function setUpdateDiscont($discountValue,$teacher,$timetable,$level_start,$id){
         $db = $this->db;
         $sql = "UPDATE `discounts` SET `discount`=:discountValue WHERE `teacher`=:teacher AND `timetable`=:timetable AND `level_start`=:level_start AND `id_person`=:id";
