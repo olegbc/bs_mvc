@@ -4,6 +4,9 @@
     <option name="skippedFunctions">
       <list>
         <option value="application\models\ModelMain-&gt;setUpdatePersonStartStopToLevelPerson" />
+        <option value="application\models\ModelSPU-&gt;SPU" />
+        <option value="application\Controllers\ControllerSPU-&gt;actionSPU" />
+        <option value="application\models\ModelSPU-&gt;spu" />
       </list>
     </option>
   </component>

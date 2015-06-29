@@ -16,6 +16,7 @@
         <button class="btn_level_culculation">level_culculation</button>
         <button class="btn_number_of_students">number_of_students</button>
         <button class="btn_amount_of_money">amount_of_money</button>
+        <button class="btn_spu">spu</button>
         <button class="btn_bad_days">bad_days</button>
     </div>
 </div>

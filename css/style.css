@@ -41,8 +41,8 @@ width: 75px;height: 19px;/*border: 1px solid red;*/text-align: left;margin: 0px 
 #attendance_table_name{}
 .attendance_th{height: 83px;}
 .table_title{text-align:center;overflow:hidden;}
-.person_start_mark{border:2px solid blue !important;}
-.person_stop_mark{border:2px solid green !important;}
+.person_start_mark{border:4px solid blue !important;}
+.person_stop_mark{border:4px solid green !important;}
 .before_person_start_mark{background: gray;}
 /*-----  DIAG -----*/
 #graphHolder {margin: 50px auto;}
@@ -69,7 +69,7 @@ margin-left: -80px;}
 .legend_attendance p {text-align: left;}
 .wrapper_att_table {float: left;width: 100%;margin-bottom: 100px;}
 .att_table {margin: auto;width: 1026px;}
-.menu {margin: 10px auto;width: 640px;}
+.menu {margin: 10px auto;width: 680px;}
 .wrp_btn_add {margin-top: 20px;}
 .color{background-color: #ff0000;}
 .color_freeze{background-color: #0033ff;}
@@ -133,6 +133,10 @@ button.change_start_date { margin-right: 10px; }
 .combinations{float:left;}
 .combinationsTitle{text-align: left;margin-left:20px;}
 #IntensiveCheckIn { width: 14px; float: left !important; }
+.discountChanges{width: 900px;padding-left: 10px;}
+.discountChangeWarning{color:red;margin-left:10px;}
+.attendance_table_name{width:260px;}
+#td0_0{text-align: left;padding-left: 10px;}
 
 
 

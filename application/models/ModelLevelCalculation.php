@@ -17,7 +17,22 @@ class ModelLevelCalculation extends \application\core\model
         $timetable = $_POST["timetable"];
         $level_start = $_POST["level_start"];
         if(isset($_POST["level"])){$level = $_POST["level"];}
-        $intensive = $_POST["intensive"];
+        $intensive = false;
+        if(isset($_POST['intensive'])) {
+            $intensive = $_POST["intensive"];
+            if ($_POST["intensive"] == 'false') {
+                $intensive = false;
+            }
+            if ($_POST["intensive"] == 'true') {
+                $intensive = true;
+            }
+            if ($_POST["intensive"] == '0') {
+                $intensive = false;
+            }
+            if ($_POST["intensive"] == '1') {
+                $intensive = true;
+            }
+        }
 
         $start = strtotime($level_start);
 
@@ -45,32 +60,32 @@ class ModelLevelCalculation extends \application\core\model
             if($intensive){
                 for ($t = 0; $flag; $t++) {
                     $denied = false;
-                    $dayOfWeek = date("N", $start + (86400 * $t));
-                    if ($dataMain['badDays']) {
-                        for ($i = 0; $i < count($dataMain['badDays']); $i++) {
-                            $thisDay = date("Y-m-d", ($start + (86400 * $t)));
-                            $badDay = $dataMain['badDays'][$i];
-                            if ($thisDay == $badDay) {
-                                $denied = true;
-                            }
-                        }
-//                        if ($dayOfWeek == 1 or $dayOfWeek == 2 or $dayOfWeek == 3 or $dayOfWeek == 4 or $dayOfWeek == 5) {
-                        if ($dayOfWeek != 6 or $dayOfWeek != 7) {
-                            if (!$denied) {
-                                $newDateOfCombination = date("Y-m-d", ($start + (86400 * $t)));
-                                $dataMain['newDatesOfCombination'][] = $newDateOfCombination;
-                                $this->setUpdateNumReservedToPayedLessons($numOfLessons, $newDateOfCombination, $teacher, $timetable, $level_start);
-                                $numOfLessons++;
-                            }
-                        }
-                    } else {
-                        if ($dayOfWeek != 6 or $dayOfWeek != 7) {
+                    $dayOfWeek = (int)date("N", $start + (86400 * $t));
+//                    if ($dataMain['badDays']) {
+//                        for ($i = 0; $i < count($dataMain['badDays']); $i++) {
+//                            $thisDay = date("Y-m-d", ($start + (86400 * $t)));
+//                            $badDay = $dataMain['badDays'][$i];
+//                            if ($thisDay == $badDay) {
+//                                $denied = true;
+//                            }
+//                        }
+////                        if ($dayOfWeek == 1 or $dayOfWeek == 2 or $dayOfWeek == 3 or $dayOfWeek == 4 or $dayOfWeek == 5) {
+//                        if ($dayOfWeek != 6 or $dayOfWeek != 7) {
+//                            if (!$denied) {
+//                                $newDateOfCombination = date("Y-m-d", ($start + (86400 * $t)));
+//                                $dataMain['newDatesOfCombination'][] = $newDateOfCombination;
+//                                $this->setUpdateNumReservedToPayedLessons($numOfLessons, $newDateOfCombination, $teacher, $timetable, $level_start);
+//                                $numOfLessons++;
+//                            }
+//                        }
+//                    } else {
+                        if ($dayOfWeek != 6 and $dayOfWeek != 7) {
                             $newDateOfCombination = date("Y-m-d", ($start + (86400 * $t)));
                             $dataMain['newDatesOfCombination'][] = $newDateOfCombination;
                             $this->setUpdateNumReservedToPayedLessons($numOfLessons, $newDateOfCombination, $teacher, $timetable, $level_start);
                             $numOfLessons++;
                         }
-                    }
+//                    }
                     if ($numOfLessons == 1) {
                         $this->setIntensiveToTrueAtLevels($teacher, $timetable, $level_start);
                     }

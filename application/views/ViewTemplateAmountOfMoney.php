@@ -15,7 +15,7 @@
 	<script type="text/javascript" src="js/utils.js"></script>
 	<script type="text/javascript" src="js/layout.js?ver=1.0.2"></script>
 
-	<script type="text/javascript" src="js/jqBarGraph2.js"></script>
+<!--	<script type="text/javascript" src="js/jqBarGraph2.js"></script>-->
 	
 	<script src="http://code.highcharts.com/highcharts.js"></script>
 	<script src="http://code.highcharts.com/modules/exporting.js"></script>
@@ -29,6 +29,7 @@
 		<button class="btn_level_culculation">level_culculation</button>
 		<button class="btn_number_of_students">number_of_students</button>
 		<button class="btn_amount_of_money">amount_of_money</button>
+        <button class="btn_spu">spu</button>
 		<button class="btn_bad_days">bad_days</button>
 	</div>
 </div>

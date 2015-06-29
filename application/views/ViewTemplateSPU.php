@@ -15,7 +15,8 @@
     <script type="text/javascript" src="js/utils.js"></script>
     <script type="text/javascript" src="js/layout.js?ver=1.0.2"></script>
 
-    <script type="text/javascript" src="js/jqBarGraph.js"></script>
+    <script src="http://code.highcharts.com/highcharts.js"></script>
+    <script src="http://code.highcharts.com/modules/exporting.js"></script>
 
 </head>
 <body>
@@ -30,7 +31,9 @@
         <button class="btn_bad_days">bad_days</button>
     </div>
 </div>
-<div class="table_title"><h1>Number of students calculation</h1></div>
+<div class="table_title"><h1>SPU</h1></div>
+<!--<div class="table_title"><h1>SPU per week all teachers</h1></div>-->
+<!--<div class="table_title"><h1>SPU per week for each teacher</h1></div>-->
 
 <?php include 'application/views/'.$content_view; ?>
 

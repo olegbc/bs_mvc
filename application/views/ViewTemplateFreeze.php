@@ -15,6 +15,7 @@
         <button class="btn_attendance_table">attendance_table</button>
         <button class="btn_level_culculation">level_culculation</button>
         <button class="btn_number_of_students">number_of_students</button>
+        <button class="btn_spu">spu</button>
         <button class="btn_amount_of_money">amount_of_money</button>
     </div>
 </div>

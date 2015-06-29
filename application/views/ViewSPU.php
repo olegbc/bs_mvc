@@ -1,6 +1,6 @@
 <div class="wrapper_calendar">
     <div class="calendar">
-        <form name="datepicker" action="javascript:void(null);" method="post" onsubmit="amount_of_money_fn()" id="datepicker">
+        <form name="datepicker" action="javascript:void(null);" method="post" onsubmit="spu()" id="datepicker">
             <div id="widgetField">
                 <span></span>
                 <a href="#">Select date range</a>
@@ -11,4 +11,5 @@
         </form>
     </div>
 </div>
-<div id="container" style="min-width: 310px;width: 1211px; height: 400px; margin: 0 auto"></div>
+<div id="containerSpuSum" style="min-width: 310px;width: 1211px; height: 400px; margin: 0 auto"></div>
+<div id="containerSpuByTeacher" style="min-width: 310px;width: 1211px; height: 400px; margin: 0 auto"></div>
