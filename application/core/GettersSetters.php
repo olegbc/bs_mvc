@@ -36,7 +36,7 @@ class GettersSetters
         }
         return $isItOneOfTheTen;
     }
-    public function getDefaulCostOfOneLesson($intensive=null,$isFirstTenStudent=null)
+    public function getDefaultCostOfOneLesson($intensive=null,$isFirstTenStudent=null)
     {
         $db = $this->db;
         if($intensive){
@@ -51,18 +51,18 @@ class GettersSetters
         $data = $db->query($sql);
         $data = $data->fetchAll($db::FETCH_ASSOC);
         if(isset($data[0]['one lesson default'])) {
-            $defaulCostOfOneLesson = $data[0]['one lesson default'];
+            $defaultCostOfOneLesson = $data[0]['one lesson default'];
         }
         if(isset($data[0]['one intensive default'])) {
-            $defaulCostOfOneLesson = $data[0]['one intensive default'];
+            $defaultCostOfOneLesson = $data[0]['one intensive default'];
         }
         if(isset($data[0]['one intensive super'])) {
-            $defaulCostOfOneLesson = $data[0]['one intensive super'];
+            $defaultCostOfOneLesson = $data[0]['one intensive super'];
         }
-        return $defaulCostOfOneLesson;
+        return $defaultCostOfOneLesson;
     }
-    public function getCostOfOneLessonWithDiscount($discount,$defaulCostOfOneLesson){
-        $CostOfOneLessonWithDiscount = $defaulCostOfOneLesson - round(($defaulCostOfOneLesson*($discount*0.01)),2);
+    public function getCostOfOneLessonWithDiscount($discount,$defaultCostOfOneLesson){
+        $CostOfOneLessonWithDiscount = $defaultCostOfOneLesson - round(($defaultCostOfOneLesson*($discount*0.01)),2);
         $arr['CostOfOneLessonWithDiscount'] = $CostOfOneLessonWithDiscount;
         return $CostOfOneLessonWithDiscount;
     }
@@ -942,16 +942,24 @@ class GettersSetters
         $data = $data->fetchAll($db::FETCH_COLUMN);
         return $data;
     }
-    public function getAttendance($teacher,$timetable,$level_start){
+    public function getAttendance($teacher,$timetable=null,$level_start,$intensive=null){
         $db = $this->db;
-        $sql = "SELECT `date_of_visit` FROM `attendance` WHERE `teacher`='".$teacher."' AND `timetable`='".$timetable."' AND `level_start`='".$level_start."'";
+        if ($intensive) {
+            $sql = "SELECT `date_of_visit` FROM `attendance` WHERE `teacher`='".$teacher."' AND `intensive`='".$intensive."' AND `level_start`='".$level_start."'";
+        }else {
+            $sql = "SELECT `date_of_visit` FROM `attendance` WHERE `teacher`='" . $teacher . "' AND `timetable`='" . $timetable . "' AND `level_start`='" . $level_start . "'";
+        }
         $data = $db->query($sql);
         $data = $data->fetchAll($db::FETCH_ASSOC);
         return $data;
     }
-    public function getPayment($teacher,$timetable,$level_start){
+    public function getPayment($teacher,$timetable=null,$level_start,$intensive=null){
         $db = $this->db;
-        $sql = "SELECT `num_payed` FROM `payed_lessons` WHERE `teacher`='".$teacher."' AND `timetable`='".$timetable."' AND `level_start`='".$level_start."'";
+        if ($intensive) {
+            $sql = "SELECT `num_payed` FROM `payed_lessons` WHERE `teacher`='" . $teacher . "' AND `intensive`='" . $intensive . "' AND `level_start`='" . $level_start . "'";
+        }else {
+            $sql = "SELECT `num_payed` FROM `payed_lessons` WHERE `teacher`='" . $teacher . "' AND `timetable`='" . $timetable . "' AND `level_start`='" . $level_start . "'";
+        }
         $data = $db->query($sql);
         $data = $data->fetchAll($db::FETCH_ASSOC);
         return $data;
@@ -1148,7 +1156,7 @@ class GettersSetters
     }
     public function setUpdateBalanceAttendance($costOfOneLessonWithDiscount,$num_minus,$id_person){
         $db = $this->db;
-        $sql="UPDATE `balance` SET `balance`=balance+:costOfOneLessonWithDiscount*(:num_minus-1) WHERE `id_person`=:id_person";
+        $sql="UPDATE `balance` SET `balance`=balance+:costOfOneLessonWithDiscount*:num_minus WHERE `id_person`=:id_person";
         $stmt = $db->prepare($sql);
 
         $stmt->bindParam(':costOfOneLessonWithDiscount', $costOfOneLessonWithDiscount, \PDO::PARAM_INT);
@@ -1407,5 +1415,68 @@ class GettersSetters
         return $data;
 
     }
+    /////// LEVEL CALCULATION /////
+    public function getDoesCombinationExist($teacher,$timetable=null,$level_start,$intensive=null){
+        $db = $this->db;
+        if($intensive){
+            $sql = "SELECT `id` FROM `levels` WHERE `teacher`='" . $teacher . "' AND `intensive`='" . $intensive . "' AND `sd_1`='" . $level_start . "'";
+        }else {
+            $sql = "SELECT `id` FROM `levels` WHERE `teacher`='" . $teacher . "' AND `timetable`='" . $timetable . "' AND `sd_1`='" . $level_start . "'";
+        }
+        $data = $db->query($sql);
+        $data = $data->fetchAll($db::FETCH_ASSOC);
+        return $data;
+    }
+    public function setInsertIntoLevelsTable($level,$teacher,$timetable=null,$level_start,$intensive=null){
+        $db = $this->db;
+        if($intensive){
+            $sql = "INSERT INTO `levels` (`level`,`teacher`,`intensive`,`sd_1`) VALUES(:level,:teacher,:intensive,:level_start)";
+        }else {
+            $sql = "INSERT INTO `levels` (`level`,`teacher`,`timetable`,`sd_1`) VALUES(:level,:teacher,:timetable,:level_start)";
+        }
+        $stmt = $db->prepare($sql);
+
+        $stmt->bindParam(':level', $level, \PDO::PARAM_STR );
+        $stmt->bindParam(':teacher', $teacher, \PDO::PARAM_STR );
+        if($intensive){
+            $stmt->bindParam(':intensive', $intensive, \PDO::PARAM_INT);
+        }
+        if($intensive == 1){$intensive = true;}
+        if(!$intensive){
+            $stmt->bindParam(':timetable', $timetable, \PDO::PARAM_STR);
+        }
+        $stmt->bindParam(':level_start', $level_start, \PDO::PARAM_STR );
+        $stmt->execute();
+
+        $data['lastInsert'] = $db->lastInsertId();
+        $data['errorCode'] = $stmt->errorCode();
+        $data['rowCount'] = $stmt->rowCount();
+        $data['state'] = 'insert';
+        return $data;
+    }
+    public function setIntensiveToTrueAtLevels($teacher, $timetable=null, $level_start, $intensive=null){
+        $db = $this->db;
+        if($intensive){
+            $sql = "UPDATE `levels` SET intensive=:IntensiveTrue WHERE `teacher`=:teacher AND `intensive`=:intensive AND `sd_1`=:level_start";
+        }else {
+            $sql = "UPDATE `levels` SET intensive=:IntensiveTrue WHERE `teacher`=:teacher AND `timetable`=:timetable AND `sd_1`=:level_start";
+        }
+        $stmt = $db->prepare($sql);
+
+        $true = 1;
+
+        $stmt->bindParam(':IntensiveTrue', $true, \PDO::PARAM_INT);
+        $stmt->bindParam(':teacher', $teacher, \PDO::PARAM_STR);
+        if($intensive){$stmt->bindParam(':intensive', $intensive, \PDO::PARAM_INT);}
+        if(!$intensive){$stmt->bindParam(':timetable', $timetable, \PDO::PARAM_STR);}
+        $stmt->bindParam(':level_start', $level_start, \PDO::PARAM_STR);
+        $stmt->execute();
+
+        $data['errorCode'] = $stmt->errorCode();
+        $data['rowCount'] = $stmt->rowCount();
+        $data['state'] = 'update';
+        return $data;
+    }
+
 
 }

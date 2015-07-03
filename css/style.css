@@ -53,7 +53,8 @@ width: 75px;height: 19px;/*border: 1px solid red;*/text-align: left;margin: 0px 
 .calendar #widgetCalendar .datepicker {position: static !important;bottom: 0;top: auto;}
 .datepickerContainer{position: static !important;}
 
-.brick{padding:5px;background:red;border:5px solid black;margin:10px;width: 170px;float:left;position: relative;}
+.brick{padding:5px;background:red;border:5px solid black;width: 170px;float:left;z-index: 9;position: relative;}
+.brickWrapper { margin: 5px; float: left; position: relative; }
 .brick_input{background: red;text-align: center;color: #fff;border: none;}
 
 .display_none{display:none;}
@@ -91,7 +92,7 @@ label {width: 300px;}
 #attendance_table_name{width: 300px;height: 17px;}
 .pay_check_green{background: green;}
 .send_to_archive_div {padding: 0px 0px 0px 8px;}
-.remove_combination {position: absolute;right: 7px;}
+.remove_combination { position: absolute; right: 15px; z-index: 999; top: 11px; float: left; width: 20px; height: 20px; }
 .search_input {text-align: center;margin: 0px 0px 20px 0px;}
 a.fio_links:visited{color:rgb(0, 0, 238);}
 
@@ -137,6 +138,7 @@ button.change_start_date { margin-right: 10px; }
 .discountChangeWarning{color:red;margin-left:10px;}
 .attendance_table_name{width:260px;}
 #td0_0{text-align: left;padding-left: 10px;}
+.formField { margin-bottom: 5px; }
 
 
 

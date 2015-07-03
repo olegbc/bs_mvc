@@ -142,19 +142,30 @@ class ModelAttendance extends \application\core\Model
         $data=$gettersSetters->getAllCombinationsExistedFromLevels();
         $mainData = $data;
         foreach($data as $key=>$value){
-            $payment=$gettersSetters->getPayment($value['teacher'],$value['timetable'],$value['sd_1']);
-            $attendance=$gettersSetters->getAttendance($value['teacher'],$value['timetable'],$value['sd_1']);
-//            $mainData[$key]['attendance'] = $attendance;
+            $intensive = $value['intensive'];
+            $teacher = $value['teacher'];
+            $timetable = $value['timetable'];
+            $level_start = $value['sd_1'];
+            $intensive = $value['intensive'];
+            if($intensive){
+                $payment = $gettersSetters->getPayment($teacher, false, $level_start,$intensive);
+                $attendance = $gettersSetters->getAttendance($teacher, false, $level_start, $intensive);
+            }else {
+                $payment = $gettersSetters->getPayment($teacher, $timetable, $level_start, false);
+                $attendance = $gettersSetters->getAttendance($teacher, $timetable, $level_start, false);
+            }
             $mainData[$key]['paymentExists'] = 0;
             $mainData[$key]['attendanceExists'] = 0;
-            foreach($payment as $k=>$v){
-//                $mainData[$key]['payment222'] = $value['num_payed'];
-                if($v['num_payed'] >0){$mainData[$key]['paymentExists'] = 1;}
+            foreach ($payment as $k => $v) {
+                if ($v['num_payed'] > 0) {
+                    $mainData[$key]['paymentExists'] = 1;
+                }
             }
-            foreach($attendance as $k=>$v){
-                if(count($v['date_of_visit']) > 0){$mainData[$key]['attendanceExists'] = 1;}
+            foreach ($attendance as $k => $v) {
+                if (count($v['date_of_visit']) > 0) {
+                    $mainData[$key]['attendanceExists'] = 1;
+                }
             }
-//            $mainData[$key]['attendance222'] = $mainData[$key]['attendanceExists'];
         }
         return $mainData;
     }
@@ -237,6 +248,7 @@ class ModelAttendance extends \application\core\Model
                 $intensive = true;
             }
         }
+        if($intensive){$IdOfFirstTenStudents = $gettersSetters->getIdOfFirstTenStudents();}
 
         $wrong = array();
         $start = strtotime($new_level_start);
@@ -335,7 +347,7 @@ class ModelAttendance extends \application\core\Model
                     if(strtotime($person_stop)>strtotime($calculatedLevelStop)){ //←
                         $num_minus=0;	//	количество скушаных в конце уроков
                         if(strtotime($person_start)>strtotime($calculatedLevelStop)){
-                            $this->removePersonCombination($id_person,$teacher,$timetable,$level_start,$intensive);
+                            $this->removePersonCombination($id_person,$teacher,$timetable,$level_start,$intensive,$IdOfFirstTenStudents);
                         }else{
                             for($j=0;$j<count($dataMain['combinationDates']);$j++){
                                 if( strtotime($dataMain['combinationDates'][$j]) == strtotime($calculatedLevelStop) ){
@@ -351,15 +363,23 @@ class ModelAttendance extends \application\core\Model
 //                                $num_minus = $numPayed;
 //                                $num_minus_reserverd = $numReserved;
 //                            }
+
                         if($numPayed>($numReserved-$num_minus)){
                             $discount=$gettersSetters->getDiscount($id_person,$teacher,$timetable,$level_start,$intensive);
-                            $defaulCostOfOneLesson=$gettersSetters->getDefaulCostOfOneLesson($intensive);
-                            $costOfOneLessonWithDiscount=$gettersSetters->getCostOfOneLessonWithDiscount($discount,$defaulCostOfOneLesson);
-                            $gettersSetters->setUpdateBalanceAttendance($costOfOneLessonWithDiscount,$num_minus,$id_person);
-                            $gettersSetters->setUpdateNumPayedToPayedLessons($num_minus,$id_person,$teacher,$timetable,$level_start,$intensive);
+                            if($intensive){
+                                $isFirstTenStudent = $gettersSetters->getIsItOneOfFirstTenStudents($IdOfFirstTenStudents, $id_person);
+                                $defaultCostOfOneLesson = $gettersSetters->getDefaultCostOfOneLesson($intensive, $isFirstTenStudent);
+                                $costOfOneLessonWithDiscount = $gettersSetters->getCostOfOneLessonWithDiscount($discount,$defaultCostOfOneLesson);
+                                $gettersSetters->setUpdateBalanceAttendance($costOfOneLessonWithDiscount,$num_minus,$id_person);
+                                $gettersSetters->setUpdateNumPayedToPayedLessons($num_minus,$id_person,$teacher,$timetable,$level_start,$intensive);
+                            }else {
+                                $defaultCostOfOneLesson = $gettersSetters->getDefaultCostOfOneLesson(false, false);
+                                $costOfOneLessonWithDiscount = $gettersSetters->getCostOfOneLessonWithDiscount($discount, $defaultCostOfOneLesson);
+                                $gettersSetters->setUpdateBalanceAttendance($costOfOneLessonWithDiscount,$num_minus,$id_person);
+                                $gettersSetters->setUpdateNumPayedToPayedLessons($num_minus,$id_person,$teacher,$timetable,$level_start,$intensive);
+                            }
                         }
                         if(strtotime($person_start)>strtotime($calculatedLevelStop)){
-//                                $gettersSetters->setUpdateNumReservedToPayedLessons($num_minus_reserverd,$id_person,$teacher,$timetable,$level_start);
                         }else{
                             $gettersSetters->setUpdateNumReservedByNumMinusToPayedLessons($num_minus,$id_person,$teacher,$timetable,$level_start,$intensive);
                         }
@@ -371,31 +391,45 @@ class ModelAttendance extends \application\core\Model
                         $num_eaten=0;	//	съедено в начале
                         $num_eaten_from_level_start=0; // количество от даты старта уровня, а не стурта персоны
                         $numEmptynessBetweenLevelStartAndPersonStart = 0;
+                        $firstDate = 0;
+                        $lastDate = 0;
 //                            $num_minus=0;	//	съедено в конце
                         for($j=0;$j<count($dataMain['combinationDates']);$j++){
-                            if( strtotime($dataMain['combinationDates'][$j]) == strtotime($new_level_start) ){
-                                $num_eaten_from_level_start = $j;
+                            if(strtotime($person_stop)<strtotime($new_level_start)){
+                                if(strtotime($person_start)  == strtotime($dataMain['combinationDates'][$j])){$firstDate=$j;}
+                                if(strtotime($person_stop)  == strtotime($dataMain['combinationDates'][$j])){$lastDate=$j+1;}
+                                $num_eaten = $lastDate - $firstDate;
+                            }else {
+                                if (strtotime($dataMain['combinationDates'][$j]) == strtotime($new_level_start)) {
+                                    $num_eaten_from_level_start = $j;
+                                }
+                                if (strtotime($dataMain['combinationDates'][$j]) == strtotime($person_start)) {
+                                    $numEmptynessBetweenLevelStartAndPersonStart = $j;
+                                }
+                                $num_eaten = $num_eaten_from_level_start - $numEmptynessBetweenLevelStartAndPersonStart;
                             }
-                            if( strtotime($dataMain['combinationDates'][$j]) == strtotime($person_start) ){
-                                $numEmptynessBetweenLevelStartAndPersonStart = $j;
-                            }
-                            $num_eaten = $num_eaten_from_level_start - $numEmptynessBetweenLevelStartAndPersonStart;
                         }
                         $dataMain['num_eaten'][] = $num_eaten;
 //                            if(!empty($numPayed)){
-                            $person_stop = $gettersSetters->getPersonStop($id_person,$teacher,$timetable,$level_start,$intensive);
-//                            $person_stop = $person_stop[0][0];
+//                            $person_stop = $gettersSetters->getPersonStop($id_person,$teacher,$timetable,$level_start,$intensive);
                             for($e=0;$e<count($dataMain['newDatesInDayFormat']);$e++){
-                                $dataMain['new_person_stop'][] = $person_stop;
-                                if(strtotime($dataMain['newDatesInDayFormat'][$e])==strtotime($person_stop)){
-                                    $new_person_stop = $dataMain['newDatesInDayFormat'][$e+$num_eaten];
+//                                $dataMain['new_person_stop'][] = $person_stop;
+                                if(strtotime($person_stop)<strtotime($new_level_start)) {
+                                    if ($e == $num_eaten - 1) {
+                                        $new_person_stop = $dataMain['newDatesInDayFormat'][$e];
+                                    }
+                                }else{
+                                    if (strtotime($dataMain['newDatesInDayFormat'][$e])==strtotime($person_stop)) {
+                                        $new_person_stop = $dataMain['newDatesInDayFormat'][$e+$num_eaten];
+                                    }
                                 }
                             }
-                            if(strtotime($person_stop)<strtotime($new_level_start)){
-                                $gettersSetters->setUpdatePersonStopToLevelsPerson($calculatedLevelStop,$id_person,$teacher,$timetable,$level_start,$intensive);
-                            }else{
-                                $gettersSetters->setUpdatePersonStopWithNewPersonStopToLevelsPerson($new_person_stop,$id_person,$teacher,$timetable,$level_start,$intensive);
-                            }
+//                        $dataMain['new_person_stop'][] = $new_person_stop;
+                        $gettersSetters->setUpdatePersonStopWithNewPersonStopToLevelsPerson($new_person_stop,$id_person,$teacher,$timetable,$level_start,$intensive);
+//                        if(strtotime($person_stop)<strtotime($new_level_start)){
+//                            }else{
+//                                $gettersSetters->setUpdatePersonStopToLevelsPerson($calculatedLevelStop,$id_person,$teacher,$timetable,$level_start,$intensive);
+//                            }
 //                            }
                         $gettersSetters->setUpdatePersonStartToLevelsPerson($new_level_start,$id_person,$teacher,$timetable,$level_start,$intensive);
                         $gettersSetters->setUpdateLevelStartToLevelsPerson($new_level_start,$id_person,$teacher,$timetable,$level_start,$intensive);
@@ -428,7 +462,7 @@ class ModelAttendance extends \application\core\Model
         }
 
     }
-    public function removePersonCombination($id,$teacher,$timetable=null,$level_start,$intensive=null){
+    public function removePersonCombination($id,$teacher,$timetable=null,$level_start,$intensive=null,$IdOfFirstTenStudents=null){
         $gettersSetters = $this->gettersSetters;
         if(isset($_POST["id"]) and isset($_POST["teacher"]) and isset($_POST["timetable"]) and isset($_POST["level_start"])) {
             $id = $_POST["id"];
@@ -453,8 +487,16 @@ class ModelAttendance extends \application\core\Model
         }
 
         $discount = $gettersSetters->getDiscount($id,$teacher,$timetable,$level_start,$intensive);
-        $defaulCostOfOneLesson=$gettersSetters->getDefaulCostOfOneLesson($intensive);
-        $costOfOneLessonWithDiscount=$gettersSetters->getCostOfOneLessonWithDiscount($discount,$defaulCostOfOneLesson);
+
+        if($intensive){
+            $isFirstTenStudent = $gettersSetters->getIsItOneOfFirstTenStudents($IdOfFirstTenStudents, $id);
+            $defaultCostOfOneLesson = $gettersSetters->getDefaultCostOfOneLesson($intensive, $isFirstTenStudent);
+            $costOfOneLessonWithDiscount = $gettersSetters->getCostOfOneLessonWithDiscount($discount,$defaultCostOfOneLesson);
+        }else {
+            $defaultCostOfOneLesson = $gettersSetters->getDefaultCostOfOneLesson($intensive, false);
+            $costOfOneLessonWithDiscount = $gettersSetters->getCostOfOneLessonWithDiscount($discount, $defaultCostOfOneLesson);
+        }
+
         $numPayed = $gettersSetters->getNumPayedNumReserved($id,$teacher,$timetable,$level_start,$intensive);
         $numPayed = $numPayed[0]['num_payed'];
 
@@ -473,7 +515,7 @@ class ModelAttendance extends \application\core\Model
         $teacher=$_POST['teacher'];
         $level_start=$_POST['level_start'];
         $timetable = false;
-        if(isset($_POST["intensive"])){
+        if(isset($_POST["timetable"])){
             $timetable = $_POST["timetable"];
         }
         $intensive = false;

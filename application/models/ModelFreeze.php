@@ -175,8 +175,8 @@ class ModelFreeze extends \application\core\model {
             $discount = $gettersSetters->getDiscount($id,$teacher,$timetable,$level_start,$intensive);
         }
 
-        $defaulCostOfOneLesson = $gettersSetters->getDefaulCostOfOneLesson($intensive);
-        $costOfOneLessonWithDiscount = $gettersSetters->getCostOfOneLessonWithDiscount($discount,$defaulCostOfOneLesson);
+        $defaultCostOfOneLesson = $gettersSetters->getDefaultCostOfOneLesson($intensive);
+        $costOfOneLessonWithDiscount = $gettersSetters->getCostOfOneLessonWithDiscount($discount,$defaultCostOfOneLesson);
 
         if($intensive){
             $datesOfVisit = $gettersSetters->getDatesOfVisit($id, $teacher, 'undefined', $level_start,$intensive);

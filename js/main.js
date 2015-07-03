@@ -12,10 +12,16 @@ $(document).ready(function(){
 
 	$('#intensive_choose').click(function(){
         if($(this).attr('checked') == 'checked'){
-            $('#timetable_choose').val('ПУ').attr('disabled',true);
+            $('#timetable_choose').attr('hidden',true);
+            $('#level_choose').attr('hidden',true);
+            $("label[for='level_choose']").hide();
+            $("label[for='timetable_choose']").hide();
         }
         if($(this).attr('checked') == undefined){
-            $('#timetable_choose').val('').attr('disabled',false);
+            $('#timetable_choose').val('').attr('hidden',false);
+            $('#level_choose').attr('hidden',false);
+            $("label[for='level_choose']").show();
+            $("label[for='timetable_choose']").show();
         }
     });
 
@@ -519,7 +525,12 @@ function submit_enable(){
 var first_time = 0;
 
 //ПОСТРОЕНИЕ ТАБЛИЦЫ
-function building_blocks(teacher_now,timetable_now,level_start_now){
+function building_blocks(teacher_now,timetable_now,level_start_now, intensive_now){
+    var badDayPage = 0;
+    if(getParameterByName('badDayPage') == 1){badDayPage = 1;}
+    if(location.pathname == "/bs_mvc/BadDays"){
+        badDayPage = 1;
+    }
 		$.ajax({
 			type: 'POST',
 			async: false,
@@ -529,7 +540,6 @@ function building_blocks(teacher_now,timetable_now,level_start_now){
                 //console.log(data);
                 var dayNow = new Date();
 				for(var i in data) {
-                    var status = data[i]['status'];
                     var teacher = data[i]['teacher'];
                     var timetable = data[i]['timetable'];
                     var level_start = data[i]['sd_1'];
@@ -543,102 +553,35 @@ function building_blocks(teacher_now,timetable_now,level_start_now){
                     var attendanceExists = data[i]['attendanceExists'];
 
                     if(archive){
-                        $('.past_combinations').append('<div class="brick"><input class="brick_input" type="text" name="teacher_choose" id="teacher_choose_' + i + '" value="'+teacher+'" disabled /><input class="brick_input" type="text" name="timetable_choose" id="timetable_choose_' + i + '" value="'+timetable+'" disabled /><input class="brick_input" type="text" name="level_start_choose" id="level_start_choose_' + i + '" value="'+level_start+'" disabled /><input class="brick_input" type="text" name="level_choose" id="level_choose_' + i + '"  value="'+level+'" disabled /></div>');
+                        if(intensive && badDayPage == 0){
+                            $('.past_combinations').append('<div class="brickWrapper"><div class="brick"><input class="brick_input" type="text" name="teacher_choose" id="teacher_choose_' + i + '" value="' + teacher + '" disabled /><input class="brick_input" type="text" name="timetable_choose" id="timetable_choose_' + i + '" value="false" disabled hidden /><input class="brick_input" type="text" name="level_start_choose" id="level_start_choose_' + i + '" value="' + level_start + '" disabled /><input class="brick_input" type="text" name="level_choose" id="level_choose_' + i + '"  value="false" disabled hidden/><input class="brick_input" type="text" name="intensive" id="intensive_choose intensive_choose_' + i + '"  value="intensive" disabled /><input class="brick_input" type="text" name="choose" id="choose" value="" disabled /></div><div class="remove_combination remove_combination_' + i + '"><button class="btn_remove_combination" onclick="remove_combination(' + teacherQuoted + ',false,' + levelStartQuoted + ',true)" disabled hidden>x</button></div></div>');
+                        }else{
+                            $('.past_combinations').append('<div class="brickWrapper"><div class="brick"><input class="brick_input" type="text" name="teacher_choose" id="teacher_choose_' + i + '" value="' + teacher + '" disabled /><input class="brick_input" type="text" name="timetable_choose" id="timetable_choose_' + i + '" value="' + timetable + '" disabled /><input class="brick_input" type="text" name="level_start_choose" id="level_start_choose_' + i + '" value="' + level_start + '" disabled /><input class="brick_input" type="text" name="level_choose" id="level_choose_' + i + '"  value="' + level + '" disabled /></div><div class="remove_combination remove_combination_' + i + '"><button class="btn_remove_combination" onclick="remove_combination(' + teacherQuoted + ',' + timetableQuoted + ',' + levelStartQuoted + ')" disabled hidden>x</button></div></div>');
+                        }
                     }
                     else{
                         if(dayNow.getTime() < new Date(level_start.replace(/-/g, ",")).getTime()){
-                            $('.future_combinations').append('<div class="brick"><div class="remove_combination remove_combination_' + i + '"><button class="btn_remove_combination" onclick="remove_combination(' + teacherQuoted + ',' + timetableQuoted + ',' + levelStartQuoted + ')" disabled hidden >x</button></div><input class="brick_input" type="text" name="teacher_choose" id="teacher_choose_' + i + '" value="'+teacher+'" disabled /><input class="brick_input" type="text" name="timetable_choose" id="timetable_choose_' + i + '" value="'+timetable+'" disabled /><input class="brick_input" type="text" name="level_start_choose" id="level_start_choose_' + i + '" value="'+level_start+'" disabled /><input class="brick_input" type="text" name="level_choose" id="level_choose_' + i + '"  value="'+level+'" disabled /></div>');
-                        }else{
-                            if(intensive){
-                                $('.peresent_combinations').append('<div class="brick"><div class="remove_combination remove_combination_' + i + '"><button class="btn_remove_combination" onclick="remove_combination(' + teacherQuoted + ',' + timetableQuoted + ',' + levelStartQuoted + ')" disabled hidden >x</button></div><input class="brick_input" type="text" name="teacher_choose" id="teacher_choose_' + i + '" value="' + teacher + '" disabled /><input class="brick_input" type="text" name="timetable_choose" id="timetable_choose_' + i + '" value="' + timetable + '" disabled hidden /><input class="brick_input" type="text" name="level_start_choose" id="level_start_choose_' + i + '" value="' + level_start + '" disabled /><input class="brick_input" type="text" name="level_choose" id="level_choose_' + i + '"  value="' + level + '" disabled hidden /><input class="brick_input" type="text" name="intensive" id="intensive_choose intensive_choose_' + i + '"  value="intensive" disabled /><input class="brick_input" type="text" name="choose" id="choose" value="" disabled /></div>');
+                            if(intensive && badDayPage == 0) {
+                                $('.future_combinations').append('<div class="brickWrapper"><div class="brick"><input class="brick_input" type="text" name="teacher_choose" id="teacher_choose_' + i + '" value="' + teacher + '" disabled /><input class="brick_input" type="text" name="timetable_choose" id="timetable_choose_' + i + '" value="false" disabled hidden /><input class="brick_input" type="text" name="level_start_choose" id="level_start_choose_' + i + '" value="' + level_start + '" disabled /><input class="brick_input" type="text" name="level_choose" id="level_choose_' + i + '"  value="false" disabled hidden/><input class="brick_input" type="text" name="intensive" id="intensive_choose intensive_choose_' + i + '"  value="intensive" disabled /><input class="brick_input" type="text" name="choose" id="choose" value="" disabled /></div><div class="remove_combination remove_combination_' + i + '"><button class="btn_remove_combination" onclick="remove_combination(' + teacherQuoted + ',false,' + levelStartQuoted + ',true)" disabled hidden>x</button></div></div>');
                             }else{
-                                $('.peresent_combinations').append('<div class="brick"><div class="remove_combination remove_combination_' + i + '"><button class="btn_remove_combination" onclick="remove_combination(' + teacherQuoted + ',' + timetableQuoted + ',' + levelStartQuoted + ')" disabled hidden >x</button></div><input class="brick_input" type="text" name="teacher_choose" id="teacher_choose_' + i + '" value="' + teacher + '" disabled /><input class="brick_input" type="text" name="timetable_choose" id="timetable_choose_' + i + '" value="' + timetable + '" disabled /><input class="brick_input" type="text" name="level_start_choose" id="level_start_choose_' + i + '" value="' + level_start + '" disabled /><input class="brick_input" type="text" name="level_choose" id="level_choose_' + i + '"  value="' + level + '" disabled /></div>');
+                                $('.future_combinations').append('<div class="brickWrapper"><div class="brick"><input class="brick_input" type="text" name="teacher_choose" id="teacher_choose_' + i + '" value="' + teacher + '" disabled /><input class="brick_input" type="text" name="timetable_choose" id="timetable_choose_' + i + '" value="' + timetable + '" disabled /><input class="brick_input" type="text" name="level_start_choose" id="level_start_choose_' + i + '" value="' + level_start + '" disabled /><input class="brick_input" type="text" name="level_choose" id="level_choose_' + i + '"  value="' + level + '" disabled /></div><div class="remove_combination remove_combination_' + i + '"><button class="btn_remove_combination" onclick="remove_combination(' + teacherQuoted + ',' + timetableQuoted + ',' + levelStartQuoted + ')" disabled hidden >x</button></div></div>');
+                            }
+                        }else{
+                            if(intensive && badDayPage == 0){
+                                $('.peresent_combinations').append('<div class="brickWrapper"><div class="brick"><input class="brick_input" type="text" name="teacher_choose" id="teacher_choose_' + i + '" value="' + teacher + '" disabled /><input class="brick_input" type="text" name="timetable_choose" id="timetable_choose_' + i + '" value="false" disabled hidden /><input class="brick_input" type="text" name="level_start_choose" id="level_start_choose_' + i + '" value="' + level_start + '" disabled /><input class="brick_input" type="text" name="level_choose" id="level_choose_' + i + '"  value="' + level + '" disabled hidden /><input class="brick_input" type="text" name="intensive" id="intensive_choose intensive_choose_' + i + '"  value="intensive" disabled /><input class="brick_input" type="text" name="choose" id="choose" value="" disabled /></div><div class="remove_combination remove_combination_' + i + '"><button class="btn_remove_combination" onclick="remove_combination(' + teacherQuoted + ',false,' + levelStartQuoted + ',true)" disabled hidden>x</button></div></div>');
+                            }else{
+                                $('.peresent_combinations').append('<div class="brickWrapper"><div class="brick"><input class="brick_input" type="text" name="teacher_choose" id="teacher_choose_' + i + '" value="' + teacher + '" disabled /><input class="brick_input" type="text" name="timetable_choose" id="timetable_choose_' + i + '" value="' + timetable + '" disabled /><input class="brick_input" type="text" name="level_start_choose" id="level_start_choose_' + i + '" value="' + level_start + '" disabled /><input class="brick_input" type="text" name="level_choose" id="level_choose_' + i + '"  value="' + level + '" disabled /></div><div class="remove_combination remove_combination_' + i + '"><button class="btn_remove_combination" onclick="remove_combination(' + teacherQuoted + ',' + timetableQuoted + ',' + levelStartQuoted + ')" disabled hidden >x</button></div></div>');
                             }
                         }
                     }
                     if(!paymentExists && !attendanceExists && !archive) {
-                        $("input[value*='" + teacher + "']").siblings("input[value*='" + timetable + "']").siblings("input[value*='" + level_start + "']").parent('.brick').children('.remove_combination').children('.btn_remove_combination').prop({'disabled':false,'hidden':false});
+                        if(intensive){
+                            $("input[value*='" + teacher + "']").siblings("input[value*='" + level_start + "']").siblings("input[value*='intensive']").parents('.brickWrapper').children('.remove_combination').children('.btn_remove_combination').prop({'disabled':false,'hidden':false});
+                        }else{
+                            $("input[value*='" + teacher + "']").siblings("input[value*='" + timetable + "']").siblings("input[value*='" + level_start + "']").parents('.brickWrapper').children('.remove_combination').children('.btn_remove_combination').prop({'disabled':false,'hidden':false});
+                        }
                     }
                 }
-                //return;
-                    //$.ajax({
-                    //    type: 'POST',
-                    //    async: false,
-                    //    url: './Attendance/IsArchiveTodayWithinCombinationDates.php',
-                    //    dataType: 'json',
-                    //    data: {teacher: teacher, timetable: timetable, level_start: level_start},
-                    //    success: function (data) {
-                    //        //console.log(data);
-                    //        //return;
-                    //        if(data){
-                    //            //console.log(teacherQuoted,timetableQuoted,levelStartQuoted);
-                    //            //console.log(teacher,timetable,level_start);
-                    //            // pressent blocks
-                    //            $('.peresent_combinations').append('<div class="brick"><div class="remove_combination remove_combination_' + i + '"><button class="btn_remove_combination" onclick="remove_combination(' + teacherQuoted + ',' + timetableQuoted + ',' + levelStartQuoted + ')" disabled>x</button></div><input class="brick_input" type="text" name="teacher_choose" id="teacher_choose_' + i + '" value="'+teacher+'" disabled /><input class="brick_input" type="text" name="timetable_choose" id="timetable_choose_' + i + '" value="'+timetable+'" disabled /><input class="brick_input" type="text" name="level_start_choose" id="level_start_choose_' + i + '" value="'+level_start+'" disabled /><input class="brick_input" type="text" name="level_choose" id="level_choose_' + i + '" value="'+level+'" disabled /></div>');
-                    //        }else{
-                    //            // ajax isThisArchive find by field `archive`
-                    //            // future or archive
-                    //        }
-                    //    },
-                    //    error: function (xhr, str) {
-                    //        alert('Возникла ошибка: ' + xhr.responseCode);
-                    //    }
-                    //});
-
-                 //   if (status == null){
-                 //           $('.peresent_combinations').append('<div class="brick"><div class="remove_combination remove_combination_' + i + '"><button class="btn_remove_combination" onclick="remove_combination(' + teacherQuoted + ',' + timetableQuoted + ',' + levelStartQuoted + ')" disabled>x</button></div><input class="brick_input" type="text" name="teacher_choose" id="teacher_choose_' + i + '" disabled /><input class="brick_input" type="text" name="timetable_choose" id="timetable_choose_' + i + '" disabled /><input class="brick_input" type="text" name="level_start_choose" id="level_start_choose_' + i + '" disabled /><input class="brick_input" type="text" name="level_choose" id="level_choose_' + i + '" disabled /></div>');
-                 //           $('#teacher_choose_' + i).val(teacher);
-                 //           $('#timetable_choose_' + i).val(timetable);
-                 //           $('#level_start_choose_' + i).val(level_start);
-                 //           $('#level_choose_' + i).val(level);
-                 //           // console.log(is);
-                 //   }
-                 //   if (status == null) {
-                 //           var is = [];
-                 //           $.ajax({
-                 //               type: 'POST',
-                 //               async: false,
-                 //               url: './Attendance/IsTodayWithinCombinationDates.php',
-                 //               dataType: 'json',
-                 //               data: {teacher: teacher, timetable: timetable, level_start: level_start},
-                 //               success: function (data) {
-                 //                   is[i] = data;
-                 //               },
-                 //               error: function (xhr, str) {
-                 //                   alert('Возникла ошибка: ' + xhr.responseCode);
-                 //               }
-                 //           });
-                 //           // console.log(i);
-                 //       }
-                 //   if (status == 0) {
-                 //           console.log(teacherQuoted,timetableQuoted,levelStartQuoted);
-                 //           var teacherQuoted = "'" + teacher + "'";
-                 //           var timetableQuoted = "'" + timetable + "'";
-                 //           var levelStartQuoted = "'" + level_start + "'";
-                 //           $('.peresent_combinations').append('<div class="brick"><div class="remove_combination remove_combination_' + i + '"><button class="btn_remove_combination" onclick="remove_combination(' + teacherQuoted + ',' + timetableQuoted + ',' + levelStartQuoted + ')" disabled>x</button></div><input class="brick_input" type="text" name="teacher_choose" id="teacher_choose_' + i + '" disabled /><input class="brick_input" type="text" name="timetable_choose" id="timetable_choose_' + i + '" disabled /><input class="brick_input" type="text" name="level_start_choose" id="level_start_choose_' + i + '" disabled /><input class="brick_input" type="text" name="level_choose" id="level_choose_' + i + '" disabled /></div>')
-                 //           $('#teacher_choose_' + i).val(teacher);
-                 //           $('#timetable_choose_' + i).val(timetable);
-                 //           $('#level_start_choose_' + i).val(level_start);
-                 //           $('#level_choose_' + i).val(level);
-                 //       }
-                 //   if (status == -1) {
-                 //           $('.past_combinations').append('<div class="brick"><input class="brick_input" type="text" name="teacher_choose" id="teacher_choose_' + i + '" disabled /><input class="brick_input" type="text" name="timetable_choose" id="timetable_choose_' + i + '" disabled /><input class="brick_input" type="text" name="level_start_choose" id="level_start_choose_' + i + '" disabled /><input class="brick_input" type="text" name="level_choose" id="level_choose_' + i + '" disabled /></div>')
-                 //           $('#teacher_choose_' + i).val(teacher);
-                 //           $('#timetable_choose_' + i).val(timetable);
-                 //           $('#level_start_choose_' + i).val(level_start);
-                 //           $('#level_choose_' + i).val(level);
-                 //       }
-                 //   if (status == 1) {
-                 //           $('.future_combinations').append('<div class="brick"><input class="brick_input" type="text" name="teacher_choose" id="teacher_choose_' + i + '" disabled /><input class="brick_input" type="text" name="timetable_choose" id="timetable_choose_' + i + '" disabled /><input class="brick_input" type="text" name="level_start_choose" id="level_start_choose_' + i + '" disabled /><input class="brick_input" type="text" name="level_choose" id="level_choose_' + i + '" disabled /></div>')
-                 //           $('#teacher_choose_' + i).val(teacher);
-                 //           $('#timetable_choose_' + i).val(timetable);
-                 //           $('#level_start_choose_' + i).val(level_start);
-                 //           $('#level_choose_' + i).val(level);
-                 //       }
-                //
-				//}
-
-
 			},
 			error: function(xhr, str){
 				alert('Возникла ошибка: ' + xhr.responseCode);
@@ -658,7 +601,7 @@ function building_blocks(teacher_now,timetable_now,level_start_now){
 		//	$('.change_start_date').prop('disabled',true);
 		//});
 		//$('.combination_all .peresent_combinations .brick').click(function(){
-		$('.combination_all .brick').not('.combination_all .past_combinations .brick').click(function(){
+		$('.combination_all .brick').not('.combination_all .past_combinations .brick').not('.remove_combination .btn_remove_combination').click(function(){
             $('.brick').css('borderColor', '#000');
             var teacher_choose = $(this).children("input[name='teacher_choose']").val();
             var level_start_choose = $(this).children("input[name='level_start_choose']").val();
@@ -712,13 +655,21 @@ function building_blocks(teacher_now,timetable_now,level_start_now){
 		//});
 
 		$('.brick').each(function(){
-			if($(this).children("input[name='teacher_choose']").val()==teacher_now && $(this).children("input[name='timetable_choose']").val()==timetable_now && $(this).children("input[name='level_start_choose']").val()==level_start_now){
-				$(this).css('borderColor','rgb(0, 0, 255)');
-			}
+            if(intensive_now){
+                if($(this).children("input[name='teacher_choose']").val()==teacher_now && $(this).children("input[name='intensive']").val()=="intensive" && $(this).children("input[name='level_start_choose']").val()==level_start_now){
+                    $(this).css('borderColor','rgb(0, 0, 255)');
+                }
+            }else {
+                if ($(this).children("input[name='teacher_choose']").val() == teacher_now && $(this).children("input[name='timetable_choose']").val() == timetable_now && $(this).children("input[name='level_start_choose']").val() == level_start_now) {
+                    $(this).css('borderColor', 'rgb(0, 0, 255)');
+                }
+            }
 		});
 }
 
 function lgtt_match_fn(teacher,timetable,level_start,intensive){
+    //console.log(teacher,timetable,level_start,intensive);
+    //return;
     if(intensive == 'false'){
         intensive = false;
     }
@@ -754,33 +705,33 @@ function lgtt_match_fn(teacher,timetable,level_start,intensive){
         //----- Построение шапки таблицы ;
 	$('#attendance_table').empty();
 	$('#attendance_table').html('<tbody><tr id="th_line"><th class="attendance_name_th" id="name_th"><div id="attendance_table_name" >Имя</div></th></tr></tbody>');
-		
+	//console.log(msg);
     $.ajax({
-				type: 'POST',
-				async: false,
-				url: './Attendance/CombinationDatesFittedToTimetable.php',
-				dataType: 'json',
-				data: msg,
-				success: function(data) {
-                    //console.log(data);
-                    if(intensive){
-                        levelStop = data['sd_10'];
-                        for (var g = 10; g > 0; g--) {
-                            $('#name_th').after("<th class='attendance_th'><div class='rotateText'>" + data['sd_' + g] + "</div></th>");
-                            level_date[g - 1] = data['sd_' + g];
-                        }
-                    }else {
-                        levelStop = data['sd_21'];
-                        for (var g = 21; g > 0; g--) {
-                            $('#name_th').after("<th class='attendance_th'><div class='rotateText'>" + data['sd_' + g] + "</div></th>");
-                            level_date[g - 1] = data['sd_' + g];
-                        }
-                    }
-				},
-				error: function(xhr, str){
-					alert('Возникла ошибка: ' + xhr.responseCode);
-				}
-			});
+        type: 'POST',
+        async: false,
+        url: './Attendance/CombinationDatesFittedToTimetable.php',
+        dataType: 'json',
+        data: msg,
+        success: function(data) {
+            //console.log(data);
+            if(intensive){
+                levelStop = data['sd_10'];
+                for (var g = 10; g > 0; g--) {
+                    $('#name_th').after("<th class='attendance_th'><div class='rotateText'>" + data['sd_' + g] + "</div></th>");
+                    level_date[g - 1] = data['sd_' + g];
+                }
+            }else {
+                levelStop = data['sd_21'];
+                for (var g = 21; g > 0; g--) {
+                    $('#name_th').after("<th class='attendance_th'><div class='rotateText'>" + data['sd_' + g] + "</div></th>");
+                    level_date[g - 1] = data['sd_' + g];
+                }
+            }
+        },
+        error: function(xhr, str){
+            alert('Возникла ошибка: ' + xhr.responseCode);
+        }
+    });
     //return;
 			//----- /Построение шапки таблицы
 
@@ -813,23 +764,13 @@ function lgtt_match_fn(teacher,timetable,level_start,intensive){
                     //console.log(data['status']);
                     //return;
                     var payed_all = 1;
-                        //if(!data['paymentExists'] && !data['attendenceExists']) {
-                        //    $('.brick').children("input[value='" + teacher + "']").siblings("input[value='" + timetable + "']").siblings("input[value='" + level_start + "']").parent('.brick').children('.remove_combination').children('.btn_remove_combination').prop('disabled', false);
-                        //}else{
-                        //    $('.brick').children("input[value='" + teacher + "']").siblings("input[value='" + timetable + "']").siblings("input[value='" + level_start + "']").parent('.brick').children('.remove_combination').children('.btn_remove_combination').prop({'disabled':true,'hidden':true});
-                        //}
-
-                    //if (data == null) {
-                    //    $('.brick').children("input[value='" + teacher + "']").siblings("input[value='" + timetable + "']").siblings("input[value='" + level_start + "']").parent('.brick').children('.remove_combination').children('.btn_remove_combination').prop('disabled', false);
-                    //}
-                    //if (data) {
                         var idArr = data['id'];
                         for (var i = (data['name'].length - 1); i >= 0; i--) {
                             $('#th_line').after("<tr id='tr" + i + "'></tr>");
                             idQuoted = "'" + data['id'][i] + "'";
                             nameQuoted = "'" + data['name'][i] + "'";
                             iQuoted = "'" + i + "'";
-                            if (data['numPayed'][i] == data['numReserved'][i]) {
+                            if (data['numPayed'][i] != 0 && data['numReserved'][i] !=0 && data['numPayed'][i] == data['numReserved'][i]) {
                                 $('#tr' + i).html('<td  class="studentTitle" id="td' + i + '_' + 0 + '"><div class="remove_pers_soch"><button  onclick="remove_pers_soch(' + idQuoted + ',' + nameQuoted + ',' + iQuoted + ',' + intensiveQuoted +')">x</button></div><div class="pay_check pay_check_green">' + data['numPayed'][i] + '/' + data['numReserved'][i] + '</div><div class="fio_pers_soch"><a href='+window.location.origin+'/bs_mvc/person?id='+data['id'][i]+' target="_self" class="fio_links">' + data['name'][i] + '</a></div></td>');
                                 //payed_all = 1;
                             } else {
@@ -938,7 +879,6 @@ function lgtt_match_fn(teacher,timetable,level_start,intensive){
                                 }
                             }
                         }
-                    //}
 
                     //		Проверка оплачен ли урок (полностью или частично)
 
@@ -1008,7 +948,7 @@ function lgtt_match_fn(teacher,timetable,level_start,intensive){
                                     success: function (data) {
                                         //console.log(data);
                                         $('.brick').remove();
-                                        building_blocks();
+                                        building_blocks(teacher, timetable, level_start, intensive);
                                         lgtt_match_fn(teacher, timetable, level_start, intensive);
                                     },
                                     error: function (xhr, str) {
@@ -1031,7 +971,7 @@ function lgtt_match_fn(teacher,timetable,level_start,intensive){
                                 success: function (data) {
                                     //console.log(data);
                                     $('.brick').remove();
-                                    building_blocks();
+                                    building_blocks(teacher, timetable, level_start, intensive);
                                     lgtt_match_fn(teacher, timetable, level_start, intensive);
                                 },
                                 error: function (xhr, str) {
@@ -1041,60 +981,11 @@ function lgtt_match_fn(teacher,timetable,level_start,intensive){
                         }
                     });
 
-                    //---- /действия при клике на ячейку даты, находиться здесь так как таблицеа формируется после формирования страницы
-                    //	*/
-                    // var is_today_within_combination = 0;
-                    //var is = 0;
-                    //$.ajax({
-                    //	type:'POST',
-                    //	async: false,
-                    //	url: './oldphpfiles/is_today_within_combination.php',
-                    //	dataType: 'json',
-                    //	data: {teacher:r,timetable:t,level_start:u},
-                    //	success: function(data){
-                    //		is = data;
-                    //	},
-                    //	error:  function(xhr, str){
-                    //		alert('Возникла ошибка: ' + xhr.responseCode);
-                    //	}
-                    //});
-
-                    //var teacherQuoted = "'" + teacher + "'";
-                    //var timetableQuoted = "'" + timetable + "'";
-                    //var level_startQuoted = "'" + level_start + "'";
-                    //$('.btn_arrangment').remove();
-                    //$('.btn_send_to_archive').remove();
-                    //
-                    //$('.att_table').before('<div class="btn_arrangment"><input type="text" name="new_level_start" id="new_level_start"/><button class="change_start_date" onclick="change_start_date(' + teacherQuoted + ',' + timetableQuoted + ',' + level_startQuoted + ')">change_start_date</button><cite>Изменить дату старта возможно, если нет посещений или заморозок</cite></div><div class="send_to_archive_div"><button class="btn_send_to_archive" onclick="send_to_archive(' + teacherQuoted + ',' + timetableQuoted + ',' + level_startQuoted + ')" disabled>Отправить в архив</button></div>');
-                    //
-                    //if (location.pathname == "/bs_mvc/Attendance") {
-                    //    $("#new_level_start").datepicker({
-                    //        showOn: "button",
-                    //        buttonImage: "images/calendar.gif",
-                    //        buttonImageOnly: true,
-                    //        buttonText: "Select date",
-                    //        dateFormat: "yy-mm-dd",
-                    //        firstDay: 1,
-                    //    });
-                    //}
-                    //
-                    //if ($('*').hasClass('color') || $('*').hasClass('color_freeze')) {
-                    //    $('.change_start_date').prop('disabled', true);
-                    //}
-                    //
-
-
-
                         var dayNow = new Date();
                         $('.btn_send_to_archive').prop('disabled', true);
                         if (payed_all == 1 && dayNow.getTime() > new Date(levelStop.replace(/-/g, ",")).getTime()){
                             $('.btn_send_to_archive').prop('disabled', false);
                         }
-
-
-                    //}
-                    //if(payed_all==1 && $('*').hasClass('fio_pers_soch') && is ==-1){$('.btn_send_to_archive').prop('disabled',false);}
-                    //$('.past_combinations .btn_send_to_archive').prop('disabled',true);}
                     }else{
                             $('.btn_send_to_archive').prop('disabled', true)
                         }
@@ -1104,14 +995,6 @@ function lgtt_match_fn(teacher,timetable,level_start,intensive){
 					alert('Возникла ошибка ajax: ' + xhr.responseCode);
 				}
 			});
-
-    //var teacherQuoted = "'" + teacher + "'";
-    //var timetableQuoted = "'" + timetable + "'";
-    //var level_startQuoted = "'" + level_start + "'";
-    //$('.btn_arrangment').remove();
-    //$('.btn_send_to_archive').remove();
-    //
-    //$('.att_table').before('<div class="btn_arrangment"><input type="text" name="new_level_start" id="new_level_start"/><button class="change_start_date" onclick="change_start_date(' + teacherQuoted + ',' + timetableQuoted + ',' + level_startQuoted + ')">change_start_date</button><cite>Изменить дату старта возможно, если нет посещений или заморозок</cite></div><div class="send_to_archive_div"><button class="btn_send_to_archive" onclick="send_to_archive(' + teacherQuoted + ',' + timetableQuoted + ',' + level_startQuoted + ')" disabled>Отправить в архив</button></div>');
 
     if (location.pathname == "/bs_mvc/Attendance") {
         $("#new_level_start").datepicker({
@@ -1129,45 +1012,71 @@ function lgtt_match_fn(teacher,timetable,level_start,intensive){
     if ($('*').hasClass('color') || $('*').hasClass('color_freeze')) {
         $('.change_start_date').prop('disabled', true);
     }
-
-			/*----- /Фамилии даты -------*/
-
-	//	}
 }
 
 function level_culc_fn(){
 	//var msg = $('#level_culc').serialize();
-	if($('#level_culc input#teacher_choose')[0]['value'] != "" &&
-		$('#level_culc input#timetable_choose')[0]['value'] != "" &&
-		$('#level_culc input#level_start_date')[0]['value'] != "" &&
-		$('#level_culc input#level_choose')[0]['value'] != "" ){
-		var teacher = $('#level_culc input#teacher_choose')[0]['value'];
-		var timetable = $('#level_culc input#timetable_choose')[0]['value'];
-		var level_start = $('#level_culc input#level_start_date')[0]['value'];
-		var level = $('#level_culc input#level_choose')[0]['value'];
-        var intensive = false;
-        if($('#intensive_choose').attr('checked') == 'checked'){intensive = true;}
-		$.ajax({
-			type:'POST',
-			url: './LevelCalculation/CalculateLevelDates',
-            dataType: 'json',
-			data: {teacher:teacher,timetable:timetable,level_start:level_start,level:level,intensive:intensive},
-			success: function(data){
-				//console.log(data);
-                //return;
-				if(data['wrongTimetable']){
-					alert("Дата старта уровня не соответствует расписанию");
-				}else{
-                    var origin = window.location.origin;
-                    var pathname = "/bs_mvc/BadDays";
-                    window.location.href = origin + pathname;
-				}
-			},
-			error:  function(xhr, str){
-				alert('Возникла ошибка: ' + xhr.responseCode);
-			}
-		});
-	}else{alert('Заполните все обязательные поля')}
+    var intensive = false;
+    var timetable = false;
+    var level = false;
+    if($('#intensive_choose').attr('checked') == 'checked'){intensive = true;}
+    if(intensive) {
+        if ($('#level_culc input#teacher_choose')[0]['value'] != "" &&
+            $('#level_culc input#level_start_date')[0]['value'] != "") {
+            var teacher = $('#level_culc input#teacher_choose')[0]['value'];
+            var level_start = $('#level_culc input#level_start_date')[0]['value'];
+            $.ajax({
+                type: 'POST',
+                url: './LevelCalculation/CalculateLevelDates',
+                dataType: 'json',
+                data: { teacher: teacher, timetable: timetable, level_start: level_start, level: level, intensive: intensive},
+                success: function (data) {
+                    if (data['wrongTimetable']) {
+                        alert("Дата старта уровня не соответствует расписанию");
+                    } else {
+                        alert("Сочетание создано");
+                    }
+                },
+                error: function (xhr, str) {
+                    alert('Возникла ошибка: ' + xhr.responseCode);
+                }
+            });
+        } else {
+            alert('Заполните все обязательные поля')
+        }
+    }else {
+        if ($('#level_culc input#teacher_choose')[0]['value'] != "" &&
+            $('#level_culc input#timetable_choose')[0]['value'] != "" &&
+            $('#level_culc input#level_start_date')[0]['value'] != "" &&
+            $('#level_culc input#level_choose')[0]['value'] != "") {
+            var teacher = $('#level_culc input#teacher_choose')[0]['value'];
+            timetable = $('#level_culc input#timetable_choose')[0]['value'];
+            var level_start = $('#level_culc input#level_start_date')[0]['value'];
+            level = $('#level_culc input#level_choose')[0]['value'];
+            $.ajax({
+                type: 'POST',
+                url: './LevelCalculation/CalculateLevelDates',
+                dataType: 'json',
+                data: { teacher: teacher, timetable: timetable, level_start: level_start, level: level, intensive: intensive},
+                success: function (data) {
+                    //console.log(data);
+                    //return;
+                    if (data['wrongTimetable']) {
+                        alert("Дата старта уровня не соответствует расписанию");
+                    } else {
+                        var origin = window.location.origin;
+                        var pathname = "/bs_mvc/BadDays?badDayPage=1";
+                        window.location.href = origin + pathname;
+                    }
+                },
+                error: function (xhr, str) {
+                    alert('Возникла ошибка: ' + xhr.responseCode);
+                }
+            });
+        } else {
+            alert('Заполните все обязательные поля')
+        }
+    }
 }
 
 
@@ -1617,7 +1526,7 @@ function person_match(id){
 		dataType: 'json',
 		data: {id:id},
 		success: function(data) {
-            console.log(data);
+            //console.log(data);
             //return;
             $('#attendance_table').html(data);
 			name = data['name'];
@@ -2670,22 +2579,45 @@ function fix_person_start(date){
 	});
 }
 
-function remove_combination(teacher,timetable,level_start){
-	if(confirm("Вы действительно хотите удалить сочетание: "+teacher+"/"+timetable+"/"+level_start+" ?")){
+function remove_combination(teacher,timetable,level_start,intensive){
+    if(intensive == 'false'){
+        intensive = false;
+    }
+    if(intensive == 'true'){
+        intensive = true;
+    }
+    if(intensive == '1'){
+        intensive = true;
+    }
+    if(intensive == '0'){
+        intensive = false;
+    }
+    if(intensive == 'undefined'){
+        intensive = false;
+    }
+    var $timetableOrIntensive = timetable;
+    if(intensive){$timetableOrIntensive = intensive}
+	if(confirm("Вы действительно хотите удалить сочетание: "+teacher+"/"+$timetableOrIntensive+"/"+level_start+" ?")){
 		$.ajax({
 			type: 'POST',
 			url: './Attendance/RemoveCombination.php',
 			dataType: 'json',
-			data: {teacher:teacher,timetable:timetable,level_start:level_start},
+			data: {teacher:teacher,timetable:timetable,level_start:level_start,intensive:intensive},
 			success: function(data) {
-				console.log(data);
-                //return;
-				$(".brick[style*='rgb(0, 0, 255)']").remove();
-				var teacher = $('.brick:first').children('[name=teacher_choose]').val();
-				var timetable = $('.brick:first').children('[name=timetable_choose]').val();
-				var level_start = $('.brick:first').children('[name=level_start_choose]').val();
+				$(".brick[style*='rgb(0, 0, 255)']").parents('.brickWrapper').remove();
+				var teacher = $('.peresent_combinations .brick:first').children('[name=teacher_choose]').val();
+                var timetable = false;
+                var intensive = false;
+                if($('.peresent_combinations .brick:first').children('[name=intensive]') == 'intensive'){
+                    intensive = true;
+                };
+                if(!intensive){
+                    timetable = $('.peresent_combinations .brick:first').children('[name=timetable_choose]').val();
+                }
+				var level_start = $('.peresent_combinations .brick:first').children('[name=level_start_choose]').val();
 				$('.brick:first').css('borderColor','rgb(0, 0, 255)');
-				lgtt_match_fn(teacher,timetable,level_start);
+                //console.log(teacher,timetable,level_start,intensive);
+				lgtt_match_fn(teacher,timetable,level_start,intensive);
 			},
 			error: function(xhr, str){
 				alert('Возникла ошибка: ' + xhr.responseCode);
@@ -2768,8 +2700,8 @@ function send_to_archive(teacher,timetable,level_start,intensive){
 			data: {teacher:teacher,timetable:timetable,level_start:level_start,intensive:intensive},
 			success: function(data) {
 				console.log();
-                $('.brick').remove();
-                building_blocks();
+                $('.brickWrapper').remove();
+                building_blocks(teacher,timetable,level_start,intensive);
                 if(intensive){
                     $(":input[value*='" + teacher + "']").siblings(":input[value*='" + intensive + "']").siblings(":input[value*='" + level_start + "']").parent().attr('style', 'border-color: rgb(0,0,255);');
                     $('.change_start_date').prop('disabled', true);

@@ -134,8 +134,15 @@ class ModelPerson extends \application\core\model
             $discount = $gettersSetters->getDiscount($id,$teacher,$timetable,$level_start,$intensive);
         }
 
-        $defaulCostOfOneLesson = $gettersSetters->getDefaulCostOfOneLesson($intensive);
-        $costOfOneLessonWithDiscount = $gettersSetters->getCostOfOneLessonWithDiscount($discount,$defaulCostOfOneLesson);
+        if($intensive){
+            $IdOfFirstTenStudents = $gettersSetters->getIdOfFirstTenStudents();
+            $isFirstTenStudent = $gettersSetters->getIsItOneOfFirstTenStudents($IdOfFirstTenStudents, $id);
+            $defaultCostOfOneLesson = $gettersSetters->getDefaultCostOfOneLesson($intensive, $isFirstTenStudent);
+            $costOfOneLessonWithDiscount = $gettersSetters->getCostOfOneLessonWithDiscount($discount,$defaultCostOfOneLesson);
+        }else {
+            $defaultCostOfOneLesson = $gettersSetters->getDefaultCostOfOneLesson($intensive, false);
+            $costOfOneLessonWithDiscount = $gettersSetters->getCostOfOneLessonWithDiscount($discount, $defaultCostOfOneLesson);
+        }
 
         if($intensive){
             $datesOfVisit = $gettersSetters->getDatesOfVisit($id, $teacher, 'undefined', $level_start,$intensive);
@@ -194,12 +201,12 @@ class ModelPerson extends \application\core\model
         if($intensive){
             $IdOfFirstTenStudents = $gettersSetters->getIdOfFirstTenStudents();
             $isFirstTenStudent = $gettersSetters->getIsItOneOfFirstTenStudents($IdOfFirstTenStudents, $id);
-            $defaulCostOfOneLesson = $gettersSetters->getDefaulCostOfOneLesson($intensive, $isFirstTenStudent);
-            $costOfOneLessonWithDiscount = $gettersSetters->getCostOfOneLessonWithDiscount($discount,$defaulCostOfOneLesson);
+            $defaultCostOfOneLesson = $gettersSetters->getDefaultCostOfOneLesson($intensive, $isFirstTenStudent);
+            $costOfOneLessonWithDiscount = $gettersSetters->getCostOfOneLessonWithDiscount($discount,$defaultCostOfOneLesson);
             $arr['CostOfOneLessonWithDiscount']=$costOfOneLessonWithDiscount;
         }else {
-            $defaulCostOfOneLesson = $gettersSetters->getDefaulCostOfOneLesson($intensive, false);
-            $costOfOneLessonWithDiscount = $gettersSetters->getCostOfOneLessonWithDiscount($discount, $defaulCostOfOneLesson);
+            $defaultCostOfOneLesson = $gettersSetters->getDefaultCostOfOneLesson($intensive, false);
+            $costOfOneLessonWithDiscount = $gettersSetters->getCostOfOneLessonWithDiscount($discount, $defaultCostOfOneLesson);
             $arr['CostOfOneLessonWithDiscount'] = $costOfOneLessonWithDiscount;
         }
 
@@ -236,9 +243,17 @@ class ModelPerson extends \application\core\model
             $discount = $gettersSetters->getDiscount($id,$teacher,$timetable,$level_start,$intensive);
         }
 
-        $defaulCostOfOneLesson = $gettersSetters->getDefaulCostOfOneLesson($intensive);
-        $costOfOneLessonWithDiscount = $gettersSetters->getCostOfOneLessonWithDiscount($discount,$defaulCostOfOneLesson);
-        $arr['CostOfOneLessonWithDiscount'] = $costOfOneLessonWithDiscount;
+        if($intensive){
+            $IdOfFirstTenStudents = $gettersSetters->getIdOfFirstTenStudents();
+            $isFirstTenStudent = $gettersSetters->getIsItOneOfFirstTenStudents($IdOfFirstTenStudents, $id);
+            $defaultCostOfOneLesson = $gettersSetters->getDefaultCostOfOneLesson($intensive, $isFirstTenStudent);
+            $costOfOneLessonWithDiscount = $gettersSetters->getCostOfOneLessonWithDiscount($discount,$defaultCostOfOneLesson);
+            $arr['CostOfOneLessonWithDiscount']=$costOfOneLessonWithDiscount;
+        }else {
+            $defaultCostOfOneLesson = $gettersSetters->getDefaultCostOfOneLesson($intensive, false);
+            $costOfOneLessonWithDiscount = $gettersSetters->getCostOfOneLessonWithDiscount($discount, $defaultCostOfOneLesson);
+            $arr['CostOfOneLessonWithDiscount'] = $costOfOneLessonWithDiscount;
+        }
 
         $balance = $gettersSetters->getBalance($id);
 
@@ -303,7 +318,7 @@ class ModelPerson extends \application\core\model
         }
 
 
-        $data = $gettersSetters->numPayedNumReservedCostOfOneLessonWithDiscount($id,$teacher,$timetable,$level_start,$intensive);
+        $data = $this->numPayedNumReservedCostOfOneLessonWithDiscount($id,$teacher,$timetable,$level_start,$intensive);
         if($data['num_payed']!=0){ $payedLessonExists=1; }
 
         $arr[] = $payedLessonExists;
