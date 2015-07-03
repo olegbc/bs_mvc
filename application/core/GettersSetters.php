@@ -1477,6 +1477,101 @@ class GettersSetters
         $data['state'] = 'update';
         return $data;
     }
+    ////// NUMBER OF STUDENTS //////
+    public function getallTeachers(){
+        $db = $this->db;
+        $sql="SELECT DISTINCT `teacher` FROM `levels`";
+        $data = $db->query($sql);
+        $data = $data->fetchAll($db::FETCH_COLUMN);
+        return $data;
+    }
+    public function getPersonStratStopOfEveryStudentOfThisTeacher($thisTeacher){
+        $db = $this->db;
+        $sql = "SELECT `person_start`,`person_stop` FROM `levels_person` WHERE `teacher`='".$thisTeacher."'";
+        $data = $db->query($sql);
+        $data = $data->fetchAll($db::FETCH_ASSOC);
+        return $data;
+    }
+    /////// AMOUNT OF MONEY /////
+    public function getSumMoneyForThisWeek($start_week,$stop_week){
+        $db = $this->db;
+        $sql = "SELECT SUM(`given`) FROM `payment_has` WHERE `date` between '".$start_week."' AND '".$stop_week."'";
+        $data = $db->query($sql);
+        $data = $data->fetchAll($db::FETCH_COLUMN);
+        return $data;
+    }
+    /////// SPU /////
+    public function getAllPersonsStartsAndStopsAndOtherInformation(){
+        $db = $this->db;
+        $sql = "SELECT `id`, `id_person`, `person_start`, `person_stop`,`teacher`,`timetable`,`level_start`,`intensive` FROM `levels_person`";
+        $data = $db->query($sql);
+        $data = $data->fetchAll($db::FETCH_ASSOC);
+        return $data;
+    }
+    public function getNumReserved($id_person,$teacher,$timetable=null,$level_start,$intensive=null){
+        $db = $this->db;
+        if($intensive){
+            $sql = "SELECT `num_reserved` FROM `payed_lessons` WHERE `id_person` ='" . $id_person . "' AND `teacher` = '" . $teacher . "' AND `level_start` = '" . $level_start . "' AND `intensive` ='" . $intensive . "'";
+        }else {
+            $sql = "SELECT `num_reserved` FROM `payed_lessons` WHERE `id_person` ='" . $id_person . "' AND `teacher` = '" . $teacher . "' AND `level_start` = '" . $level_start . "' AND `timetable` ='" . $timetable . "'";
+        }
+        $data = $db->query($sql);
+        $data = $data->fetchAll($db::FETCH_ASSOC);
+        return $data;
+    }
+    /////// BAD DAYS //////
+    public function getIsThisBadDayExist($teacher,$timetable,$level_start,$badDayClicked){
+        $db = $this->db;
+        $sql = "SELECT `id` FROM `bad_days` WHERE `teacher`='".$teacher."' AND `timetable`='".$timetable."' AND `level_start`='".$level_start."' AND `bad_day`='".$badDayClicked."'";
+        $data = $db->query($sql);
+        $data = $data->fetchAll($db::FETCH_COLUMN);
+        if(empty($data)){return false;}else{return true;}
+    }
 
+    public function setDeleteBadDay($teacher,$timetable,$level_start,$badDayClicked){
+        $db = $this->db;
+        $sql = "DELETE FROM `bad_days` WHERE `teacher`=:teacher AND `timetable`=:timetable AND `level_start`=:level_start AND `bad_day`=:badDayClicked";
+        $stmt = $db->prepare($sql);
+
+        $stmt->bindParam(':teacher', $teacher, \PDO::PARAM_STR);
+        $stmt->bindParam(':timetable', $timetable, \PDO::PARAM_STR);
+        $stmt->bindParam(':level_start', $level_start, \PDO::PARAM_STR);
+        $stmt->bindParam(':badDayClicked', $badDayClicked, \PDO::PARAM_STR);
+        $stmt->execute();
+
+        $data['errorCode'] = $stmt->errorCode();
+        $data['rowCount'] = $stmt->rowCount();
+        $data['lastInsert'] = $db->lastInsertId();
+        $data['state'] = 'delete';
+        return $data;
+    }
+    public function setInsertBadDay($teacher,$timetable,$level_start,$badDayClicked){
+        $db = $this->db;
+        $sql = "INSERT INTO `bad_days` (`bad_day`,`teacher`,`timetable`,`level_start`) VALUES (:badDayClicked,:teacher,:timetable,:level_start)";
+        $stmt = $db->prepare($sql);
+
+        $stmt->bindParam(':teacher', $teacher, \PDO::PARAM_STR );
+        $stmt->bindParam(':timetable', $timetable, \PDO::PARAM_STR );
+        $stmt->bindParam(':level_start', $level_start, \PDO::PARAM_STR );
+        $stmt->bindParam(':badDayClicked', $badDayClicked, \PDO::PARAM_STR);
+        $stmt->execute();
+
+        $data['errorCode'] = $stmt->errorCode();
+        $data['rowCount'] = $stmt->rowCount();
+        $data['lastInsert'] = $db->lastInsertId();
+        $data['state'] = 'insert';
+        return $data;
+    }
+    public function getAllAttenedDates($teacher,$timetable=null,$level_start,$intensive=null){
+        $db = $this->db;
+        if($intensive){
+            $sql = "SELECT `date_of_visit` FROM `attendance` WHERE `teacher`='" . $teacher . "' AND `level_start`='" . $level_start . "' AND `intensive`='" . $intensive . "'";
+        }else{
+            $sql = "SELECT `date_of_visit` FROM `attendance` WHERE `teacher`='" . $teacher . "' AND `level_start`='" . $level_start . "' AND `timetable`='" . $timetable . "'";
+        }
+        $data = $db->query($sql);
+        $data = $data->fetchAll($db::FETCH_COLUMN);
+        return $data;
+    }
 
 }

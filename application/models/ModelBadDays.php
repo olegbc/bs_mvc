@@ -11,39 +11,43 @@ class ModelBadDays extends \application\core\model
     }
 
     public function combinationAndBadDaysDates(){
+        $gettersSetters = $this->gettersSetters;
         $teacher = $_POST["teacher"];
         $timetable = $_POST["timetable"];
         $level_start = $_POST["level_start"];
 
-        $dataMain['combinationDates'] = $this->getCombinationDates($teacher,$timetable,$level_start);
-        $dataMain['BadDaysOfCombination'] = $this->getAllBadDaysOfCombination($teacher,$timetable,$level_start);
+        $dataMain['combinationDates'] = $gettersSetters->getCombinationDates($teacher,$timetable,$level_start,false);
+        $dataMain['BadDaysOfCombination'] = $gettersSetters->getAllBadDaysOfCombination($teacher,$timetable,$level_start);
 
         return $dataMain;
     }
     public function insertOrDeleteBadDay(){
+        $gettersSetters = $this->gettersSetters;
         $teacher = $_POST["teacher"];
         $timetable = $_POST["timetable"];
         $level_start = $_POST["level_start"];
         $badDayClicked = $_POST["badDayClicked"];
 
-        $data = $this->getIsThisBadDayExist($teacher,$timetable,$level_start,$badDayClicked);
+        $data = $gettersSetters->getIsThisBadDayExist($teacher,$timetable,$level_start,$badDayClicked);
         if($data){
-            $this->setDeleteBadDay($teacher,$timetable,$level_start,$badDayClicked);
+            $gettersSetters->setDeleteBadDay($teacher,$timetable,$level_start,$badDayClicked);
         }else{
-            $this->setInsertBadDay($teacher,$timetable,$level_start,$badDayClicked);
+            $gettersSetters->setInsertBadDay($teacher,$timetable,$level_start,$badDayClicked);
         }
     }
     public function attenedDates(){
+        $gettersSetters = $this->gettersSetters;
         $teacher = $_POST["teacher"];
         $timetable = $_POST["timetable"];
         $level_start = $_POST["level_start"];
 
-        $data = $this->getAttenedDates($teacher,$timetable,$level_start);
+        $data = $gettersSetters->getAllAttenedDates($teacher,$timetable,$level_start,false);
         return $data;
     }
 
+    /*
     /////////////////////////////////////////////////////////   GETTERS/SETTERS   /////////////////////////////////////////////////////////
-
+/*
     public function getCombinationDates($teacher,$timetable,$level_start){
         $db = $this->db;
         $sql = "SELECT sd_1,sd_2,sd_3,sd_4,sd_5,sd_6,sd_7,sd_8,sd_9,sd_10,sd_11,sd_12,sd_13,sd_14,sd_15,sd_16,sd_17,sd_18,sd_19,sd_20,sd_21 FROM `levels` WHERE levels.teacher='".$teacher."' AND levels.timetable='".$timetable."' AND levels.sd_1='".$level_start."'";
@@ -58,19 +62,19 @@ class ModelBadDays extends \application\core\model
         $data = $data->fetchAll($db::FETCH_COLUMN);
         return $data;
     }
-    public function getIsThisBadDayExist($teacher,$timetable,$level_start,$badDayClicked){
-        $db = $this->db;
-        $sql = "SELECT `id` FROM `bad_days` WHERE `teacher`='".$teacher."' AND `timetable`='".$timetable."' AND `level_start`='".$level_start."' AND `bad_day`='".$badDayClicked."'";
-        $data = $db->query($sql);
-        $data = $data->fetchAll($db::FETCH_COLUMN);
-        if(empty($data)){return false;}else{return true;}
-    }
     public function getAttenedDates($teacher,$timetable,$level_start){
         $db = $this->db;
         $sql = "SELECT `date_of_visit` FROM `attendance` WHERE `teacher`='" . $teacher . "' AND `level_start`='" . $level_start . "' AND `timetable`='" . $timetable . "'";
         $data = $db->query($sql);
         $data = $data->fetchAll($db::FETCH_COLUMN);
         return $data;
+    }
+    public function getIsThisBadDayExist($teacher,$timetable,$level_start,$badDayClicked){
+        $db = $this->db;
+        $sql = "SELECT `id` FROM `bad_days` WHERE `teacher`='".$teacher."' AND `timetable`='".$timetable."' AND `level_start`='".$level_start."' AND `bad_day`='".$badDayClicked."'";
+        $data = $db->query($sql);
+        $data = $data->fetchAll($db::FETCH_COLUMN);
+        if(empty($data)){return false;}else{return true;}
     }
 
     public function setDeleteBadDay($teacher,$timetable,$level_start,$badDayClicked){
@@ -107,4 +111,5 @@ class ModelBadDays extends \application\core\model
         $data['state'] = 'insert';
         return $data;
     }
+    */
 }

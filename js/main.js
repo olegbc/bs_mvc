@@ -880,52 +880,6 @@ function lgtt_match_fn(teacher,timetable,level_start,intensive){
                             }
                         }
 
-                    //		Проверка оплачен ли урок (полностью или частично)
-
-                    //function pay() {
-                    //    var t = 0;
-                    //    for (var i in data) {
-                    //        var start_point = $('td[id^=td' + t + '_].person_start_mark').attr('id');
-                    //        // console.log("start_point 1 : "+start_point);
-                    //        start_point = parseInt(start_point.replace('td' + t + '_', ''));
-                    //        // console.log("start_point 2 : "+start_point);
-                    //        // alert(i);
-                    //        var flag = 0;
-                    //        for (var y = 0; y <= data[i]['lessons_num'][3]; y++) {
-                    //            // alert(y);
-                    //            if (y === 0 && y === data[i]['lessons_num'][3] && data[i]['lessons_num'][4] > 0) {
-                    //                console.log('недоплата : ' + data[i]['lessons_num'][4])
-                    //                $('td[id=td' + t + '_' + start_point + ']').addClass('partly_payed_lesson');
-                    //
-                    //            } else if (y !== 0 && y === data[i]['lessons_num'][3] && data[i]['lessons_num'][4] > 0) {
-                    //                // console.log('недоплата : '+data[i]['lessons_num'][4])
-                    //                start_point = start_point + 1;
-                    //                $('td[id=td' + t + '_' + start_point + ']').addClass('partly_payed_lesson');
-                    //
-                    //            } else if (data[i]['lessons_num'][4] === 0) {
-                    //            }
-                    //            else {
-                    //                if (start_point !== undefined && flag !== 1) {
-                    //                    // console.log(data[i]['lessons_num'][3]);
-                    //                    flag = 1;
-                    //                    var num_num = data[i]['lessons_num'][3];
-                    //                    // console.log(num_num);+
-                    //                    // $('td[id=td'+y+'_'+start_point+'].person_start_mark').css('color','rgb(255, 20, 255)');
-                    //                    $('td[id=td' + t + '_' + start_point + '].person_start_mark').addClass('payed_lesson');
-                    //                } else {
-                    //                    start_point = start_point + 1;
-                    //                    // console.log("start_point 3 : "+start_point);
-                    //                    // $('td[id=td'+y+'_'+start_point+']').css('color','rgb(255, 20, 255)');
-                    //                    // $('td[id=td0_6]').delay(8000).css('color','rgb(255, 20, 255)');
-                    //                    $('td[id=td' + t + '_' + start_point + ']').addClass('payed_lesson');
-                    //                    // alert($('td[id=td0_6]'));
-                    //                }
-                    //            }
-                    //        }
-                    //        t++;
-                    //    }
-                    //}
-
                     //---- действия при клике на ячейку даты, находиться здесь так как таблицеа формируется после формирования страницы
                     $('.attendence_mark').not('.before_person_start_mark').not('.color_freeze').click(function () {
                         var thisId = $(this).attr('id');
@@ -947,7 +901,7 @@ function lgtt_match_fn(teacher,timetable,level_start,intensive){
                                     },
                                     success: function (data) {
                                         //console.log(data);
-                                        $('.brick').remove();
+                                        $('.brickWrapper').remove();
                                         building_blocks(teacher, timetable, level_start, intensive);
                                         lgtt_match_fn(teacher, timetable, level_start, intensive);
                                     },
@@ -970,7 +924,7 @@ function lgtt_match_fn(teacher,timetable,level_start,intensive){
                                 },
                                 success: function (data) {
                                     //console.log(data);
-                                    $('.brick').remove();
+                                    $('.brickWrapper').remove();
                                     building_blocks(teacher, timetable, level_start, intensive);
                                     lgtt_match_fn(teacher, timetable, level_start, intensive);
                                 },
@@ -2661,7 +2615,7 @@ function change_start_date(teacher,timetable,level_start,intensive){
                         alert('Данная дата не совпадает с расписанием(не тот день недели');
                     }else{
                     lgtt_match_fn(teacher,timetable,newLevelStart,intensive);
-                    $('.brick').remove();
+                    $('.brickWrapper').remove();
                     building_blocks(teacher,timetable,newLevelStart,intensive);
                     }
                 }

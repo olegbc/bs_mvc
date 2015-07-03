@@ -74,10 +74,11 @@ function findComboDays(teacher,timetable,level_start,shift){
 		dataType: 'json',
 		data: {teacher:teacher,timetable:timetable,level_start:level_start},
         success: function(data) {
+            //console.log(data);
             var i=0;
             var yearMonthDay = [];
             for(i=0;i<21;i++){
-                yearMonthDay[i] = data['combinationDates'][i].split('-');
+                yearMonthDay[i] = data['combinationDates'][0][i].split('-');
             }
             var badDayDates = [];
             for(i=0;i<data['BadDaysOfCombination'].length;i++){
@@ -359,42 +360,6 @@ function displayCalendarTable(month,year,yearMonthDay,teacher,timetable,level_st
 	if(month==11){daysNstartingPos((month-10),(year+1),'bad_days_calendar_4',badDayDates);}else if(month+1==11){daysNstartingPos((month-10),(year+1),'bad_days_calendar_4',badDayDates);}else{daysNstartingPos((month+2),year,'bad_days_calendar_4',badDayDates);}
 	betweenComboDays(yearMonthDay);
 
-	//	/бэд дэй в базу
-	//$('.day').click(function(){
-     //   if($(this).hasClass('.attenedDay')){
-     //       alert('55');
-     //   }
-     //   return;
-	//	var badDayClicked=$(this).attr('date-ymd');
-	//	if(badDayClicked!=level_start){
-	//		$.ajax({
-	//			type: 'POST',
-	//			url: './BadDays/InsertOrDeleteBadDay',
-	//			dataType: 'json',
-	//			data: {badDayClicked:badDayClicked,teacher:teacher,timetable:timetable,level_start:level_start},
-	//			success: function(data){
-	//				$.ajax({
-	//					type:'POST',
-	//					url: './LevelCalculation/calculateLevelDates',
-     //                   dataType: 'json',
-	//					data: {teacher:teacher,timetable:timetable,level_start:level_start},
-	//					success: function(data){
-	//						findComboDays(teacher,timetable,level_start);
-	//					},
-	//					error:  function(xhr, str){
-	//						alert('Возникла ошибка: ' + xhr.responseCode);
-	//					}
-	//				});
-	//				findComboDays(teacher,timetable,level_start);
-	//			},
-	//			error: function(xhr, str){
-	//				alert('Возникла ошибка: ' + xhr.responseCode);
-	//			}
-	//		});
-	//	}else{alert('Если дата старта не подходящий день, перенесите дату старта на странице управления attendance_table');}
-	//});
-	//	/бэд дэй в базу
-
 	function daysNstartingPos(month,year,table,badDayDates){
 		// console.log(badDayDates);
 		var month_num_now = d.getMonth();
@@ -503,6 +468,7 @@ function displayCalendarTable(month,year,yearMonthDay,teacher,timetable,level_st
 
 
 function betweenComboDays(yearMonthDay){
+    //console.log( yearMonthDay  );
 	for(var y=yearMonthDay[0][0];y<=yearMonthDay[20][0];y++){
 		if(y == parseInt(yearMonthDay[0][0])+1){
 			for(var m=1;m<=yearMonthDay[20][1];m++){
@@ -511,6 +477,7 @@ function betweenComboDays(yearMonthDay){
 				if(m==yearMonthDay[0][1]){
 					for(var d=yearMonthDay[0][2];d<=days;d++){
 						if(d<10){d="0"+d;}
+                        console.log( $('td[date-ymd='+y+'-'+m+'-'+d+']')   );
 						$('td[date-ymd='+y+'-'+m+'-'+d+']').addClass('betweenComboDays');
 					}
 				}
@@ -557,9 +524,11 @@ function betweenComboDays(yearMonthDay){
 				if(m<10){m="0"+m;}
 				var days = getDaysInMonth(m,y);
 				if(m==yearMonthDay[0][1]){
+                    var count = 0;
 					for(var d=yearMonthDay[0][2];d<=days;d++){
-						if(d<10){d="0"+d;}
+						if(d<10 && count!=0){d="0"+d;}
 						$('td[date-ymd='+y+'-'+m+'-'+d+']').addClass('betweenComboDays');
+                        count++;
 					}
 				}
 				if(m!=yearMonthDay[0][1] && m!=yearMonthDay[20][1]){

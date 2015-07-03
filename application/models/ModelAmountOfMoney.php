@@ -12,6 +12,7 @@ class ModelAmountOfMoney extends \application\core\model
     }
 
     public function amountOfMoney(){
+        $gettersSetters = $this->gettersSetters;
         $datetime1 = new \DateTime($_POST["from"]);
         $datetime2 = new \DateTime($_POST["to"]);
         $interval = $datetime1->diff($datetime2);
@@ -23,10 +24,8 @@ class ModelAmountOfMoney extends \application\core\model
             $start_week = date('Y-m-d',$start_week_range_unix + (604800*$t));
             $stop_week = date('Y-m-d',$start_week_range_unix + ((604800*($t+1))-86400));
 
-            $data = $this->getSumMoneyForThisWeek($start_week,$stop_week);
+            $data = $gettersSetters->getSumMoneyForThisWeek($start_week,$stop_week);
 
-//            $arr[$t][0]=$data[0];
-//            $arr[$t][1]=$start_week." - ".$stop_week;
             if($data[0]==null){
                 $arr['amount'][]=0;
             }else{
@@ -38,6 +37,7 @@ class ModelAmountOfMoney extends \application\core\model
         return $arr;
     }
 
+    /*
     /////////////////////////////////////////////////////////   GETTERS/SETTERS   /////////////////////////////////////////////////////////
 
     public function getSumMoneyForThisWeek($start_week,$stop_week){
@@ -47,4 +47,5 @@ class ModelAmountOfMoney extends \application\core\model
         $data = $data->fetchAll($db::FETCH_COLUMN);
         return $data;
     }
+    */
 }

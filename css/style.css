@@ -53,7 +53,7 @@ width: 75px;height: 19px;/*border: 1px solid red;*/text-align: left;margin: 0px 
 .calendar #widgetCalendar .datepicker {position: static !important;bottom: 0;top: auto;}
 .datepickerContainer{position: static !important;}
 
-.brick{padding:5px;background:red;border:5px solid black;width: 170px;float:left;z-index: 9;position: relative;}
+.brick{padding:5px;background:red;border:5px solid black;width: 170px;float:left;z-index: 6;position: relative;}
 .brickWrapper { margin: 5px; float: left; position: relative; }
 .brick_input{background: red;text-align: center;color: #fff;border: none;}
 
@@ -79,11 +79,11 @@ margin-left: -80px;}
 div#stackedGraph_wrapper {margin: auto;width: 1510px;}
 label {width: 300px;}
 .add_form_select{width: 260px;}
-.btn_arrangment{margin: 10px 0px 20px 8px;}
+.btn_arrangment{margin: 25px 0px 20px 25px;}
 .remove_pers_soch {width: 23px;float: left;margin: 7px;}
 .fio_pers_soch {float: left;margin: 7px 7px 8px 0px;width: 210px;text-align: center;}
 
-.combination_all {overflow: hidden;}
+.combination_all {overflow: hidden;  margin-left: 20px;}
 .line_1,.line_2{width: 100%;float: left;}
 .pay_check {color:white;width: 40px;float: left;background: red;margin: 9px 5px 8px 0px;text-align: center;}
 /*.att_page td#td0_0{width: 300px;overflow: hidden;display: inline-block;white-space: nowrap;}*/
@@ -91,8 +91,8 @@ label {width: 300px;}
 .studentTitle{width: 300px;overflow: hidden;display: inline-block;white-space: nowrap;height: 38px;}
 #attendance_table_name{width: 300px;height: 17px;}
 .pay_check_green{background: green;}
-.send_to_archive_div {padding: 0px 0px 0px 8px;}
-.remove_combination { position: absolute; right: 15px; z-index: 999; top: 11px; float: left; width: 20px; height: 20px; }
+.send_to_archive_div {  padding: 0px 0px 0px 25px;}
+.remove_combination { position: absolute; right: 15px; z-index: 9; top: 11px; float: left; width: 20px; height: 20px; }
 .search_input {text-align: center;margin: 0px 0px 20px 0px;}
 a.fio_links:visited{color:rgb(0, 0, 238);}
 
@@ -139,6 +139,8 @@ button.change_start_date { margin-right: 10px; }
 .attendance_table_name{width:260px;}
 #td0_0{text-align: left;padding-left: 10px;}
 .formField { margin-bottom: 5px; }
+/*datepicker*/
+#ui-datepicker-div{z-index:9999 !important;}
 
 
 

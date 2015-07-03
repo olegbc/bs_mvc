@@ -11,12 +11,12 @@ class ModelNumberOfStudents extends \application\core\model
     }
 
     public function allTeachers(){
-
-        $data = $this->getallTeachers();
+        $gettersSetters = $this->gettersSetters;
+        $data = $gettersSetters->getallTeachers();
         return $data;
     }
     public function datepicker(){
-
+        $gettersSetters = $this->gettersSetters;
         $allTeacher = $_POST['allTeachers'];
 
         $start_week_range = strtotime($_POST["from"]);
@@ -31,7 +31,7 @@ class ModelNumberOfStudents extends \application\core\model
             for($i=0;$i<count($allTeacher);$i++){
                 $thisTeacher = $allTeacher[$i];
 
-                $data = $this->getPersonStratStopOfEveryStudentOfThisTeacher($thisTeacher);
+                $data = $gettersSetters->getPersonStratStopOfEveryStudentOfThisTeacher($thisTeacher);
 
                 foreach($data as $key=>$value){
                     $startPerson = strtotime($data[$key]['person_start']);
@@ -51,6 +51,7 @@ class ModelNumberOfStudents extends \application\core\model
 
     }
 
+    /*
     /////////////////////////////////////////////////////////   GETTERS/SETTERS   /////////////////////////////////////////////////////////
 
     public function getallTeachers(){
@@ -67,4 +68,5 @@ class ModelNumberOfStudents extends \application\core\model
         $data = $data->fetchAll($db::FETCH_ASSOC);
         return $data;
     }
+    */
 }

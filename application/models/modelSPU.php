@@ -12,6 +12,7 @@ class ModelSPU extends \application\core\model
 
     public function spuCalculation()
     {
+        $gettersSetters = $this->gettersSetters;
         $datetime1 = new \DateTime($_POST["from"]);
         $datetime2 = new \DateTime($_POST["to"]);
         $interval = $datetime1->diff($datetime2);
@@ -25,10 +26,10 @@ class ModelSPU extends \application\core\model
 
         $start_week_range_unix = strtotime($_POST["from"]);
 
-        $allPersonsStartsAndStops = $this->getAllPersonsStartsAndStopsAndOtherInformation();
+        $allPersonsStartsAndStops = $gettersSetters->getAllPersonsStartsAndStopsAndOtherInformation();
 
 
-        $allTeachers = $this->getAllTeachers();
+        $allTeachers = $gettersSetters->getAllTeachers();
 
         foreach ($allPersonsStartsAndStops as $value) {
             foreach ($allTeachers as $theTeacher) {
@@ -65,11 +66,11 @@ class ModelSPU extends \application\core\model
                     $level_start = $byTeacherByRange[$key]['level_start'];
                     $intensive = $byTeacherByRange[$key]['intensive'];
 
-                    $datesOfCombination = $this->getCombinationDates($teacher, $timetable, $level_start, $intensive);
+                    $datesOfCombination = $gettersSetters->getCombinationDates($teacher, $timetable, $level_start, $intensive);
 
-                    $discount = $this->getDiscount($id_person, $teacher, $timetable, $level_start, $intensive);
-                    $defaultCostOfOneLesson = $this->getDefaulCostOfOneLesson($intensive);
-                    $costOfOneLessonWithDiscount = $this->getCostOfOneLessonWithDiscount($discount, $defaultCostOfOneLesson);
+                    $discount = $gettersSetters->getDiscount($id_person, $teacher, $timetable, $level_start, $intensive);
+                    $defaultCostOfOneLesson = $gettersSetters->getDefaultCostOfOneLesson($intensive);
+                    $costOfOneLessonWithDiscount = $gettersSetters->getCostOfOneLessonWithDiscount($discount, $defaultCostOfOneLesson);
 
                     for ($t = 0; $t < $num_weeks; $t++) {
                         $start_week = date('Y-m-d', $start_week_range_unix + (604800 * $t));
@@ -126,8 +127,9 @@ class ModelSPU extends \application\core\model
         return $dataMain;
     }
 
+    /*
     /////////////////////////////////////////////////////////   GETTERS/SETTERS   /////////////////////////////////////////////////////////
-
+/*
     public function getAllPersonsStartsAndStopsAndOtherInformation(){
         $db = $this->db;
         $sql = "SELECT `id`, `id_person`, `person_start`, `person_stop`,`teacher`,`timetable`,`level_start`,`intensive` FROM `levels_person`";
@@ -158,7 +160,8 @@ class ModelSPU extends \application\core\model
         if(isset($data[0]['discount'])){$discount = $data[0]['discount'];}else{$discount = 0;}
         return $discount;
     }
-    public function getDefaulCostOfOneLesson($intensive=null)
+
+    public function getDefaultCostOfOneLesson($intensive=null)
     {
         $db = $this->db;
         if($intensive){
@@ -169,15 +172,15 @@ class ModelSPU extends \application\core\model
         $data = $db->query($sql);
         $data = $data->fetchAll($db::FETCH_ASSOC);
         if(isset($data[0]['one lesson default'])) {
-            $defaulCostOfOneLesson = $data[0]['one lesson default'];
+            $defaultCostOfOneLesson = $data[0]['one lesson default'];
         }
         if(isset($data[0]['one intensive default'])) {
-            $defaulCostOfOneLesson = $data[0]['one intensive default'];
+            $defaultCostOfOneLesson = $data[0]['one intensive default'];
         }
-        return $defaulCostOfOneLesson;
+        return $defaultCostOfOneLesson;
     }
-    public function getCostOfOneLessonWithDiscount($discount,$defaulCostOfOneLesson){
-        $CostOfOneLessonWithDiscount = $defaulCostOfOneLesson - round(($defaulCostOfOneLesson*($discount*0.01)),2);
+    public function getCostOfOneLessonWithDiscount($discount,$defaultCostOfOneLesson){
+        $CostOfOneLessonWithDiscount = $defaultCostOfOneLesson - round(($defaultCostOfOneLesson*($discount*0.01)),2);
         $arr['CostOfOneLessonWithDiscount'] = $CostOfOneLessonWithDiscount;
         return $CostOfOneLessonWithDiscount;
     }
@@ -199,4 +202,5 @@ class ModelSPU extends \application\core\model
         $everyLessonDate = $everyLessonDate->fetchAll($db::FETCH_NUM);
         return $everyLessonDate;
     }
+    */
 }
