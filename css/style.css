@@ -11,7 +11,7 @@ p{text-align:center;}
 .date_of_visit:hover{text-decoration:underline;color:blue;cursor:pointer;}
 .lgtt:hover{text-decoration:underline;color:yellow;cursor:pointer;}
 .main_form{margin: 0px auto 50px;width:1000px;}
-form#form{width:730px;margin: auto;}
+form#form{width:478px;margin: auto;}
 .payment_form{margin: 10px 10px 20px 10px;}
 .links{margin: 10px;}
 /*.btn_add{overflow:hidden;display:block;float:right;margin: 0px 10px 0px 0px;cursor:pointer;display: block;float: right;}*/

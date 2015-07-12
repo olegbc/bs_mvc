@@ -1,5 +1,5 @@
 <div class="calendar">
-    <form name="datepicker" action="javascript:void(null);" method="post" onsubmit="datepicker_fn()" id="datepicker">
+    <form name="datepicker" action="javascript:void(null);" method="post" onsubmit="datepickerFunction()" id="datepicker">
         <div id="widgetField">
             <span></span>
             <a href="#">Select date range</a>

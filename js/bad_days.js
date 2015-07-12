@@ -1,5 +1,5 @@
 $(document).ready(function(){
-	building_blocks();
+	attendanceTable();
 
 	$('.combination_all_bad_days .peresent_combinations .brick,.combination_all_bad_days .future_combinations .brick').click(function(){
 		$('.brick').css('borderColor','#000');

@@ -21,7 +21,6 @@
 			<button class="btn_bad_days">bad_days</button>
 		</div>
 	</div>
-	<div class="wrp_btn_add"><button class="btn_add">Добавить ученика</button></div>
 	<?php include 'application/views/'.$content_view; ?>
 </body>
 </html>

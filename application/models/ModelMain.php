@@ -240,6 +240,15 @@ class ModelMain extends \application\core\Model
         $data = $gettersSetters->getAllCombinationsExisted();
         return $data;
     }
+    public function agreementNumber(){
+        $gettersSetters = $this->gettersSetters;
+
+        $id = $_POST["id"];
+        $info = $_POST["info"];
+
+        $data = $gettersSetters->setUpdateAgreementNumber($id,$info);
+        return $data;
+    }
 
     /*
     /////////////////////////////////////////////////////////   GETTERS/SETTERS   ///////////////////////////////////////////////////////

@@ -1,6 +1,6 @@
 <div class="wrapper_calendar">
     <div class="calendar">
-        <form name="datepicker" action="javascript:void(null);" method="post" onsubmit="amount_of_money_fn()" id="datepicker">
+        <form name="datepicker" action="javascript:void(null);" method="post" onsubmit="amountOfMoney()" id="datepicker">
             <div id="widgetField">
                 <span></span>
                 <a href="#">Select date range</a>

@@ -154,7 +154,7 @@ class GettersSetters
     public function getFrozenDates($id,$teacher,$timetable=null,$level_start,$intensive=null){
         $db = $this->db;
         if($intensive){
-            $sql = "SELECT `frozen_day` FROM `freeze` WHERE `intensive`='" . $intensive . "' AND `level_start`='" . $level_start . "'  AND `timetable`='" . $timetable . "'  AND `id_person`=" . $id;
+            $sql = "SELECT `frozen_day` FROM `freeze` WHERE `teacher`='" . $teacher . "' AND `level_start`='" . $level_start . "'  AND `intensive`='" . $intensive . "'  AND `id_person`=" . $id;
         }else{
             $sql = "SELECT `frozen_day` FROM `freeze` WHERE `teacher`='" . $teacher . "' AND `level_start`='" . $level_start . "'  AND `timetable`='" . $timetable . "'  AND `id_person`=" . $id;
         }
@@ -592,7 +592,7 @@ class GettersSetters
     }
     public function getTimetables($teacher){
         $db = $this->db;
-        $sql = "SELECT DISTINCT `timetable` FROM `levels` WHERE `teacher`='".$teacher."'";
+        $sql = "SELECT DISTINCT `timetable` FROM `levels` WHERE `teacher`='".$teacher."' AND `intensive`=0";
         $data = $db->query($sql);
         $data = $data->fetchAll($db::FETCH_COLUMN);
         return $data;
@@ -870,6 +870,20 @@ class GettersSetters
         $sql = "SELECT `teacher`, `timetable`, `sd_1`,`level`,`status` FROM `levels` ORDER BY `teacher` ";
         $data = $db->query($sql);
         $data = $data->fetchAll($db::FETCH_ASSOC);
+        return $data;
+    }
+    public function setUpdateAgreementNumber($id,$info){
+        $db = $this->db;
+        $sql = "UPDATE main SET `dog_num`=:info WHERE id=:id";
+        $stmt = $db->prepare($sql);
+
+        $stmt->bindParam(':id', $id, \PDO::PARAM_INT);
+        $stmt->bindParam(':info', $info, \PDO::PARAM_INT);
+        $stmt->execute();
+
+        $data['errorCode'] = $stmt->errorCode();
+        $data['rowCount'] = $stmt->rowCount();
+        $data['state'] = 'update';
         return $data;
     }
     ////////// ATTENDANCE ///////////
@@ -1527,7 +1541,6 @@ class GettersSetters
         $data = $data->fetchAll($db::FETCH_COLUMN);
         if(empty($data)){return false;}else{return true;}
     }
-
     public function setDeleteBadDay($teacher,$timetable,$level_start,$badDayClicked){
         $db = $this->db;
         $sql = "DELETE FROM `bad_days` WHERE `teacher`=:teacher AND `timetable`=:timetable AND `level_start`=:level_start AND `bad_day`=:badDayClicked";

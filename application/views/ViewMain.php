@@ -9,13 +9,13 @@
     <form name="save2table" action="javascript:void(null);" method="post" onsubmit="call()" id="form">
         <table  class="main_table default_table">
             <tr>
-                <th>id</th>
+                <!--<th>id</th> -->
                 <th>fio</th>
                 <th>dog_num</th>
                 <th>Создать уровень</th>
                 <!-- <th>Отметить посещение</th> -->
                 <th>Принять проплату</th>
-                <th>Удалить</th>
+                <!--<th>Удалить</th> -->
             </tr>
             <?php
                 foreach($data['main'] as $row) {
@@ -25,13 +25,12 @@
 
             ?>
                     <tr class="tr_<?php echo $id; ?>">
-                        <td><input type="text" name="id" value="<?php echo $id; ?>" readonly></td>
+                        <!--                      <td><input type="text" name="id" value="<?php echo $id; ?>" readonly></td> -->
                         <td><a href='http://test.ru/bs_mvc/person?id=<?php echo $id; ?>' target='_self' class="fio_links"><?php echo $fio; ?></a></td>
-                        <td><input type="text" name="dog_num" size="5"  onchange="call2(this.value,<?php echo $id; ?>,'dog_num')" class="id_<?php echo $id; ?>"  value="<?php echo $dog_num; ?>"></td>
+                        <td><input type="text" name="dog_num" size="5"  onchange="agreementNumberChange(this.value,<?php echo $id; ?>)" class="id_<?php echo $id; ?>"  value="<?php echo $dog_num; ?>"></td>
                         <td><p class="lgtt" onclick="showDivWrapperOfFormShowGrayBackgroundResetForm();fillInNameAndIdInForm(<?php echo $id.','.$fioQuoted; ?>);">Создать уровень</p></td>
-<!--                        <td><p class="take" onclick="take(idPHP)ShowTakeForm();">Принять проплату</p></td>  -->
                         <td><p class="take" onclick="ShowTakeForm(<?php echo $id.','.$fioQuoted; ?>);">Принять проплату</p></td>
-                        <td><p class="del" onclick="deleteStudent(<?php echo $id.", '".$fio."'"; ?>)">Удалить</p></td>
+                        <!--      <td><p class="del" onclick="deleteStudent(<?php echo $id.", '".$fio."'"; ?>)">Удалить</p></td> -->
                     </tr>
                     <?php }else{echo 'Нет студентов';} ?>
                 <?php } ?>
@@ -45,7 +44,7 @@
         <div class="item"><label for="fio_person">ФИО:</label> <input id="fio_person" class="add_form_input" type="text" name="fio_person" readonly></div>
         <div class="item"><label for="fio_person">Интенсив:</label> <input id="IntensiveCheckIn" class="add_form_input" type="checkbox" name="IntensiveCheckIn"></div>
         <div class="item teacher_soch"><label for="teacher">Учитель:</label>
-            <select name="teacher" id="teacher" class="add_form_select" onchange="get_timetable(this.value)">
+            <select name="teacher" id="teacher" class="add_form_select" onchange="getTimetable(this.value)">
                 <option value="choose_teacher" selected>Выберите учителя</option>
                 <?php
                 echo 'eee';
@@ -72,7 +71,7 @@
 </div>
 <div class="add_form">
     <div class="close_cross"></div>
-    <form name="save2table" action="javascript:void(null);" method="post" onsubmit="add_fn()" id="add_form">
+    <form name="save2table" action="javascript:void(null);" method="post" onsubmit="addStudent()" id="add_form">
         <div class="item"><label for="fio_add">ФИО:</label> <input id="fio_add" class="add_form_input" type="text" name="fio_add"></div>
         <div class="item last"><input type="submit" class="add_form_btn" value="Сохранить" /></div>
     </form>

@@ -54,5 +54,9 @@ class ControllerMain extends \application\core\Controller
         $data = $this->model->studentStartStop();
         echo json_encode($data);
     }
+    public function actionAgreementNumber(){
+        $data = $this->model->agreementNumber();
+        echo json_encode($data);
+    }
 }
 
