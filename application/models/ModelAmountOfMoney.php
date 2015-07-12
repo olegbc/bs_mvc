@@ -36,16 +36,4 @@ class ModelAmountOfMoney extends \application\core\model
         }
         return $arr;
     }
-
-    /*
-    /////////////////////////////////////////////////////////   GETTERS/SETTERS   /////////////////////////////////////////////////////////
-
-    public function getSumMoneyForThisWeek($start_week,$stop_week){
-        $db = $this->db;
-        $sql = "SELECT SUM(`given`) FROM `payment_has` WHERE `date` between '".$start_week."' AND '".$stop_week."'";
-        $data = $db->query($sql);
-        $data = $data->fetchAll($db::FETCH_COLUMN);
-        return $data;
-    }
-    */
 }

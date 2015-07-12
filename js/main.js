@@ -322,7 +322,6 @@ function saveAmountOfMoney(){
 
 function attendanceTable(teacher_now,timetable_now,level_start_now, intensive_now){
     var badDayPage = 0;
-    if(getParameterByName('badDayPage') == 1){badDayPage = 1;}
     if(location.pathname == "/bs_mvc/BadDays"){
         badDayPage = 1;
     }
@@ -331,6 +330,7 @@ function attendanceTable(teacher_now,timetable_now,level_start_now, intensive_no
 			async: false,
 			url: './Attendance/BuildingBlocks.php',
 			dataType: 'json',
+            data: {badDayPage:badDayPage},
 			success: function(data){
                 //console.log(data);
                 var dayNow = new Date();

@@ -141,6 +141,7 @@ button.change_start_date { margin-right: 10px; }
 .formField { margin-bottom: 5px; }
 /*datepicker*/
 #ui-datepicker-div{z-index:9999 !important;}
+.peresent_combinations { overflow: hidden; }
 
 
 

@@ -7,10 +7,6 @@ class ModelLevelCalculation extends \application\core\model
         parent::__construct();
     }
 
-    public function get_data()
-    {
-    }
-
     public function calculateLevelDates()
     {
         $gettersSetters = $this->gettersSetters;
@@ -138,78 +134,4 @@ class ModelLevelCalculation extends \application\core\model
             }
     }
     }
-/*
-    /////////////////////////////////////////////////////////   GETTERS/SETTERS   /////////////////////////////////////////////////////////
-/*
-    public function getDoesCombinationExist($teacher,$timetable,$level_start){
-        $db = $this->db;
-        $sql = "SELECT `id` FROM `levels` WHERE `teacher`='".$teacher."' AND `timetable`='".$timetable."' AND `sd_1`='".$level_start."'";
-        $data = $db->query($sql);
-        $data = $data->fetchAll($db::FETCH_ASSOC);
-        return $data;
-    }
-    public function getAllBadDaysOfCombination($teacher,$timetable,$level_start){
-        $db = $this->db;
-        $sql = "SELECT `bad_day` FROM `bad_days` WHERE `teacher`='".$teacher."' AND `timetable`='".$timetable."' AND `level_start`='".$level_start."'";
-        $data = $db->query($sql);
-        $data = $data->fetchAll($db::FETCH_COLUMN);
-        return $data;
-    }
-
-
-    public function setInsertIntoLevelsTable($level,$teacher,$timetable,$level_start){
-        $db = $this->db;
-        $sql = "INSERT INTO `levels` (`level`,`teacher`,`timetable`,`sd_1`) VALUES(:level,:teacher,:timetable,:level_start)";
-        $stmt = $db->prepare($sql);
-
-        $stmt->bindParam(':level', $level, \PDO::PARAM_STR );
-        $stmt->bindParam(':teacher', $teacher, \PDO::PARAM_STR );
-        $stmt->bindParam(':timetable', $timetable, \PDO::PARAM_STR );
-        $stmt->bindParam(':level_start', $level_start, \PDO::PARAM_STR );
-        $stmt->execute();
-
-        $data['lastInsert'] = $db->lastInsertId();
-        $data['errorCode'] = $stmt->errorCode();
-        $data['rowCount'] = $stmt->rowCount();
-        $data['state'] = 'insert';
-        return $data;
-    }
-    public function setUpdateLevelStartToLevels($i,$newDateOfCombination,$teacher,$timetable,$level_start){
-        $db = $this->db;
-        $i = $i+1;
-        $sql="UPDATE `levels` SET sd_:i=:newDateOfCombination WHERE `teacher`=:teacher AND `timetable`=:timetable AND `sd_1`=:level_start";
-        $stmt = $db->prepare($sql);
-
-        $stmt->bindParam(':i', $i, \PDO::PARAM_INT);
-        $stmt->bindParam(':newDateOfCombination', $newDateOfCombination, \PDO::PARAM_STR);
-        $stmt->bindParam(':teacher', $teacher, \PDO::PARAM_STR);
-        $stmt->bindParam(':timetable', $timetable, \PDO::PARAM_STR);
-        $stmt->bindParam(':level_start', $level_start, \PDO::PARAM_STR);
-        $stmt->execute();
-
-        $data['errorCode'] = $stmt->errorCode();
-        $data['rowCount'] = $stmt->rowCount();
-        $data['state'] = 'update';
-        return $data;
-
-    }
-    public function setIntensiveToTrueAtLevels($teacher, $timetable, $level_start){
-        $db = $this->db;
-        $sql="UPDATE `levels` SET intensive=:IntensiveTrue WHERE `teacher`=:teacher AND `timetable`=:timetable AND `sd_1`=:level_start";
-        $stmt = $db->prepare($sql);
-
-        $true = 1;
-
-        $stmt->bindParam(':IntensiveTrue', $true, \PDO::PARAM_INT);
-        $stmt->bindParam(':teacher', $teacher, \PDO::PARAM_STR);
-        $stmt->bindParam(':timetable', $timetable, \PDO::PARAM_STR);
-        $stmt->bindParam(':level_start', $level_start, \PDO::PARAM_STR);
-        $stmt->execute();
-
-        $data['errorCode'] = $stmt->errorCode();
-        $data['rowCount'] = $stmt->rowCount();
-        $data['state'] = 'update';
-        return $data;
-    }
-*/
 }

@@ -11,8 +11,7 @@ class ControllerAttendance extends \application\core\Controller
 
     public function actionIndex()
     {
-        $data = $this->model->get_data();
-        $this->view->generate('ViewAttendance.php', 'ViewTemplateAttendance.php', $data);
+        $this->view->generate('ViewAttendance.php', 'ViewTemplateAttendance.php');
     }
 
     public function actionCombinationDatesFittedToTimetable()

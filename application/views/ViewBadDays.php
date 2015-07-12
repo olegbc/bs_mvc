@@ -1,10 +1,19 @@
 <div class="combination_all_bad_days">
-    <div class="past_combinations"></div>
-    <div class="line_1"><hr></div>
-    <div class="peresent_combinations"></div>
-    <div class="line_2"><hr></div>
-    <div class="future_combinations"></div>
+    <div class="peresent_combinations">
+        <div class="combinationsTitle">
+            <h1>текущие</h1>
+        </div>
+    </div>
+    <div class="line_2">
+        <hr />
+    </div>
+    <div class="future_combinations">
+        <div class="combinationsTitle">
+            <h1>планируемые</h1>
+        </div>
+    </div>
 </div>
+
 <div class="bad_days_calendar_monthes_wrapper">
     <div class="bad_days_calendar_monthes">
         <div class="left_arrow"></div>

@@ -6,9 +6,6 @@ class ModelSPU extends \application\core\model
     {
         parent::__construct();
     }
-    public function get_data()
-    {
-    }
 
     public function spuCalculation()
     {
@@ -126,81 +123,4 @@ class ModelSPU extends \application\core\model
 
         return $dataMain;
     }
-
-    /*
-    /////////////////////////////////////////////////////////   GETTERS/SETTERS   /////////////////////////////////////////////////////////
-/*
-    public function getAllPersonsStartsAndStopsAndOtherInformation(){
-        $db = $this->db;
-        $sql = "SELECT `id`, `id_person`, `person_start`, `person_stop`,`teacher`,`timetable`,`level_start`,`intensive` FROM `levels_person`";
-        $data = $db->query($sql);
-        $data = $data->fetchAll($db::FETCH_ASSOC);
-        return $data;
-    }
-    public function getNumReserved($id_person,$teacher,$timetable=null,$level_start,$intensive=null){
-        $db = $this->db;
-        if($intensive){
-            $sql = "SELECT `num_reserved` FROM `payed_lessons` WHERE `id_person` ='" . $id_person . "' AND `teacher` = '" . $teacher . "' AND `level_start` = '" . $level_start . "' AND `intensive` ='" . $intensive . "'";
-        }else {
-            $sql = "SELECT `num_reserved` FROM `payed_lessons` WHERE `id_person` ='" . $id_person . "' AND `teacher` = '" . $teacher . "' AND `level_start` = '" . $level_start . "' AND `timetable` ='" . $timetable . "'";
-        }
-        $data = $db->query($sql);
-        $data = $data->fetchAll($db::FETCH_ASSOC);
-        return $data;
-    }
-    public function getDiscount($id,$teacher,$timetable=null,$level_start,$intensive=null){
-        $db = $this->db;
-        if($intensive){
-            $sql = "SELECT `discount` FROM `discounts` WHERE `id_person`='" . $id . "' AND `teacher`='" . $teacher . "' AND `intensive`='" . $intensive . "' AND `level_start`='" . $level_start . "'";
-        }else{
-            $sql = "SELECT `discount` FROM `discounts` WHERE `id_person`='" . $id . "' AND `teacher`='" . $teacher . "' AND `timetable`='" . $timetable . "' AND `level_start`='" . $level_start . "'";
-        }
-        $data = $db->query($sql);
-        $data = $data->fetchAll($db::FETCH_ASSOC);
-        if(isset($data[0]['discount'])){$discount = $data[0]['discount'];}else{$discount = 0;}
-        return $discount;
-    }
-
-    public function getDefaultCostOfOneLesson($intensive=null)
-    {
-        $db = $this->db;
-        if($intensive){
-            $sql = "SELECT `one intensive default` FROM `constants`";
-        }else {
-            $sql = "SELECT `one lesson default` FROM `constants`";
-        }
-        $data = $db->query($sql);
-        $data = $data->fetchAll($db::FETCH_ASSOC);
-        if(isset($data[0]['one lesson default'])) {
-            $defaultCostOfOneLesson = $data[0]['one lesson default'];
-        }
-        if(isset($data[0]['one intensive default'])) {
-            $defaultCostOfOneLesson = $data[0]['one intensive default'];
-        }
-        return $defaultCostOfOneLesson;
-    }
-    public function getCostOfOneLessonWithDiscount($discount,$defaultCostOfOneLesson){
-        $CostOfOneLessonWithDiscount = $defaultCostOfOneLesson - round(($defaultCostOfOneLesson*($discount*0.01)),2);
-        $arr['CostOfOneLessonWithDiscount'] = $CostOfOneLessonWithDiscount;
-        return $CostOfOneLessonWithDiscount;
-    }
-    public function getAllTeachers(){
-        $db = $this->db;
-        $sql = "SELECT DISTINCT `teacher` FROM `levels`";
-        $data = $db->query($sql);
-        $data = $data->fetchAll($db::FETCH_COLUMN);
-        return $data;
-    }
-    public function getCombinationDates($teacher,$timetable=null,$level_start,$intensive=null){
-        $db = $this->db;
-        if($intensive){
-            $sql = "SELECT sd_1,sd_2,sd_3,sd_4,sd_5,sd_6,sd_7,sd_8,sd_9,sd_10 FROM `levels` WHERE teacher='" . $teacher . "' AND intensive='" . $intensive . "' AND sd_1='" . $level_start . "'";
-        }else {
-            $sql = "SELECT sd_1,sd_2,sd_3,sd_4,sd_5,sd_6,sd_7,sd_8,sd_9,sd_10,sd_11,sd_12,sd_13,sd_14,sd_15,sd_16,sd_17,sd_18,sd_19,sd_20,sd_21 FROM `levels` WHERE teacher='" . $teacher . "' AND timetable='" . $timetable . "' AND sd_1='" . $level_start . "'";
-        }
-        $everyLessonDate = $db->query($sql);
-        $everyLessonDate = $everyLessonDate->fetchAll($db::FETCH_NUM);
-        return $everyLessonDate;
-    }
-    */
 }

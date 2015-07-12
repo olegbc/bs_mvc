@@ -9,8 +9,7 @@ class ControllerFreeze extends \application\core\Controller
     }
     public function actionIndex()
     {
-        $data = $this->model->get_data();
-        $this->view->generate('ViewFreeze.php', 'ViewTemplateFreeze.php', $data);
+        $this->view->generate('ViewFreeze.php', 'ViewTemplateFreeze.php');
     }
     public function actionBuildFreezeTable(){
         $data = $this->model->buildFreezeTable();

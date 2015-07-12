@@ -11,8 +11,7 @@ class ControllerLevelCalculation extends \application\core\Controller
 
     public function actionIndex()
     {
-        $data = $this->model->get_data();
-        $this->view->generate('ViewLevelCalculation.php', 'ViewTemplateLevelCalculation.php', $data);
+        $this->view->generate('ViewLevelCalculation.php', 'ViewTemplateLevelCalculation.php');
     }
 
     public function actionCalculateLevelDates()

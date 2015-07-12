@@ -920,9 +920,13 @@ class GettersSetters
         $data = $data->fetchAll($db::FETCH_COLUMN);
         return $data;
     }
-    public function getAllCombinationsExistedFromLevels(){
+    public function getAllCombinationsExistedFromLevels($badDayPage){
         $db = $this->db;
-        $sql = "SELECT `teacher`, `timetable`, `sd_1`,`level`,`archive`,`intensive` FROM `levels` ORDER BY `teacher` ";
+        if($badDayPage == 0) {
+            $sql = "SELECT `teacher`, `timetable`, `sd_1`,`level`,`archive`,`intensive` FROM `levels` ORDER BY `teacher` ";
+        }else{
+            $sql = "SELECT `teacher`, `timetable`, `sd_1`,`level` FROM `levels` WHERE `intensive` NOT IN(1) AND `archive` NOT IN(1) ORDER BY `teacher` ";
+        }
         $data = $db->query($sql);
         $data = $data->fetchAll($db::FETCH_ASSOC);
         return $data;

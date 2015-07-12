@@ -11,8 +11,7 @@ class ControllerBadDays extends \application\core\Controller
 
     public function actionIndex()
     {
-        $data = $this->model->get_data();
-        $this->view->generate('ViewBadDays.php', 'ViewTemplateBadDays.php', $data);
+        $this->view->generate('ViewBadDays.php', 'ViewTemplateBadDays.php');
     }
 
     public function actionCombinationAndBadDaysDates()

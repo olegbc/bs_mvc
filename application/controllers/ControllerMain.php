@@ -7,11 +7,10 @@ class ControllerMain extends \application\core\Controller
 		parent::__construct();
 		$this->model = new \application\models\ModelMain;
 	}
-
 	function actionIndex()
 	{
-        $data = $this->model->getData();
-		$this->view->generate('ViewMain.php', 'ViewTemplate.php',$data);
+        $data = $this->model->main();
+		$this->view->generate('ViewMain.php', 'ViewTemplate.php', $data);
 	}
 
     public function actionTimetables(){

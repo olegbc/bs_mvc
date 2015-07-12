@@ -6,9 +6,6 @@ class ModelNumberOfStudents extends \application\core\model
     {
         parent::__construct();
     }
-    public function get_data()
-    {
-    }
 
     public function allTeachers(){
         $gettersSetters = $this->gettersSetters;
@@ -50,23 +47,4 @@ class ModelNumberOfStudents extends \application\core\model
         return $dataMain;
 
     }
-
-    /*
-    /////////////////////////////////////////////////////////   GETTERS/SETTERS   /////////////////////////////////////////////////////////
-
-    public function getallTeachers(){
-        $db = $this->db;
-        $sql="SELECT DISTINCT `teacher` FROM `levels`";
-        $data = $db->query($sql);
-        $data = $data->fetchAll($db::FETCH_COLUMN);
-        return $data;
-    }
-    public function getPersonStratStopOfEveryStudentOfThisTeacher($thisTeacher){
-        $db = $this->db;
-        $sql = "SELECT `person_start`,`person_stop` FROM `levels_person` WHERE `teacher`='".$thisTeacher."'";
-        $data = $db->query($sql);
-        $data = $data->fetchAll($db::FETCH_ASSOC);
-        return $data;
-    }
-    */
 }

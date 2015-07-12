@@ -10,8 +10,7 @@ class ControllerNumberOfStudents extends \application\core\Controller
     }
     public function actionIndex()
     {
-        $data = $this->model->get_data();
-        $this->view->generate('ViewNumberOfStudents.php', 'ViewTemplateNumberOfStudents.php', $data);
+        $this->view->generate('ViewNumberOfStudents.php', 'ViewTemplateNumberOfStudents.php');
     }
 
     public function actionAllTeachers()

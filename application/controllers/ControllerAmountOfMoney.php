@@ -11,7 +11,7 @@ class ControllerAmountOfMoney extends \application\core\Controller
     public function actionIndex()
     {
         $data = $this->model->get_data();
-        $this->view->generate('ViewAmountOfMoney.php', 'ViewTemplateAmountOfMoney.php', $data);
+        $this->view->generate('ViewAmountOfMoney.php', 'ViewTemplateAmountOfMoney.php');
     }
 
     public function actionAmountOfMoney()

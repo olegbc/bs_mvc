@@ -11,8 +11,7 @@ class ControllerPerson extends \application\core\Controller
 
     public function actionIndex()
 	{
-		$data = $this->model->get_data();
-		$this->view->generate('ViewPerson.php', 'ViewTemplatePerson.php', $data);
+		$this->view->generate('ViewPerson.php', 'ViewTemplatePerson.php');
 	}
     public function actionNameSumCombinationsFrozenDatesBalance(){
         $data = $this->model->nameSumCombinationsFrozenDatesBalance();
